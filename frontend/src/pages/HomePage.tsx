@@ -104,11 +104,11 @@ export const HomePage: React.FC<HomePageProps> = ({
           </form>
 
           {/* Official Single Governmental Jurisdiction Dropdown Box */}
-          <div className="pt-2 max-w-2xl mx-auto space-y-2.5">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 bg-white/10 backdrop-blur-md p-2.5 rounded-2xl border border-white/20 shadow-xl">
-              <div className="flex items-center space-x-2 text-xs text-blue-100 font-semibold px-2 shrink-0">
-                <Building className="w-4 h-4 text-amber-300 shrink-0" />
-                <span>
+          <div className="pt-2 max-w-3xl mx-auto space-y-3 w-full">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/10 backdrop-blur-md p-[20px] rounded-2xl border border-white/20 shadow-xl w-full">
+              <div className="flex items-center space-x-2.5 text-xs sm:text-sm text-blue-100 font-semibold shrink-0">
+                <Building className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
+                <span className="whitespace-nowrap">
                   {i18n.language === "hi" 
                     ? "प्रशासन / राज्य चुनें:" 
                     : i18n.language === "mr" 
@@ -116,59 +116,63 @@ export const HomePage: React.FC<HomePageProps> = ({
                     : "Select Jurisdiction / State:"}
                 </span>
               </div>
-              <select
-                value={selectedState}
-                onChange={(e) => onSelectState && onSelectState(e.target.value)}
-                className="w-full sm:w-auto flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-900 border-0 shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer transition"
-              >
-                <option value="ALL" className="text-slate-900 font-bold">
-                  🇮🇳 {i18n.language === "hi" 
-                    ? "अखिल भारतीय / सर्व भारत (सभी 36 राज्य, UT एवं केंद्र सरकार)" 
-                    : i18n.language === "mr" 
-                    ? "सर्व भारत / अखिल भारतीय (सर्व ३६ राज्ये, UT व केंद्र सरकार)" 
-                    : "All India / National (All 36 States, UTs & Central)"}
-                </option>
-                <option value="CENTRAL" className="text-blue-900 font-bold bg-blue-50">
-                  🏛️ {i18n.language === "hi" 
-                    ? "भारत सरकार (केन्द्र सरकार — CBSE, NSP, डिजिटल लॉकर, राष्ट्रीय योजनाएं)" 
-                    : i18n.language === "mr" 
-                    ? "भारत सरकार (केंद्र सरकार — CBSE, NSP, डिजीलॉकर, राष्ट्रीय योजना)" 
-                    : "Central Government (Govt of India — CBSE, NSP, DigiLocker & National Schemes)"}
-                </option>
-                <optgroup label={i18n.language === "hi" ? "── 28 राज्य (States) ──" : i18n.language === "mr" ? "── २८ राज्ये (States) ──" : "── 28 States ──"} className="text-slate-900">
-                  {ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "STATE").map((s) => (
-                    <option key={s.code} value={s.code} className="text-slate-900">
-                      {i18n.language === "hi" ? `${s.hi} (${s.name} - ${s.code})` : i18n.language === "mr" ? `${s.mr} (${s.name} - ${s.code})` : `${s.name} (${s.code})`}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label={i18n.language === "hi" ? "── 8 केंद्र शासित प्रदेश (UTs) ──" : i18n.language === "mr" ? "── ८ केंद्रशासित प्रदेश (UTs) ──" : "── 8 Union Territories ──"} className="text-slate-900">
-                  {ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "UT").map((s) => (
-                    <option key={s.code} value={s.code} className="text-slate-900">
-                      {i18n.language === "hi" ? `${s.hi} (${s.name} - ${s.code})` : i18n.language === "mr" ? `${s.mr} (${s.name} - ${s.code})` : `${s.name} (${s.code})`}
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
+              <div className="relative w-full sm:flex-1 min-w-0">
+                <select
+                  value={selectedState}
+                  onChange={(e) => onSelectState && onSelectState(e.target.value)}
+                  className="w-full min-w-0 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-900 border-0 shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer transition truncate pr-8"
+                >
+                  <option value="ALL" className="text-slate-900 font-bold">
+                    🇮🇳 {i18n.language === "hi" 
+                      ? "अखिल भारतीय / सर्व भारत (सभी 36 राज्य, UT एवं केंद्र सरकार)" 
+                      : i18n.language === "mr" 
+                      ? "सर्व भारत / अखिल भारतीय (सर्व ३६ राज्ये, UT व केंद्र सरकार)" 
+                      : "All India / National (All 36 States, UTs & Central)"}
+                  </option>
+                  <option value="CENTRAL" className="text-blue-900 font-bold bg-blue-50">
+                    🏛️ {i18n.language === "hi" 
+                      ? "भारत सरकार (केन्द्र सरकार — CBSE, NSP, डिजिटल लॉकर, राष्ट्रीय योजनाएं)" 
+                      : i18n.language === "mr" 
+                      ? "भारत सरकार (केंद्र सरकार — CBSE, NSP, डिजीलॉकर, राष्ट्रीय योजना)" 
+                      : "Central Government (Govt of India — CBSE, NSP, DigiLocker & National Schemes)"}
+                  </option>
+                  <optgroup label={i18n.language === "hi" ? "── 28 राज्य (States) ──" : i18n.language === "mr" ? "── २८ राज्ये (States) ──" : "── 28 States ──"} className="text-slate-900">
+                    {ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "STATE").map((s) => (
+                      <option key={s.code} value={s.code} className="text-slate-900">
+                        {i18n.language === "hi" ? `${s.hi} (${s.name} - ${s.code})` : i18n.language === "mr" ? `${s.mr} (${s.name} - ${s.code})` : `${s.name} (${s.code})`}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label={i18n.language === "hi" ? "── 8 केंद्र शासित प्रदेश (UTs) ──" : i18n.language === "mr" ? "── ८ केंद्रशासित प्रदेश (UTs) ──" : "── 8 Union Territories ──"} className="text-slate-900">
+                    {ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "UT").map((s) => (
+                      <option key={s.code} value={s.code} className="text-slate-900">
+                        {i18n.language === "hi" ? `${s.hi} (${s.name} - ${s.code})` : i18n.language === "mr" ? `${s.mr} (${s.name} - ${s.code})` : `${s.name} (${s.code})`}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
             </div>
 
             {/* Active Jurisdiction Status Badge */}
             {selectedState !== "ALL" && (
-              <div className="inline-flex items-center space-x-2 text-xs text-amber-200 bg-black/20 px-3 py-1 rounded-full border border-amber-400/30">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
-                <span>
-                  {i18n.language === "hi" ? "वर्तमान में प्रदर्शित सेवाएं:" : i18n.language === "mr" ? "सध्या दर्शविलेल्या सेवा:" : "Currently viewing services for:"}{" "}
-                  <strong className="text-white font-bold underline underline-offset-2">
-                    {getStateLabel(selectedState, i18n.language)}
-                  </strong>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => onSelectState && onSelectState("ALL")}
-                  className="ml-2 text-blue-200 hover:text-white underline text-[11px]"
-                >
-                  ({i18n.language === "hi" ? "सभी राज्य देखें" : i18n.language === "mr" ? "सर्व राज्ये पहा" : "View All India"})
-                </button>
+              <div className="flex items-center justify-center">
+                <div className="inline-flex items-center space-x-2 text-xs text-amber-200 bg-black/20 px-3.5 py-1.5 rounded-full border border-amber-400/30">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                  <span>
+                    {i18n.language === "hi" ? "वर्तमान में प्रदर्शित सेवाएं:" : i18n.language === "mr" ? "सध्या दर्शविलेल्या सेवा:" : "Currently viewing services for:"}{" "}
+                    <strong className="text-white font-bold underline underline-offset-2">
+                      {getStateLabel(selectedState, i18n.language)}
+                    </strong>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onSelectState && onSelectState("ALL")}
+                    className="ml-2 text-blue-200 hover:text-white underline text-[11px]"
+                  >
+                    ({i18n.language === "hi" ? "सभी राज्य देखें" : i18n.language === "mr" ? "सर्व राज्ये पहा" : "View All India"})
+                  </button>
+                </div>
               </div>
             )}
           </div>
