@@ -1,0 +1,66 @@
+{
+  "brand": {
+    "title": "Maha-Seva Integrator",
+    "subtitle": "Government of Maharashtra",
+    "slogan": "One Platform. Many Government Services.",
+    "sub_message": "Unified digital orchestration gateway for citizens and state departments."
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "track": "Track Application",
+    "departments": "Departments",
+    "dashboard": "Dashboard",
+    "officer_desk": "Officer Desk",
+    "admin_desk": "Admin Desk",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "help": "Help & FAQs"
+  },
+  "hero": {
+    "title": "Seamless Citizen Services Across Maharashtra",
+    "subtitle": "Discover, apply, submit verified documents, and track government services in real-time through a single unified portal.",
+    "explore_btn": "Explore Services",
+    "track_btn": "Track Application",
+    "ask_assistant": "Ask Smart Service Assistant",
+    "search_placeholder": "Search services (e.g., Income Certificate, Domicile, Birth, Water Connection)..."
+  },
+  "common": {
+    "search": "Search",
+    "filter_by_dept": "All Departments",
+    "filter_by_cat": "All Categories",
+    "apply_now": "Apply Now",
+    "view_details": "View Details",
+    "status": "Status",
+    "processing_time": "Est. Processing Time",
+    "days": "days",
+    "fee": "Government Fee",
+    "free": "Free",
+    "documents_required": "Required Documents",
+    "eligibility": "Eligibility Criteria",
+    "loading": "Loading data...",
+    "no_data": "No matching records found.",
+    "save_draft": "Save Draft",
+    "submit": "Submit Application",
+    "cancel": "Cancel",
+    "back": "Back",
+    "remarks": "Official Remarks",
+    "timeline": "Application Timeline",
+    "verify": "Verify",
+    "reject": "Reject",
+    "download": "Download File"
+  },
+  "statuses": {
+    "DRAFT": "Draft",
+    "SUBMITTED": "Submitted",
+    "UNDER_REVIEW": "Under Review",
+    "DOCUMENT_VERIFICATION": "Document Verification",
+    "ADDITIONAL_INFORMATION_REQUIRED": "Info Required",
+    "PROCESSING": "In Processing",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  }
+}
