@@ -26,6 +26,7 @@ class ServiceListItem(BaseModel):
     category_id: int
     category_name: Optional[str] = None
     description: Optional[str] = None
+    description_mr: Optional[str] = None
     description_hi: Optional[str] = None
     fee: float
     processing_days: int
@@ -47,15 +48,16 @@ class ServiceDetailResponse(BaseModel):
     category_id: int
     category_name: Optional[str] = None
     description: Optional[str] = None
+    description_mr: Optional[str] = None
     description_hi: Optional[str] = None
     eligibility: Optional[str] = None
-    documents_required: Optional[List[Dict[str, Any]]] = None
+    documents_required: Optional[List[Any]] = None
     fee: float
     processing_days: int
     workflow_id: str
     integration_type: str
     is_active: bool
-    form_schema: Optional[List[Dict[str, Any]]] = None
+    form_schema: Optional[Any] = None
 
     class Config:
         from_attributes = True

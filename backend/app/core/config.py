@@ -1,5 +1,5 @@
-﻿import os
-from typing import List
+import os
+from typing import List, Optional
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -20,6 +20,7 @@ class Settings(BaseModel):
     JWT_SECRET: str = os.getenv("JWT_SECRET", "maha-seva-super-secret-key-2026")
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
+    GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY", None)
 
     CORS_ORIGINS: List[str] = [
         "http://localhost:5173",

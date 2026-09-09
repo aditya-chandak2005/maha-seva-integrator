@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { ServiceItem } from "../types";
 
+import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION, getStateShortName } from "../constants/states";
+
 interface HomePageProps {
   services: ServiceItem[];
   onSelectService: (serviceId: number) => void;
@@ -27,14 +29,7 @@ interface HomePageProps {
   onSelectState?: (state: string) => void;
 }
 
-const STATE_CHIPS = [
-  { code: "ALL", name: "All States", mr: "सर्व राज्य", hi: "सभी राज्य" },
-  { code: "MH", name: "Maharashtra (MH)", mr: "महाराष्ट्र (MH)", hi: "महाराष्ट्र (MH)" },
-  { code: "KA", name: "Karnataka (KA)", mr: "कर्नाटक (KA)", hi: "कर्नाटक (KA)" },
-  { code: "GJ", name: "Gujarat (GJ)", mr: "गुजरात (GJ)", hi: "गुजरात (GJ)" },
-  { code: "DL", name: "Delhi NCT (DL)", mr: "दिल्ली (DL)", hi: "दिल्ली (DL)" },
-  { code: "UP", name: "Uttar Pradesh (UP)", mr: "उत्तर प्रदेश (UP)", hi: "उत्तर प्रदेश (UP)" },
-];
+const POPULAR_STATE_CODES = ["ALL", "MH", "KA", "GJ", "DL", "UP", "RJ", "TN", "WB", "KL", "JK"];
 
 export const HomePage: React.FC<HomePageProps> = ({
   services,
@@ -110,25 +105,53 @@ export const HomePage: React.FC<HomePageProps> = ({
             </button>
           </form>
 
-          {/* State Selector Quick Chips */}
+          {/* State Selector Quick Chips & All 36 States/UTs Dropdown */}
           <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
             <span className="text-xs text-blue-200 font-medium mr-1 flex items-center">
               {i18n.language === "hi" ? "राज्य चुनें:" : i18n.language === "mr" ? "राज्य निवडा:" : "Select State:"}
             </span>
-            {STATE_CHIPS.map((st) => (
-              <button
-                key={st.code}
-                type="button"
-                onClick={() => onSelectState && onSelectState(st.code)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold transition border ${
-                  selectedState === st.code
-                    ? "bg-orange-500 border-orange-400 text-white shadow-md scale-105"
-                    : "bg-white/10 hover:bg-white/20 border-white/20 text-blue-100"
-                }`}
-              >
-                {i18n.language === "hi" ? st.hi : i18n.language === "mr" ? st.mr : st.name}
-              </button>
-            ))}
+            {POPULAR_STATE_CODES.map((code) => {
+              const label = getStateShortName(code, i18n.language);
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => onSelectState && onSelectState(code)}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition border ${
+                    selectedState === code
+                      ? "bg-orange-500 border-orange-400 text-white shadow-md scale-105"
+                      : "bg-white/10 hover:bg-white/20 border-white/20 text-blue-100"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+
+            {/* All 36 States & UTs dropdown picker */}
+            <select
+              value={selectedState}
+              onChange={(e) => onSelectState && onSelectState(e.target.value)}
+              className="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 border border-white/20 text-amber-300 focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer max-w-[210px]"
+            >
+              <option value="ALL" className="text-slate-900">
+                {i18n.language === "hi" ? "✨ अधिक राज्य/UT (कुल 36)..." : i18n.language === "mr" ? "✨ इतर राज्ये/UT (एकूण ३६)..." : "✨ More States & UTs (All 36)..."}
+              </option>
+              <optgroup label={i18n.language === "hi" ? "28 राज्य" : i18n.language === "mr" ? "२८ राज्ये" : "28 States"} className="text-slate-900">
+                {ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "STATE").map((s) => (
+                  <option key={s.code} value={s.code} className="text-slate-900">
+                    {i18n.language === "hi" ? `${s.hi} (${s.code})` : i18n.language === "mr" ? `${s.mr} (${s.code})` : `${s.name} (${s.code})`}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label={i18n.language === "hi" ? "8 केंद्र शासित प्रदेश" : i18n.language === "mr" ? "८ केंद्रशासित प्रदेश" : "8 Union Territories"} className="text-slate-900">
+                {ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "UT").map((s) => (
+                  <option key={s.code} value={s.code} className="text-slate-900">
+                    {i18n.language === "hi" ? `${s.hi} (${s.code})` : i18n.language === "mr" ? `${s.mr} (${s.code})` : `${s.name} (${s.code})`}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
           </div>
 
           {/* Quick Action Badges */}

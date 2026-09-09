@@ -21,10 +21,11 @@ from app.integrations.orchestrator import orchestrator
 router = APIRouter(prefix="/applications", tags=["Applications"])
 
 def generate_application_number(dept_code: str, state_code: str = "MH") -> str:
+    clean_dept = dept_code.split("_")[-1] if "_" in dept_code else dept_code
     year = datetime.now().year
     random_digits = random.randint(10000, 99999)
     prefix = (state_code or "MH").upper()
-    return f"{prefix}-{dept_code}-{year}-{random_digits}"
+    return f"{prefix}-{clean_dept}-{year}-{random_digits}"
 
 @router.post("", response_model=ApplicationDetailResponse)
 def submit_application(

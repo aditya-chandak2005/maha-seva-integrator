@@ -7,11 +7,15 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from app.core.database import get_db
+from app.core.config import settings
 from app.models import Service, Department
 from app.schemas.assistant import (
     AssistantQueryRequest,
     AssistantQueryResponse,
-    SuggestedService
+    SuggestedService,
+    AssistantMessage,
+    KeyValidationRequest,
+    KeyValidationResponse
 )
 
 logger = logging.getLogger(__name__)
@@ -26,7 +30,7 @@ INTENT_KEYWORDS = {
         "आय प्रमाण पत्र", "आय प्रमाणपत्र", "आय प्रमाण", "आय", "आमदनी", "वेतन"
     ],
     "domicile": [
-        "domicile certificate", "residence certificate", "domicile", "residence", "residential", "15 years", "mpsc", "nationality", "native",
+        "domicile certificate", "residence certificate", "domicile", "residence", "residential", "bonafide", "bonafide resident", "bonafide residence", "15 years", "mpsc", "nationality", "native", "mool niwas",
         "अधिवास प्रमाणपत्र", "राष्ट्रीयत्व प्रमाणपत्र", "अधिवास", "राष्ट्रीयत्व", "रहवासी", "वास्तव्य",
         "निवास प्रमाण पत्र", "मूल निवास प्रमाण पत्र", "मूल निवास", "निवास प्रमाण", "स्थानीय निवासी"
     ],
@@ -77,6 +81,20 @@ INTENT_KEYWORDS = {
     ]
 }
 
+INTENT_DB_PATTERNS = {
+    "income": ["income", "उत्पन्न", "आय"],
+    "domicile": ["domicile", "residence", "resident", "bonafide", "mool niwas", "अधिवास", "निवास", "रहवासी"],
+    "caste": ["caste", "जात", "जाति"],
+    "land": ["land", "7/12", "satbara", "mutation", "ror", "khata", "जमीन", "सातबारा", "फेरफार", "भू", "खसरा", "खतियान", "jamabandi"],
+    "birth": ["birth", "जन्म"],
+    "water": ["water", "पाणी", "पानी", "जल"],
+    "electricity": ["electricity", "power", "electric", "विद्युत", "वीज", "बिजली", "bescom"],
+    "trade": ["trade", "license", "shop", "vyapar", "व्यापार"],
+    "ration": ["ration", "food", "nfsa", "रेशन", "राशन"],
+    "driving": ["driving", "driver", "dl", "चालक", "वाहन", "ड्राइविंग"],
+    "senior": ["senior", "elderly", "pension", "ज्येष्ठ", "वरिष्ठ", "वृद्ध"]
+}
+
 def build_suggested_service(s: Service) -> SuggestedService:
     return SuggestedService(
         id=s.id,
@@ -112,17 +130,18 @@ def run_local_fallback(
     scored_intents.sort(key=lambda x: (x[1], x[2]), reverse=True)
 
     for intent, _, _ in scored_intents:
+        patterns = INTENT_DB_PATTERNS.get(intent, [intent])
         q = db.query(Service).filter(Service.is_active == True)
         if state_code:
             q = q.filter(Service.state_code == state_code.upper())
 
-        matches = q.filter(
-            or_(
-                Service.name.ilike(f"%{intent}%"),
-                Service.description.ilike(f"%{intent}%"),
-                Service.code.ilike(f"%{intent}%")
-            )
-        ).all()
+        conditions = []
+        for p in patterns:
+            conditions.append(Service.name.ilike(f"%{p}%"))
+            conditions.append(Service.description.ilike(f"%{p}%"))
+            conditions.append(Service.code.ilike(f"%{p}%"))
+
+        matches = q.filter(or_(*conditions)).all()
 
         for s in matches:
             if s.id not in matched_ids:
@@ -145,6 +164,22 @@ def run_local_fallback(
 
         for s in general_matches:
             matched_services.append(build_suggested_service(s))
+
+    # Rank matched services by query and intent relevance
+    if matched_services:
+        def compute_service_relevance(s: SuggestedService) -> int:
+            score = 0
+            search_corpus = f"{s.name} {s.name_mr or ''} {s.name_hi or ''} {s.description or ''}".lower()
+            for token in query_text.split():
+                if len(token) >= 2 and token in search_corpus:
+                    score += 5
+            for intent, _, _ in scored_intents:
+                for term in INTENT_KEYWORDS.get(intent, []):
+                    if term in search_corpus:
+                        score += 3
+            return score
+
+        matched_services.sort(key=compute_service_relevance, reverse=True)
 
     # Formulate verified response message
     if matched_services:
@@ -192,6 +227,32 @@ def run_local_fallback(
         engine="local-catalog-intelligence"
     )
 
+@router.post("/validate-key", response_model=KeyValidationResponse)
+def validate_gemini_key(data: KeyValidationRequest):
+    key = (data.api_key or "").strip()
+    if not key:
+        return KeyValidationResponse(valid=False, message="API key cannot be empty.")
+    try:
+        from google import genai
+        from google.genai import types
+        client = genai.Client(api_key=key)
+        resp = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents="Respond with only the single word: OK",
+            config=types.GenerateContentConfig(max_output_tokens=5, temperature=0.0)
+        )
+        return KeyValidationResponse(
+            valid=True,
+            model="gemini-2.5-flash",
+            message="Google Gemini 2.5 Flash connected and verified successfully!"
+        )
+    except Exception as e:
+        err_msg = str(e)
+        logger.warning(f"Gemini API key validation failed: {err_msg}")
+        if "API_KEY_INVALID" in err_msg or "400" in err_msg or "invalid" in err_msg.lower():
+            return KeyValidationResponse(valid=False, message="The provided Gemini API key is invalid or unauthorized.")
+        return KeyValidationResponse(valid=False, message=f"Verification failed: {err_msg[:120]}")
+
 @router.post("/chat", response_model=AssistantQueryResponse)
 @router.post("/suggest", response_model=AssistantQueryResponse)
 def query_assistant(data: AssistantQueryRequest, db: Session = Depends(get_db)):
@@ -206,8 +267,8 @@ def query_assistant(data: AssistantQueryRequest, db: Session = Depends(get_db)):
         else:
             target_lang = "hi"
 
-    # Determine Gemini API key (Client payload overrides server .env)
-    effective_api_key = (data.api_key or "").strip() or os.getenv("GEMINI_API_KEY", "").strip()
+    # Determine Gemini API key (Client payload overrides server config / .env)
+    effective_api_key = (data.api_key or "").strip() or (settings.GEMINI_API_KEY or "").strip() or os.getenv("GEMINI_API_KEY", "").strip()
 
     # If an API key is available, execute Gemini 2.5 Flash
     if effective_api_key:
@@ -217,7 +278,7 @@ def query_assistant(data: AssistantQueryRequest, db: Session = Depends(get_db)):
 
             # Query all active services from DB to feed as strict catalog grounding
             services_query = db.query(Service).filter(Service.is_active == True)
-            if data.state_code:
+            if data.state_code and data.state_code.upper() != "ALL":
                 services_query = services_query.filter(Service.state_code == data.state_code.upper())
             all_services = services_query.all()
 
@@ -239,16 +300,24 @@ def query_assistant(data: AssistantQueryRequest, db: Session = Depends(get_db)):
             system_instruction = (
                 "You are the official Smart Citizen Service Assistant for the Maha-Seva Integrator portal "
                 "(Smart India Hackathon 2026, PS-129). Your role is to help citizens find and understand "
-                "official government public services across Indian states (Maharashtra, Karnataka, Gujarat, Delhi, Uttar Pradesh). "
+                "official government public services across all 28 States and 8 Union Territories of India. "
                 "CRITICAL RULES:\n"
                 "1. Ground your answers ONLY on the provided official government services list. Never hallucinate fake services.\n"
-                "2. Respond in the requested language ('en' = English, 'mr' = Marathi, 'hi' = Hindi). Keep tone helpful, official, polite, and precise.\n"
-                "3. In the 'response' field, provide a 2-4 sentence clear explanation covering: the recommended service, responsible state/department, estimated processing time, and government fees.\n"
+                "2. Respond in the requested language ('en' = English, 'mr' = Marathi, 'hi' = Hindi). Keep tone helpful, official, polite, and conversational.\n"
+                "3. In the 'response' field, provide a 2-4 sentence clear, friendly explanation answering the citizen's question or follow-up, covering: the recommended service, responsible state/department, estimated processing time, and government fees.\n"
                 "4. In the 'matched_service_ids' array, return the integer IDs of the services that match the citizen's requirement (order by relevance, max 4).\n"
                 "5. Always return strictly valid JSON matching the requested schema."
             )
 
-            user_prompt = f"""Citizen Query: "{data.query}"
+            history_str = ""
+            if data.history:
+                history_str = "\nPrevious Conversation Context:\n"
+                for msg in data.history[-6:]:
+                    speaker = "Citizen" if msg.role == "user" else "Assistant"
+                    history_str += f"{speaker}: {msg.content}\n"
+
+            user_prompt = f"""{history_str}
+Citizen Query: "{data.query}"
 Target Language: "{target_lang}" (en=English, mr=Marathi, hi=Hindi)
 Available Official Services Catalog:
 {json.dumps(catalog_summary, ensure_ascii=False)}

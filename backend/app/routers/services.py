@@ -83,7 +83,12 @@ def get_service_detail(service_id: int, db: Session = Depends(get_db)):
 
     form_schema = []
     if s.form and s.form.form_schema:
-        form_schema = s.form.form_schema
+        if isinstance(s.form.form_schema, dict) and "fields" in s.form.form_schema:
+            form_schema = s.form.form_schema["fields"]
+        elif isinstance(s.form.form_schema, list):
+            form_schema = s.form.form_schema
+        else:
+            form_schema = s.form.form_schema
 
     return ServiceDetailResponse(
         id=s.id,
@@ -97,6 +102,7 @@ def get_service_detail(service_id: int, db: Session = Depends(get_db)):
         category_id=s.category_id,
         category_name=s.category.name if s.category else None,
         description=s.description,
+        description_mr=s.description_mr,
         description_hi=s.description_hi,
         eligibility=s.eligibility,
         documents_required=s.documents_required or [],

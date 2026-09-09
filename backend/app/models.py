@@ -57,6 +57,7 @@ class Service(Base):
     name_hi = Column(String(200), nullable=True)
     code = Column(String(50), unique=True, nullable=False)
     description = Column(Text, nullable=True)
+    description_mr = Column(Text, nullable=True)
     description_hi = Column(Text, nullable=True)
     eligibility = Column(Text, nullable=True)
     documents_required = Column(JSON, nullable=True)

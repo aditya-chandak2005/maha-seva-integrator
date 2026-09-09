@@ -20,9 +20,18 @@ class AssistantQueryRequest(BaseModel):
     query: str
     language: Optional[str] = "en"  # "en", "mr", "hi"
     api_key: Optional[str] = None  # Optional Gemini API key provided by client
-    state_code: Optional[str] = None  # Optional state filter e.g. "MH", "KA", "GJ", "DL", "UP"
+    state_code: Optional[str] = None  # Optional state filter e.g. "MH", "KA", "DL", etc.
+    history: Optional[List[AssistantMessage]] = []
 
 class AssistantQueryResponse(BaseModel):
     response: str
     suggested_services: List[SuggestedService] = []
     engine: Optional[str] = "local"  # "gemini-2.5-flash" or "local-catalog-intelligence"
+
+class KeyValidationRequest(BaseModel):
+    api_key: str
+
+class KeyValidationResponse(BaseModel):
+    valid: bool
+    model: Optional[str] = None
+    message: str

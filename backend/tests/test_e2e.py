@@ -120,12 +120,12 @@ class TestMahaSevaE2E(unittest.TestCase):
         # Search for Income Certificate
         status, res = make_request(f"{BASE_URL}/services?q=Income")
         self.assertEqual(status, 200)
-        self.assertTrue(any(s["code"] == "REV_INCOME_CERT" for s in res))
+        self.assertTrue(any(s["code"] == "MH_INCOME_CERT" for s in res))
 
         # Get Service Detail & Form Schema
         status, res = make_request(f"{BASE_URL}/services/1")
         self.assertEqual(status, 200)
-        self.assertEqual(res["code"], "REV_INCOME_CERT")
+        self.assertEqual(res["code"], "MH_INCOME_CERT")
         self.assertIsNotNone(res.get("form_schema"))
         self.assertGreater(len(res["form_schema"]), 3)
 
@@ -281,6 +281,41 @@ class TestMahaSevaE2E(unittest.TestCase):
             )
             self.assertEqual(status, 200)
             self.assertTrue(app_res["application_number"].startswith("KA-"))
+
+    def test_09_all_india_states_and_key_validation(self):
+        # 1. Key validation with empty or dummy key
+        status, res = make_request(
+            f"{BASE_URL}/assistant/validate-key",
+            method="POST",
+            data={"api_key": ""}
+        )
+        self.assertEqual(status, 200)
+        self.assertFalse(res["valid"])
+
+        # 2. Query services across diverse Indian States and UTs
+        for st_code in ["RJ", "TN", "WB", "JK"]:
+            status, res = make_request(f"{BASE_URL}/services?state_code={st_code}")
+            self.assertEqual(status, 200)
+            self.assertGreaterEqual(len(res), 1)
+            self.assertTrue(all(s["state_code"] == st_code for s in res))
+
+        # 3. Multi-turn chat with history
+        history = [
+            {"role": "user", "content": "I live in Rajasthan"},
+            {"role": "assistant", "content": "Welcome! In Rajasthan, we provide Bonafide Resident Mool Niwas certificates and other citizen services."}
+        ]
+        status, res = make_request(
+            f"{BASE_URL}/assistant/chat",
+            method="POST",
+            data={
+                "query": "How do I get my bonafide residence proof?",
+                "language": "en",
+                "state_code": "RJ",
+                "history": history
+            }
+        )
+        self.assertEqual(status, 200)
+        self.assertGreater(len(res["suggested_services"]), 0)
 
 
 if __name__ == "__main__":

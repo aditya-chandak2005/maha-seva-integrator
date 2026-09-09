@@ -4,6 +4,8 @@ import api from "../services/api";
 import { ServiceItem, Department, ServiceCategory } from "../types";
 import { Search, Filter, Clock, Building, ArrowRight, CheckCircle2 } from "lucide-react";
 
+import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION } from "../constants/states";
+
 interface ServiceCatalogPageProps {
   initialSearch?: string;
   initialState?: string;
@@ -11,14 +13,8 @@ interface ServiceCatalogPageProps {
   onStateChange?: (state: string) => void;
 }
 
-const STATE_OPTIONS = [
-  { code: "ALL", name: "All States", mr: "सर्व राज्य", hi: "सभी राज्य" },
-  { code: "MH", name: "Maharashtra", mr: "महाराष्ट्र", hi: "महाराष्ट्र" },
-  { code: "KA", name: "Karnataka", mr: "कर्नाटक", hi: "कर्नाटक" },
-  { code: "GJ", name: "Gujarat", mr: "गुजरात", hi: "गुजरात" },
-  { code: "DL", name: "Delhi NCT", mr: "दिल्ली", hi: "दिल्ली" },
-  { code: "UP", name: "Uttar Pradesh", mr: "उत्तर प्रदेश", hi: "उत्तर प्रदेश" },
-];
+const statesList = ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "STATE");
+const utsList = ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "UT");
 
 export const ServiceCatalogPage: React.FC<ServiceCatalogPageProps> = ({
   initialSearch = "",
@@ -104,10 +100,10 @@ export const ServiceCatalogPage: React.FC<ServiceCatalogPageProps> = ({
         </h1>
         <p className="text-sm text-slate-600">
           {i18n.language === "mr"
-            ? "महाराष्ट्र, कर्नाटक, गुजरात, दिल्ली आणि उत्तर प्रदेशमधील सर्व अधिकृत शासकीय सेवा शोधा व अर्ज करा."
+            ? "भारतातील सर्व २८ राज्ये आणि ८ केंद्रशासित प्रदेशांमधील अधिकृत शासकीय सेवा शोधा व अर्ज करा."
             : i18n.language === "hi"
-            ? "महाराष्ट्र, कर्नाटक, गुजरात, दिल्ली एवं उत्तर प्रदेश में संचालित सभी आधिकारिक सरकारी सेवाओं को खोजें और ऑनलाइन आवेदन करें।"
-            : "Search and apply for official digital public services across Maharashtra, Karnataka, Gujarat, Delhi, and Uttar Pradesh."}
+            ? "भारत के सभी 28 राज्यों एवं 8 केंद्र शासित प्रदेशों में संचालित आधिकारिक डिजिटल सार्वजनिक सेवाओं को खोजें और ऑनलाइन आवेदन करें।"
+            : "Search and apply for official digital public services across all 28 States and 8 Union Territories of India."}
         </p>
       </div>
 
@@ -142,13 +138,25 @@ export const ServiceCatalogPage: React.FC<ServiceCatalogPageProps> = ({
               setSelectedDept(null);
               if (onStateChange) onStateChange(val);
             }}
-            className="px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white font-semibold text-blue-800 focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white font-semibold text-blue-800 focus:ring-2 focus:ring-blue-500 max-w-[220px]"
           >
-            {STATE_OPTIONS.map((st) => (
-              <option key={st.code} value={st.code}>
-                {i18n.language === "mr" ? st.mr : i18n.language === "hi" ? st.hi : st.name}
-              </option>
-            ))}
+            <option value="ALL">
+              {i18n.language === "hi" ? ALL_OPTION.hi : i18n.language === "mr" ? ALL_OPTION.mr : ALL_OPTION.name}
+            </option>
+            <optgroup label={i18n.language === "hi" ? "--- 28 राज्य ---" : i18n.language === "mr" ? "--- २८ राज्य ---" : "--- 28 States ---"}>
+              {statesList.map((st) => (
+                <option key={st.code} value={st.code}>
+                  {i18n.language === "hi" ? `${st.hi} (${st.code})` : i18n.language === "mr" ? `${st.mr} (${st.code})` : `${st.name} (${st.code})`}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={i18n.language === "hi" ? "--- 8 केंद्र शासित प्रदेश ---" : i18n.language === "mr" ? "--- ८ केंद्रशासित प्रदेश ---" : "--- 8 Union Territories ---"}>
+              {utsList.map((ut) => (
+                <option key={ut.code} value={ut.code}>
+                  {i18n.language === "hi" ? `${ut.hi} (${ut.code})` : i18n.language === "mr" ? `${ut.mr} (${ut.code})` : `${ut.name} (${ut.code})`}
+                </option>
+              ))}
+            </optgroup>
           </select>
 
           {/* Department Filter */}

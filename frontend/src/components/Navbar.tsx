@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { NotificationItem } from "../types";
 
+import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION } from "../constants/states";
+
 interface NavbarProps {
   currentTab: string;
   onNavigate: (tab: string, param?: any) => void;
@@ -25,14 +27,8 @@ interface NavbarProps {
   onSelectState?: (state: string) => void;
 }
 
-const STATE_OPTIONS = [
-  { code: "ALL", name: "All States", mr: "सर्व राज्य", hi: "सभी राज्य" },
-  { code: "MH", name: "Maharashtra (MH)", mr: "महाराष्ट्र (MH)", hi: "महाराष्ट्र (MH)" },
-  { code: "KA", name: "Karnataka (KA)", mr: "कर्नाटक (KA)", hi: "कर्नाटक (KA)" },
-  { code: "GJ", name: "Gujarat (GJ)", mr: "गुजरात (GJ)", hi: "गुजरात (GJ)" },
-  { code: "DL", name: "Delhi NCT (DL)", mr: "दिल्ली (DL)", hi: "दिल्ली (DL)" },
-  { code: "UP", name: "Uttar Pradesh (UP)", mr: "उत्तर प्रदेश (UP)", hi: "उत्तर प्रदेश (UP)" },
-];
+const statesList = ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "STATE");
+const utsList = ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "UT");
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentTab,
@@ -101,13 +97,25 @@ export const Navbar: React.FC<NavbarProps> = ({
             <select
               value={selectedState}
               onChange={(e) => onSelectState && onSelectState(e.target.value)}
-              className="bg-slate-800 text-amber-300 font-semibold text-[10px] px-2 py-0.5 rounded border border-slate-700 focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer"
+              className="bg-slate-800 text-amber-300 font-semibold text-[10px] px-2 py-0.5 rounded border border-slate-700 focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer max-w-[190px]"
             >
-              {STATE_OPTIONS.map((st) => (
-                <option key={st.code} value={st.code}>
-                  {i18n.language === "mr" ? st.mr : i18n.language === "hi" ? st.hi : st.name}
-                </option>
-              ))}
+              <option value="ALL">
+                {i18n.language === "hi" ? ALL_OPTION.hi : i18n.language === "mr" ? ALL_OPTION.mr : ALL_OPTION.name}
+              </option>
+              <optgroup label={i18n.language === "hi" ? "--- 28 राज्य ---" : i18n.language === "mr" ? "--- २८ राज्य ---" : "--- 28 States ---"}>
+                {statesList.map((st) => (
+                  <option key={st.code} value={st.code}>
+                    {i18n.language === "hi" ? `${st.hi} (${st.code})` : i18n.language === "mr" ? `${st.mr} (${st.code})` : `${st.name} (${st.code})`}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label={i18n.language === "hi" ? "--- 8 केंद्र शासित प्रदेश ---" : i18n.language === "mr" ? "--- ८ केंद्रशासित प्रदेश ---" : "--- 8 Union Territories ---"}>
+                {utsList.map((ut) => (
+                  <option key={ut.code} value={ut.code}>
+                    {i18n.language === "hi" ? `${ut.hi} (${ut.code})` : i18n.language === "mr" ? `${ut.mr} (${ut.code})` : `${ut.name} (${ut.code})`}
+                  </option>
+                ))}
+              </optgroup>
             </select>
           </div>
 
