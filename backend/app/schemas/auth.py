@@ -1,4 +1,4 @@
-﻿from typing import Optional
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
@@ -20,6 +20,7 @@ class TokenResponse(BaseModel):
     email: str
     role: str
     department_id: Optional[int] = None
+    state_code: Optional[str] = "MH"
 
 class UserResponse(BaseModel):
     id: int
@@ -28,6 +29,7 @@ class UserResponse(BaseModel):
     full_name: str
     role: str
     department_id: Optional[int] = None
+    state_code: Optional[str] = "MH"
     is_active: bool
     created_at: Optional[datetime] = None
 

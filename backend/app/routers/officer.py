@@ -1,4 +1,4 @@
-﻿from datetime import datetime
+from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
@@ -24,14 +24,24 @@ router = APIRouter(prefix="/officer", tags=["Officer Operations"])
 def get_officer_application_queue(
     status_filter: Optional[str] = Query(None, description="Filter by status (e.g. SUBMITTED, UNDER_REVIEW)"),
     search: Optional[str] = Query(None, description="Search by citizen name or application number"),
+    state_code: Optional[str] = Query(None, description="Filter by jurisdiction/state"),
     current_user: User = Depends(require_roles([RoleEnum.OFFICER, RoleEnum.DEPARTMENT_ADMIN, RoleEnum.SUPER_ADMIN])),
     db: Session = Depends(get_db)
 ):
-    query = db.query(Application)
+    from app.models import Service
+    query = db.query(Application).join(Service, Application.service_id == Service.id)
 
-    # Scoped to officer's department if not Super Admin
+    # Scoped to officer's department if Officer
     if current_user.role == RoleEnum.OFFICER and current_user.department_id:
         query = query.filter(Application.department_id == current_user.department_id)
+    elif current_user.role == RoleEnum.SUPER_ADMIN:
+        # Scoped to Super Admin's state if state-specific, or filter if provided
+        admin_state = current_user.state_code if (current_user.state_code and current_user.state_code not in ("ALL", None)) else state_code
+        if admin_state and admin_state.upper() != "ALL":
+            if admin_state.upper() == "CENTRAL":
+                query = query.filter(Service.state_code == "CENTRAL")
+            else:
+                query = query.filter(or_(Service.state_code == admin_state.upper(), Service.state_code == "CENTRAL"))
 
     if status_filter:
         query = query.filter(Application.status == status_filter.strip())
@@ -45,7 +55,7 @@ def get_officer_application_queue(
             )
         )
 
-    apps = query.order_by(Application.submitted_at.asc()).all()
+    apps = query.order_by(Application.submitted_at.desc()).all()
 
     result = []
     for a in apps:

@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -61,7 +61,8 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
         "sub": str(user.id),
         "email": user.email,
         "role": user.role,
-        "department_id": user.department_id
+        "department_id": user.department_id,
+        "state_code": user.state_code or "MH"
     })
 
     return TokenResponse(
@@ -71,7 +72,8 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
         full_name=user.full_name,
         email=user.email,
         role=user.role,
-        department_id=user.department_id
+        department_id=user.department_id,
+        state_code=user.state_code or "MH"
     )
 
 
@@ -105,7 +107,8 @@ def login(
         "sub": str(user.id),
         "email": user.email,
         "role": user.role,
-        "department_id": user.department_id
+        "department_id": user.department_id,
+        "state_code": user.state_code or "MH"
     })
 
     return TokenResponse(
@@ -115,7 +118,8 @@ def login(
         full_name=user.full_name,
         email=user.email,
         role=user.role,
-        department_id=user.department_id
+        department_id=user.department_id,
+        state_code=user.state_code or "MH"
     )
 
 

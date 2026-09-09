@@ -1,4 +1,4 @@
-﻿from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 
 class StatusDistribution(BaseModel):
@@ -14,6 +14,8 @@ class DepartmentWorkload(BaseModel):
     rejected: int
 
 class AdminAnalyticsOverview(BaseModel):
+    state_code: Optional[str] = "ALL"
+    state_label: Optional[str] = "All India"
     total_applications: int
     pending_review: int
     approved: int

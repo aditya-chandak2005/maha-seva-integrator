@@ -5,6 +5,7 @@ import api from "../services/api";
 import { ApplicationListItem, ApplicationDetail, AttachedDocument } from "../types";
 import { StatusBadge } from "../components/StatusBadge";
 import { Timeline } from "../components/Timeline";
+import { ALL_INDIA_STATES_AND_UTS, getStateLabel } from "../constants/states";
 import { 
   Building, 
   Search, 
@@ -20,7 +21,8 @@ import {
   User,
   Phone,
   Mail,
-  Send
+  Send,
+  MapPin
 } from "lucide-react";
 
 export const OfficerWorkbenchPage: React.FC = () => {
@@ -29,6 +31,10 @@ export const OfficerWorkbenchPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
+
+  const isSuperAdmin = user?.role === "SUPER_ADMIN";
+  const userAssignedState = user?.state_code && user?.state_code !== "ALL" ? user.state_code : "";
+  const [stateFilter, setStateFilter] = useState(userAssignedState);
 
   // Inspection Modal State
   const [selectedAppId, setSelectedAppId] = useState<number | null>(null);
@@ -43,7 +49,7 @@ export const OfficerWorkbenchPage: React.FC = () => {
 
   useEffect(() => {
     fetchQueue();
-  }, [statusFilter, search]);
+  }, [statusFilter, search, stateFilter]);
 
   const fetchQueue = async () => {
     setLoading(true);
@@ -51,6 +57,7 @@ export const OfficerWorkbenchPage: React.FC = () => {
       const params: any = {};
       if (statusFilter) params.status_filter = statusFilter;
       if (search.trim()) params.search = search.trim();
+      if (stateFilter) params.state_code = stateFilter;
 
       const res = await api.get("/officer/applications", { params });
       setQueue(res.data || []);
@@ -151,21 +158,55 @@ export const OfficerWorkbenchPage: React.FC = () => {
           />
         </div>
 
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
-          <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white text-slate-700 focus:ring-2 focus:ring-indigo-500 w-full sm:w-auto"
-          >
-            <option value="">All Statuses</option>
-            <option value="SUBMITTED">SUBMITTED</option>
-            <option value="UNDER_REVIEW">UNDER REVIEW</option>
-            <option value="DOCUMENT_VERIFICATION">DOCUMENT VERIFICATION</option>
-            <option value="PROCESSING">PROCESSING</option>
-            <option value="APPROVED">APPROVED</option>
-            <option value="REJECTED">REJECTED</option>
-          </select>
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* Super Admin State Filter or Assigned Jurisdiction Badge */}
+          {isSuperAdmin && (!user?.state_code || user?.state_code === "ALL") && (
+            <div className="flex items-center space-x-1.5 w-full sm:w-auto">
+              <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+              <select
+                value={stateFilter}
+                onChange={(e) => setStateFilter(e.target.value)}
+                className="px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white text-slate-700 focus:ring-2 focus:ring-indigo-500 w-full sm:w-auto font-medium"
+              >
+                <option value="">All States & Central</option>
+                <option value="CENTRAL">🏛️ Central Government (CBSE/NSP)</option>
+                <optgroup label="28 States">
+                  {ALL_INDIA_STATES_AND_UTS.filter(s => s.type === "STATE").map(s => (
+                    <option key={s.code} value={s.code}>{s.name} ({s.code})</option>
+                  ))}
+                </optgroup>
+                <optgroup label="8 Union Territories">
+                  {ALL_INDIA_STATES_AND_UTS.filter(s => s.type === "UT").map(s => (
+                    <option key={s.code} value={s.code}>{s.name} ({s.code})</option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
+          )}
+
+          {isSuperAdmin && user?.state_code && user?.state_code !== "ALL" && (
+            <div className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-purple-50 text-purple-900 border border-purple-200 text-xs font-bold shrink-0">
+              <Building className="w-3.5 h-3.5 text-purple-600" />
+              <span>State: {getStateLabel(user.state_code)}</span>
+            </div>
+          )}
+
+          <div className="flex items-center space-x-1.5 w-full sm:w-auto">
+            <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white text-slate-700 focus:ring-2 focus:ring-indigo-500 w-full sm:w-auto font-medium"
+            >
+              <option value="">All Statuses</option>
+              <option value="SUBMITTED">SUBMITTED</option>
+              <option value="UNDER_REVIEW">UNDER REVIEW</option>
+              <option value="DOCUMENT_VERIFICATION">DOCUMENT VERIFICATION</option>
+              <option value="PROCESSING">PROCESSING</option>
+              <option value="APPROVED">APPROVED</option>
+              <option value="REJECTED">REJECTED</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -198,10 +239,42 @@ export const OfficerWorkbenchPage: React.FC = () => {
                 {queue.map((app) => (
                   <tr key={app.id} className="hover:bg-slate-50/60 transition">
                     <td className="py-3.5 px-4 font-mono font-bold text-indigo-700">
-                      {app.application_number}
+                      <div className="flex items-center space-x-1.5">
+                        <span>{app.application_number}</span>
+                        {app.application_number.startsWith("CENTRAL") && (
+                          <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-blue-100 text-blue-900 border border-blue-200">
+                            CENTRAL
+                          </span>
+                        )}
+                        {app.application_number.startsWith("MH") && (
+                          <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-orange-100 text-orange-900 border border-orange-200">
+                            MH
+                          </span>
+                        )}
+                        {app.application_number.startsWith("KA") && (
+                          <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200">
+                            KA
+                          </span>
+                        )}
+                        {app.application_number.startsWith("DL") && (
+                          <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-sky-100 text-sky-900 border border-sky-200">
+                            DL
+                          </span>
+                        )}
+                        {app.application_number.startsWith("UP") && (
+                          <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-900 border border-emerald-200">
+                            UP
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-3.5 px-4 font-semibold text-slate-900">
-                      {app.citizen_name}
+                      <div className="flex items-center space-x-2">
+                        <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-[10px] font-bold border border-slate-200 shrink-0">
+                          {app.citizen_name ? app.citizen_name.charAt(0) : "C"}
+                        </div>
+                        <span className="truncate max-w-[170px]">{app.citizen_name || "Unknown Citizen"}</span>
+                      </div>
                     </td>
                     <td className="py-3.5 px-4 text-slate-600">
                       {app.service_name}

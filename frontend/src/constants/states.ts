@@ -64,7 +64,7 @@ export const ALL_INDIA_STATES_AND_UTS: StateInfo[] = [
   { code: "PY", name: "Puducherry", hi: "पुडुचेरी", mr: "पुडुचेरी", type: "UT" },
 ];
 
-export const getStateLabel = (stateCode: string, lang: string): string => {
+export const getStateLabel = (stateCode: string, lang: string = "en"): string => {
   if (!stateCode || stateCode === "ALL") {
     return lang === "hi" ? ALL_OPTION.hi : lang === "mr" ? ALL_OPTION.mr : ALL_OPTION.name;
   }
@@ -76,7 +76,7 @@ export const getStateLabel = (stateCode: string, lang: string): string => {
   return lang === "hi" ? `${found.hi} (${found.code})` : lang === "mr" ? `${found.mr} (${found.code})` : `${found.name} (${found.code})`;
 };
 
-export const getStateShortName = (stateCode: string, lang: string): string => {
+export const getStateShortName = (stateCode: string, lang: string = "en"): string => {
   if (!stateCode || stateCode === "ALL") {
     return lang === "hi" ? "अखिल भारतीय" : lang === "mr" ? "अखिल भारतीय" : "All India";
   }

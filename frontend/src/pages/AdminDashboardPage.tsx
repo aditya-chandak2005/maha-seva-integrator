@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import { AdminAnalytics, AuditLogItem } from "../types";
+import { ALL_INDIA_STATES_AND_UTS } from "../constants/states";
 import { 
   ShieldAlert, 
   BarChart3, 
@@ -12,7 +13,9 @@ import {
   Clock, 
   Users, 
   Activity,
-  Calendar
+  Calendar,
+  Layers,
+  MapPin
 } from "lucide-react";
 
 export const AdminDashboardPage: React.FC = () => {
@@ -21,15 +24,23 @@ export const AdminDashboardPage: React.FC = () => {
   const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const userAssignedState = user?.state_code && user?.state_code !== "ALL" ? user.state_code : "ALL";
+  const isNationalAdmin = !user?.state_code || user?.state_code === "ALL";
+  const [selectedState, setSelectedState] = useState<string>(userAssignedState);
+
   useEffect(() => {
-    fetchAdminData();
+    fetchAdminData(selectedState);
   }, []);
 
-  const fetchAdminData = async () => {
+  const fetchAdminData = async (stateToFetch = selectedState) => {
     setLoading(true);
     try {
+      const params: any = {};
+      if (stateToFetch && stateToFetch !== "ALL") {
+        params.state_code = stateToFetch;
+      }
       const [analyticsRes, logsRes] = await Promise.all([
-        api.get("/admin/analytics/overview"),
+        api.get("/admin/analytics/overview", { params }),
         api.get("/admin/audit-logs?limit=25")
       ]);
       setAnalytics(analyticsRes.data);
@@ -41,21 +52,66 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
+  const handleStateChange = (newSt: string) => {
+    setSelectedState(newSt);
+    fetchAdminData(newSt);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-900 to-indigo-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2 text-purple-300 text-xs font-bold uppercase tracking-wider">
-            <ShieldAlert className="w-4 h-4" />
-            <span>State Platform Governance Console</span>
+            <ShieldAlert className="w-4 h-4 text-amber-400" />
+            <span>
+              {analytics?.state_label ? `${analytics.state_label} Platform Governance Console` : "State Platform Governance Console"}
+            </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold mt-1">
-            Super Administrator Telemetry
+            {analytics?.state_label ? `${analytics.state_label} Administrator Telemetry` : "Super Administrator Telemetry"}
           </h1>
           <p className="text-xs sm:text-sm text-purple-200 mt-1">
-            Cross-departmental performance monitoring, SLA compliance, and immutable security audit stream.
+            Departmental performance monitoring, statutory SLA compliance, and immutable security audit stream.
           </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          {/* Active Jurisdiction Badge */}
+          <div className="bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/20 text-xs space-y-0.5">
+            <span className="text-[10px] text-purple-300 uppercase font-bold block flex items-center">
+              <MapPin className="w-3 h-3 mr-1 text-amber-400" />
+              Jurisdiction Scoped
+            </span>
+            <span className="font-extrabold text-amber-300 text-sm block">
+              {analytics?.state_label || (user?.state_code ? user.state_code : "All India")}
+            </span>
+          </div>
+
+          {/* National Admin State Switcher */}
+          {isNationalAdmin && (
+            <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20">
+              <span className="text-[11px] font-semibold text-purple-200">Switch View:</span>
+              <select
+                value={selectedState}
+                onChange={(e) => handleStateChange(e.target.value)}
+                className="bg-slate-900 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg border border-purple-400/40 focus:outline-none cursor-pointer"
+              >
+                <option value="ALL">🇮🇳 All India (National Overview)</option>
+                <option value="CENTRAL">🏛️ Central Government (CBSE/NSP)</option>
+                <optgroup label="28 States">
+                  {ALL_INDIA_STATES_AND_UTS.filter(s => s.type === "STATE").map(s => (
+                    <option key={s.code} value={s.code}>{s.name} ({s.code})</option>
+                  ))}
+                </optgroup>
+                <optgroup label="8 Union Territories">
+                  {ALL_INDIA_STATES_AND_UTS.filter(s => s.type === "UT").map(s => (
+                    <option key={s.code} value={s.code}>{s.name} ({s.code})</option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -96,10 +152,10 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4 p-5">
             <div>
               <h2 className="text-base font-bold text-slate-900">
-                Departmental Processing Throughput
+                Departmental Processing Throughput ({analytics.state_label || "All India"})
               </h2>
               <p className="text-xs text-slate-500">
-                Workload distribution and clearance velocity across participating Maharashtra state departments.
+                Workload distribution and clearance velocity across participating departments in {analytics.state_label || "All India"}.
               </p>
             </div>
 

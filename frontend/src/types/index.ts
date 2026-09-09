@@ -7,6 +7,7 @@ export interface User {
   full_name: string;
   role: UserRole;
   department_id?: number | null;
+  state_code?: string;
   is_active: boolean;
 }
 
@@ -143,6 +144,8 @@ export interface StatusDistribution {
 }
 
 export interface AdminAnalytics {
+  state_code?: string;
+  state_label?: string;
   total_applications: number;
   pending_review: number;
   approved: number;
@@ -188,6 +191,7 @@ export interface ApplicationListItem {
   department_name?: string;
   citizen_id: number;
   citizen_name?: string;
+  state_code?: string;
   status: string;
   submitted_at: string;
   updated_at?: string;
