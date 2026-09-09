@@ -109,6 +109,14 @@ def seed():
                 "icon": "Award",
                 "description": "Enterprise registrations, single window business clearances, and factory licenses."
             },
+            {
+                "name": "Education & Examination Boards",
+                "name_mr": "शिक्षण आणि परीक्षा मंडळे",
+                "name_hi": "शिक्षा एवं परीक्षा बोर्ड",
+                "code": "EDUCATION",
+                "icon": "GraduationCap",
+                "description": "School marksheets, CBSE and State Board certificates, scholarships, and student IDs."
+            },
         ]
         cat_map = {}
         for c in cat_data:
@@ -232,8 +240,16 @@ def seed():
             {"code": "DN_EDIST", "state_code": "DN", "name": "DNHDD e-District Citizen Services", "name_mr": "दादरा व नगर हवेली प्रशासन", "name_hi": "दादरा एवं नगर हवेली और दमन एवं दीव ई-डिस्ट्रिक्ट", "description": "Integrated citizen certificate delivery across DNH, Daman, and Diu."},
             {"code": "JK_UNNAT", "state_code": "JK", "name": "Jammu & Kashmir e-UNNAT Portal", "name_mr": "जम्मू आणि काश्मीर ई-उन्नत पोर्टल", "name_hi": "जम्मू और कश्मीर ई-उन्नत पोर्टल (e-UNNAT)", "description": "e-UNNAT unified single window portal for all J&K UT citizen services."},
             {"code": "LA_EDIST", "state_code": "LA", "name": "UT Ladakh Administration e-Services", "name_mr": "लडाख केंद्रशासित प्रशासन", "name_hi": "लद्दाख केंद्र शासित प्रदेश प्रशासन ई-सेवाएं", "description": "Resident certificates and public service delivery across Leh and Kargil."},
-            {"code": "LD_EDIST", "state_code": "LD", "name": "Lakshadweep Administration e-Governance", "name_mr": "लक्षद्वीप प्रशासन ई-प्रशासन", "name_hi": "लक्षद्वीप प्रशासन ई-गवर्नेंस पोर्टल", "description": "Island territory identity and civil supplies public services."},
-            {"code": "PY_EDIST", "state_code": "PY", "name": "Puducherry e-District & Local Administration", "name_mr": "पुडुचेरी ई-जिल्हा व स्थानिक प्रशासन", "name_hi": "पुडुचेरी ई-डिस्ट्रिक्ट एवं स्थानीय प्रशासन", "description": "Single window citizen certificate issuance across Puducherry and Karaikal."}
+            {"code": "PY_EDIST", "state_code": "PY", "name": "Puducherry e-District & Local Administration", "name_mr": "पुडुचेरी ई-जिल्हा व स्थानिक प्रशासन", "name_hi": "पुडुचेरी ई-डिस्ट्रिक्ट एवं स्थानीय प्रशासन", "description": "Single window citizen certificate issuance across Puducherry and Karaikal."},
+
+            # --- CENTRAL GOVERNMENT MINISTRIES & NATIONAL BOARDS (CENTRAL) ---
+            {"code": "GOI_CBSE", "state_code": "CENTRAL", "name": "Central Board of Secondary Education (CBSE)", "name_mr": "केंद्रीय माध्यमिक शिक्षण मंडळ (CBSE)", "name_hi": "केन्द्रीय माध्यमिक शिक्षा बोर्ड (CBSE)", "description": "National secondary and senior secondary school examination board, marksheet issuance, Pariksha Sangam, and academic records verification."},
+            {"code": "GOI_EDU", "state_code": "CENTRAL", "name": "Ministry of Education & National Scholarship Portal", "name_mr": "केंद्रीय शिक्षण मंत्रालय व राष्ट्रीय शिष्यवृत्ती पोर्टल", "name_hi": "शिक्षा मंत्रालय एवं राष्ट्रीय छात्रवृत्ति पोर्टल (NSP)", "description": "Higher education welfare, Central Sector Schemes, pre/post-matric scholarships, and APAAR One Nation One Student ID."},
+            {"code": "GOI_HEALTH", "state_code": "CENTRAL", "name": "National Health Authority (Ayushman Bharat)", "name_mr": "राष्ट्रीय आरोग्य प्राधिकरण (आयुष्मान भारत)", "name_hi": "राष्ट्रीय स्वास्थ्य प्राधिकरण (आयुष्मान भारत / ABHA)", "description": "Ayushman Bharat PM-JAY 5 lakh health coverage and 14-digit ABHA digital health accounts."},
+
+            # --- STATE EDUCATION BOARDS ---
+            {"code": "MH_BOARD", "state_code": "MH", "name": "Maharashtra State Board of Secondary & Higher Secondary Education (MSBSHSE)", "name_mr": "महाराष्ट्र राज्य माध्यमिक व उच्च माध्यमिक शिक्षण मंडळ (e-MarkSheet)", "name_hi": "महाराष्ट्र राज्य माध्यमिक एवं उच्च माध्यमिक शिक्षा बोर्ड (e-MarkSheet)", "description": "SSC (10th) and HSC (12th) digital marksheet verification, duplicate passing certificate, and migration."},
+            {"code": "UP_MSP", "state_code": "UP", "name": "UP Madhyamik Shiksha Parishad (UPMSP Prayagraj)", "name_mr": "उत्तर प्रदेश माध्यमिक शिक्षण परिषद (UPMSP)", "name_hi": "उत्तर प्रदेश माध्यमिक शिक्षा परिषद (UPMSP प्रयागराज)", "description": "High School (10th) and Intermediate (12th) online marksheet verification, duplicate marksheet, and migration certificates."}
         ]
 
         dept_map = {}
@@ -696,6 +712,123 @@ def seed():
                 "fields": [
                     {"key": "region", "label": "Region", "label_mr": "विभाग", "label_hi": "क्षेत्र", "type": "DROPDOWN", "required": True, "options": ["Puducherry", "Karaikal", "Mahe", "Yanam"]},
                     {"key": "taluk", "label": "Taluk", "label_mr": "तालुका", "label_hi": "तालुक", "type": "TEXT", "required": True}
+                ]
+            },
+            # 29. CBSE Digital Marksheet & Duplicate Certificate
+            {
+                "code": "CBSE_MARKSHEET_VERIFY", "state_code": "CENTRAL", "dept_code": "GOI_CBSE", "cat_code": "EDUCATION",
+                "name": "CBSE Digital Marksheet & Migration Certificate (Pariksha Sangam)",
+                "name_mr": "सीबीएसई डिजिटल गुणपत्रिका आणि स्थलांतर प्रमाणपत्र (परीक्षा संगम)",
+                "name_hi": "सीबीएसई डिजिटल अंकतालिका (Marksheet) एवं प्रव्रजन प्रमाण पत्र (Pariksha Sangam)",
+                "description": "Issuance of official digital or duplicate marksheet, passing certificate, and migration certificate for CBSE Class 10th (Secondary) & 12th (Senior School) examinations.",
+                "description_mr": "सीबीएसई १० वी व १२ वी बोर्ड परीक्षेसाठी अधिकृत डिजिटल गुणपत्रिका, उत्तीर्ण दाखला आणि स्थलांतर प्रमाणपत्र अर्ज व पडताळणी.",
+                "description_hi": "केन्द्रीय माध्यमिक शिक्षा बोर्ड (CBSE) 10वीं एवं 12वीं परीक्षा की डिजिटल अथवा डुप्लीकेट अंकतालिका, उत्तीर्ण प्रमाण पत्र एवं माइग्रेशन प्रमाण पत्र प्राप्ति हेतु ऑनलाइन आवेदन।",
+                "fee": 100.00, "processing_days": 5,
+                "required_docs": ["Aadhaar Card", "Previous Admit Card or Roll Number details", "School Affiliation / Center details"],
+                "eligibility": {"criteria": "Candidates who appeared in CBSE Class X or XII Board Examinations"},
+                "fields": [
+                    {"key": "class_level", "label": "Class Level", "label_mr": "इयत्ता", "label_hi": "कक्षा स्तर", "type": "DROPDOWN", "required": True, "options": ["Class X (Secondary / 10th)", "Class XII (Senior Secondary / 12th)"]},
+                    {"key": "document_type", "label": "Document Required", "label_mr": "आवश्यक दस्तऐवज", "label_hi": "आवश्यक प्रमाण पत्र", "type": "DROPDOWN", "required": True, "options": ["Duplicate Marksheet / Marks Statement", "Passing Certificate", "Migration Certificate", "Verification / Attestation"]},
+                    {"key": "exam_year", "label": "Passing / Examination Year (e.g. 2024)", "label_mr": "परीक्षेचे वर्ष", "label_hi": "परीक्षा वर्ष", "type": "NUMBER", "required": True},
+                    {"key": "roll_number", "label": "CBSE Roll Number (8 Digits)", "label_mr": "रोल नंबर", "label_hi": "अनुक्रमांक (Roll Number)", "type": "TEXT", "required": True},
+                    {"key": "school_code", "label": "5-Digit CBSE School Code", "label_mr": "शाळा संकेतांक", "label_hi": "स्कूल कोड (5 अंक)", "type": "TEXT", "required": True},
+                    {"key": "center_no", "label": "CBSE Examination Center Number", "label_mr": "केंद्र क्रमांक", "label_hi": "परीक्षा केंद्र संख्या", "type": "TEXT", "required": False}
+                ]
+            },
+            # 30. National Scholarship Portal (NSP)
+            {
+                "code": "NSP_SCHOLARSHIP", "state_code": "CENTRAL", "dept_code": "GOI_EDU", "cat_code": "EDUCATION",
+                "name": "National Scholarship Portal (NSP) Central Sector Scheme",
+                "name_mr": "राष्ट्रीय शिष्यवृत्ती पोर्टल (NSP) केंद्रीय क्षेत्र योजना",
+                "name_hi": "राष्ट्रीय छात्रवृत्ति पोर्टल (NSP) केन्द्रीय क्षेत्र छात्रवृत्ति योजना",
+                "description": "Central Government direct financial grant for meritorious students pursuing higher studies in colleges and universities.",
+                "description_mr": "महाविद्यालयीन आणि विद्यापीठ उच्च शिक्षणासाठी गुणवंत विद्यार्थ्यांसाठी केंद्र सरकारची आर्थिक शिष्यवृत्ती.",
+                "description_hi": "महाविद्यालयीन एवं विश्वविद्यालय स्तर पर अध्ययनरत मेधावी विद्यार्थियों हेतु केंद्र सरकार द्वारा प्रत्यक्ष बैंक अंतरण (DBT) छात्रवृत्ति योजना।",
+                "fee": 0.00, "processing_days": 30,
+                "required_docs": ["Aadhaar Card", "Class 12th Marksheet", "Income Certificate (< 4.5 Lakhs)", "College Fee Receipt", "Bank Passbook"],
+                "eligibility": {"criteria": "80th percentile in Class 12th Board Exam and family annual income below Rs 4.5 Lakhs"},
+                "fields": [
+                    {"key": "board_name", "label": "12th Examination Board", "label_mr": "१२ वी परीक्षा मंडळ", "label_hi": "12वीं परीक्षा बोर्ड", "type": "DROPDOWN", "required": True, "options": ["CBSE", "ICSE / CISCE", "Maharashtra State Board (MSBSHSE)", "UP Board (UPMSP)", "Karnataka KSEAB", "Other State Board"]},
+                    {"key": "twelfth_roll_no", "label": "12th Roll Number / Seat No.", "label_mr": "१२ वी रोल नंबर", "label_hi": "12वीं रोल नंबर", "type": "TEXT", "required": True},
+                    {"key": "annual_family_income", "label": "Annual Family Income (INR)", "label_mr": "कौटुंबिक वार्षिक उत्पन्न", "label_hi": "पारिवारिक वार्षिक आय", "type": "NUMBER", "required": True},
+                    {"key": "college_name", "label": "Current College / University Name", "label_mr": "महाविद्यालयाचे नाव", "label_hi": "महाविद्यालय / विश्वविद्यालय का नाम", "type": "TEXT", "required": True},
+                    {"key": "course_name", "label": "Degree / Course Enrolled", "label_mr": "अभ्यासक्रम", "label_hi": "पाठ्यक्रम का नाम", "type": "TEXT", "required": True}
+                ]
+            },
+            # 31. APAAR / Academic Bank of Credits Student ID
+            {
+                "code": "APAAR_ABC_ID", "state_code": "CENTRAL", "dept_code": "GOI_EDU", "cat_code": "EDUCATION",
+                "name": "APAAR One Nation One Student Digital ID (Academic Bank of Credits)",
+                "name_mr": "अपार (APAAR) एक देश एक विद्यार्थी डिजिटल आयडी",
+                "name_hi": "अपार (APAAR) वन नेशन वन स्टूडेंट डिजिटल पहचान पत्र (एकेडमिक बैंक ऑफ क्रेडिट्स)",
+                "description": "Creation of lifelong 12-digit APAAR ID under National Education Policy 2020 seamlessly consolidating school marksheets, college degrees, and credit transfers.",
+                "description_mr": "राष्ट्रीय शैक्षणिक धोरण २०२० अंतर्गत सर्व शैक्षणिक गुणपत्रिका व पदव्या डिजिटल स्वरूपात जोडणारा १२ अंकी अपार आयडी.",
+                "description_hi": "राष्ट्रीय शिक्षा नीति (NEP 2020) के अंतर्गत स्कूली अंकतालिकाओं, उच्च शिक्षा क्रेडिट एवं डिग्रियों को एकीकृत करने वाला आजीवन 12-अंकीय APAAR डिजिटल छात्र पहचान पत्र।",
+                "fee": 0.00, "processing_days": 1,
+                "required_docs": ["Aadhaar Card with linked Mobile", "School or College Enrollment / Registration Number"],
+                "eligibility": {"criteria": "All students enrolled in recognized Indian schools, colleges, and universities"},
+                "fields": [
+                    {"key": "student_legal_name", "label": "Student Name (as in Aadhaar)", "label_mr": "विद्यार्थ्याचे नाव", "label_hi": "विद्यार्थी का नाम (आधार अनुसार)", "type": "TEXT", "required": True},
+                    {"key": "aadhaar_number", "label": "12-Digit Aadhaar Number", "label_mr": "आधार क्रमांक", "label_hi": "आधार संख्या (12 अंक)", "type": "TEXT", "required": True},
+                    {"key": "institution_type", "label": "Institution Category", "label_mr": "संस्थेचा प्रकार", "label_hi": "संस्थान की श्रेणी", "type": "DROPDOWN", "required": True, "options": ["School (CBSE / State Board / ICSE)", "College / University (Undergraduate)", "Postgraduate / Doctorate", "Skill / Technical Institute"]},
+                    {"key": "institution_name", "label": "Name of School / College", "label_mr": "शाळा / महाविद्यालयाचे नाव", "label_hi": "स्कूल / कॉलेज का नाम", "type": "TEXT", "required": True}
+                ]
+            },
+            # 32. Maharashtra State Board SSC/HSC Marksheet & Verification
+            {
+                "code": "MH_BOARD_MARKSHEET", "state_code": "MH", "dept_code": "MH_BOARD", "cat_code": "EDUCATION",
+                "name": "Maharashtra State Board SSC/HSC Marksheet & Verification (e-MarkSheet)",
+                "name_mr": "महाराष्ट्र राज्य मंडळ १० वी / १२ वी गुणपत्रिका व पडताळणी (e-MarkSheet)",
+                "name_hi": "महाराष्ट्र राज्य बोर्ड 10वीं (SSC) / 12वीं (HSC) अंकतालिका एवं सत्यापन",
+                "description": "Official digital verification and duplicate marksheet / certificate issuance for Maharashtra State Board 10th (SSC) and 12th (HSC) examinations via MSBSHSE e-MarkSheet.",
+                "description_mr": "महाराष्ट्र राज्य माध्यमिक व उच्च माध्यमिक शिक्षण मंडळाची १० वी (SSC) व १२ वी (HSC) अधिकृत डिजिटल गुणपत्रिका व पडताळणी प्रमाणपत्र.",
+                "description_hi": "महाराष्ट्र राज्य माध्यमिक एवं उच्च माध्यमिक शिक्षा बोर्ड (MSBSHSE पुणे) द्वारा 10वीं (SSC) एवं 12वीं (HSC) अंकतालिका का ऑनलाइन सत्यापन एवं द्वितीयक प्रमाण पत्र प्राप्ति।",
+                "fee": 50.00, "processing_days": 3,
+                "required_docs": ["Seat Number / Hall Ticket details", "Passing Year & Month", "Aadhaar Card"],
+                "eligibility": {"criteria": "Students who appeared in Maharashtra State Board SSC or HSC examinations from 1990 onwards"},
+                "fields": [
+                    {"key": "exam_level", "label": "Examination Level", "label_mr": "परीक्षेचा स्तर", "label_hi": "परीक्षा स्तर", "type": "DROPDOWN", "required": True, "options": ["SSC (10th Standard)", "HSC (12th Standard)"]},
+                    {"key": "exam_session", "label": "Exam Session / Month", "label_mr": "परीक्षेचा महिना", "label_hi": "परीक्षा सत्र / माह", "type": "DROPDOWN", "required": True, "options": ["March / April (Annual)", "October / November (Supplementary)", "July (Supplementary)"]},
+                    {"key": "exam_year", "label": "Examination Year (e.g. 2023)", "label_mr": "परीक्षेचे वर्ष", "label_hi": "परीक्षा वर्ष", "type": "NUMBER", "required": True},
+                    {"key": "seat_number", "label": "Board Seat Number (e.g. A123456)", "label_mr": "आसन क्रमांक (Seat No)", "label_hi": "सीट नंबर (Seat Number)", "type": "TEXT", "required": True},
+                    {"key": "total_marks", "label": "Total Marks Obtained (Optional)", "label_mr": "मिळालेले एकूण गुण", "label_hi": "प्राप्त कुल अंक", "type": "NUMBER", "required": False}
+                ]
+            },
+            # 33. UP Board High School / Intermediate Marksheet Verification
+            {
+                "code": "UP_BOARD_MARKSHEET", "state_code": "UP", "dept_code": "UP_MSP", "cat_code": "EDUCATION",
+                "name": "UPMSP High School & Intermediate Marksheet Verification",
+                "name_mr": "उत्तर प्रदेश माध्यमिक शिक्षण मंडळ १० वी व १२ वी गुणपत्रिका पडताळणी",
+                "name_hi": "यूपी बोर्ड हाईस्कूल (10वीं) एवं इंटरमीडिएट (12वीं) अंकतालिका सत्यापन एवं द्वितीयक प्रमाण पत्र",
+                "description": "Online verification and certified duplicate copy of High School (10th) and Intermediate (12th) board certificates issued by UPMSP Prayagraj.",
+                "description_mr": "उत्तर प्रदेश माध्यमिक शिक्षण परिषद प्रयागराज मार्फत १० वी व १२ वी अधिकृत गुणपत्रिका पडताळणी.",
+                "description_hi": "उत्तर प्रदेश माध्यमिक शिक्षा परिषद (UPMSP प्रयागराज) द्वारा हाईस्कूल (10वीं) एवं इंटरमीडिएट (12वीं) परीक्षा की अधिकृत डिजिटल अंकतालिका सत्यापन।",
+                "fee": 100.00, "processing_days": 7,
+                "required_docs": ["Roll Number", "Passing Year", "District Code", "Aadhaar Card"],
+                "eligibility": {"criteria": "Candidates appearing in UPMSP High School or Intermediate examinations"},
+                "fields": [
+                    {"key": "class_name", "label": "Class / Examination", "label_mr": "वर्ग / परीक्षा", "label_hi": "कक्षा / परीक्षा", "type": "DROPDOWN", "required": True, "options": ["High School (Class 10th)", "Intermediate (Class 12th)"]},
+                    {"key": "passing_year", "label": "Year of Examination", "label_mr": "उत्तीर्ण वर्ष", "label_hi": "उत्तीर्ण वर्ष", "type": "NUMBER", "required": True},
+                    {"key": "roll_no", "label": "7 or 10-Digit UPMSP Roll Number", "label_mr": "रोल क्रमांक", "label_hi": "रोल नंबर", "type": "TEXT", "required": True},
+                    {"key": "district", "label": "District of Examination", "label_mr": "जिल्हा", "label_hi": "परीक्षा जिला", "type": "TEXT", "required": True}
+                ]
+            },
+            # 34. Ayushman Bharat ABHA Health Account
+            {
+                "code": "CENTRAL_ABHA_HEALTH", "state_code": "CENTRAL", "dept_code": "GOI_HEALTH", "cat_code": "WELFARE",
+                "name": "Ayushman Bharat Health Account (ABHA Card)",
+                "name_mr": "आयुष्मान भारत डिजिटल आरोग्य कार्ड (ABHA ID)",
+                "name_hi": "आयुष्मान भारत डिजिटल हेल्थ अकाउंट (ABHA कार्ड)",
+                "description": "National digital health identity granting unique 14-digit ABHA ID for hospital OPD/IPD registrations, digital medical records, and PM-JAY health coverage.",
+                "description_mr": "१४ अंकी अधिकृत डिजिटल आरोग्य खाते आणि आयुष्मान भारत आरोग्य सेवा सवलती.",
+                "description_hi": "राष्ट्रीय स्वास्थ्य प्राधिकरण (NHA) द्वारा प्रत्येक नागरिक हेतु 14-अंकीय डिजिटल हेल्थ कार्ड एवं आयुष्मान भारत मुफ्त स्वास्थ्य सेवा कार्ड।",
+                "fee": 0.00, "processing_days": 1,
+                "required_docs": ["Aadhaar Card", "Mobile Number linked with Aadhaar"],
+                "eligibility": {"criteria": "All citizens of India"},
+                "fields": [
+                    {"key": "aadhaar_no", "label": "12-Digit Aadhaar Number", "label_mr": "आधार क्रमांक", "label_hi": "आधार संख्या", "type": "TEXT", "required": True},
+                    {"key": "mobile_no", "label": "Aadhaar Linked Mobile Number", "label_mr": "मोबाईल क्रमांक", "label_hi": "मोबाइल नंबर", "type": "TEXT", "required": True},
+                    {"key": "dob", "label": "Date of Birth (DD/MM/YYYY)", "label_mr": "जन्मतारीख", "label_hi": "जन्म तिथि", "type": "TEXT", "required": True}
                 ]
             }
         ]

@@ -78,6 +78,18 @@ INTENT_KEYWORDS = {
         "senior", "citizen", "elderly", "aged", "pension", "old age", "vridha",
         "ज्येष्ठ", "नागरिक", "वृद्ध",
         "वरिष्ठ नागरिक", "बुजुर्ग", "वृद्ध पेंशन"
+    ],
+    "education": [
+        "marksheet", "mark sheet", "marks", "marks card", "scorecard", "board", "cbse", "state board",
+        "10th", "12th", "ssc", "hsc", "matric", "intermediate", "high school", "passing certificate",
+        "migration certificate", "migration", "duplicate marksheet", "duplicate certificate", "pariksha sangam",
+        "digilocker", "e-marksheet", "scholarship", "nsp", "national scholarship portal", "apaar", "abc id",
+        "academic bank of credits", "school marksheet", "school certificate", "board exam", "admit card",
+        "roll number", "seat number", "education", "student",
+        "गुणपत्रिका", "मार्कशीट", "१० वी", "१२ वी", "एसएससी", "एचएससी", "शिक्षण मंडळ", "स्थलांतर प्रमाणपत्र",
+        "उत्तीर्ण दाखला", "द्वितीयक प्रत", "शिष्यवृत्ती", "अपार", "परीक्षा",
+        "अंकतालिका", "मार्कशीट", "10वीं", "12वीं", "हाईस्कूल", "इंटरमीडिएट", "बोर्ड", "सीबीएसई",
+        "प्रव्रजन प्रमाण पत्र", "उत्तीर्ण प्रमाण पत्र", "छात्रवृत्ति", "स्कूल मार्कशीट", "डुप्लीकेट मार्कशीट"
     ]
 }
 
@@ -92,12 +104,14 @@ INTENT_DB_PATTERNS = {
     "trade": ["trade", "license", "shop", "vyapar", "व्यापार"],
     "ration": ["ration", "food", "nfsa", "रेशन", "राशन"],
     "driving": ["driving", "driver", "dl", "चालक", "वाहन", "ड्राइविंग"],
-    "senior": ["senior", "elderly", "pension", "ज्येष्ठ", "वरिष्ठ", "वृद्ध"]
+    "senior": ["senior", "elderly", "pension", "ज्येष्ठ", "वरिष्ठ", "वृद्ध"],
+    "education": ["marksheet", "cbse", "board", "scholarship", "apaar", "academic", "education", "school", "passing", "गुणपत्रिका", "शिक्षण", "अंकतालिका", "शिक्षा", "बोर्ड", "छात्रवृत्ति"]
 }
 
 def build_suggested_service(s: Service) -> SuggestedService:
     return SuggestedService(
         id=s.id,
+        code=s.code,
         name=s.name,
         name_mr=s.name_mr,
         name_hi=s.name_hi,
@@ -132,8 +146,11 @@ def run_local_fallback(
     for intent, _, _ in scored_intents:
         patterns = INTENT_DB_PATTERNS.get(intent, [intent])
         q = db.query(Service).filter(Service.is_active == True)
-        if state_code:
-            q = q.filter(Service.state_code == state_code.upper())
+        if state_code and state_code.upper() != "ALL":
+            if state_code.upper() == "CENTRAL":
+                q = q.filter(Service.state_code == "CENTRAL")
+            else:
+                q = q.filter(or_(Service.state_code == state_code.upper(), Service.state_code == "CENTRAL"))
 
         conditions = []
         for p in patterns:
@@ -151,8 +168,11 @@ def run_local_fallback(
     # General text search if no intent matched
     if not matched_services:
         q = db.query(Service).filter(Service.is_active == True)
-        if state_code:
-            q = q.filter(Service.state_code == state_code.upper())
+        if state_code and state_code.upper() != "ALL":
+            if state_code.upper() == "CENTRAL":
+                q = q.filter(Service.state_code == "CENTRAL")
+            else:
+                q = q.filter(or_(Service.state_code == state_code.upper(), Service.state_code == "CENTRAL"))
         general_matches = q.filter(
             or_(
                 Service.name.ilike(f"%{query_text}%"),
@@ -180,45 +200,68 @@ def run_local_fallback(
             return score
 
         matched_services.sort(key=compute_service_relevance, reverse=True)
+        matched_services = matched_services[:5]
 
     # Formulate verified response message
     if matched_services:
         first = matched_services[0]
+        is_education_query = bool(scored_intents and scored_intents[0][0] == "education")
         if is_marathi:
             title = first.name_mr or first.name
-            resp = (
-                f"तुमच्या गरजेनुसार '{title}' (राज्य: {first.state_code}) ही अधिकृत शासकीय सेवा उपलब्ध आहे. "
-                f"हा अर्ज {first.department_name} अंतर्गत येतो आणि अंदाजे {first.processing_days} दिवसांत पूर्ण होतो. "
-                f"अधिक माहिती व अर्जासाठी खालील सेवेवर क्लिक करा."
-            )
+            if is_education_query:
+                resp = (
+                    f"शालेय १० वी व १२ वी गुणपत्रिका (मार्कशीट), उत्तीर्ण दाखला व स्थलांतर प्रमाणपत्रांसाठी आपण डिजीलॉकर किंवा परीक्षा मंडळाच्या अधिकृत ई-मार्कशीट/परीक्षा संगम पोर्टलवरून डिजिटल प्रत व पडताळणी मिळवू शकता. "
+                    f"तुमच्या गरजेनुसार '{title}' ({first.department_name}) ही अधिकृत सेवा उपलब्ध आहे. अंदाजे {first.processing_days} दिवसांत ही सेवा पूर्ण होते. "
+                    f"अधिक माहिती व अर्जासाठी खालील सेवेवर क्लिक करा."
+                )
+            else:
+                resp = (
+                    f"तुमच्या गरजेनुसार '{title}' (राज्य/प्रशासन: {first.state_code}) ही अधिकृत शासकीय सेवा उपलब्ध आहे. "
+                    f"हा अर्ज {first.department_name} अंतर्गत येतो आणि अंदाजे {first.processing_days} दिवसांत पूर्ण होतो. "
+                    f"अधिक माहिती व अर्जासाठी खालील सेवेवर क्लिक करा."
+                )
         elif is_hindi:
             title = first.name_hi or first.name
-            resp = (
-                f"आपकी आवश्यकता के अनुसार '{title}' (राज्य: {first.state_code}) आधिकारिक सरकारी सेवा उपलब्ध है। "
-                f"यह सेवा {first.department_name} द्वारा संचालित है और लगभग {first.processing_days} दिनों में संसाधित होती है। "
-                f"पात्रता व आवश्यक दस्तावेजों की जांच कर सीधे नीचे से आवेदन करें।"
-            )
+            if is_education_query:
+                resp = (
+                    f"स्कूल 10वीं/12वीं की अंकतालिका (Marksheet), उत्तीर्ण प्रमाण पत्र एवं माइग्रेशन प्रमाण पत्र हेतु आप डिजिलॉकर अथवा आधिकारिक परीक्षा बोर्ड पोर्टल (जैसे सीबीएसई परीक्षा संगम या राज्य e-MarkSheet) से डिजिटल प्रति अथवा सत्यापन प्राप्त कर सकते हैं। "
+                    f"आपकी आवश्यकता हेतु '{title}' ({first.department_name}) आधिकारिक सेवा उपलब्ध है, जो लगभग {first.processing_days} दिनों में पूर्ण होती है। "
+                    f"सीधे नीचे से आवेदन करें।"
+                )
+            else:
+                resp = (
+                    f"आपकी आवश्यकता के अनुसार '{title}' (राज्य/प्रशासन: {first.state_code}) आधिकारिक सरकारी सेवा उपलब्ध है। "
+                    f"यह सेवा {first.department_name} द्वारा संचालित है और लगभग {first.processing_days} दिनों में संसाधित होती है। "
+                    f"पात्रता व आवश्यक दस्तावेजों की जांच कर सीधे नीचे से आवेदन करें।"
+                )
         else:
-            resp = (
-                f"Based on your query, the most suitable official service is '{first.name}' (State: {first.state_code}). "
-                f"It is administered by the {first.department_name} with an estimated turnaround time of {first.processing_days} days. "
-                f"You can review required documents and apply directly below."
-            )
+            if is_education_query:
+                resp = (
+                    f"For school marksheets (10th/12th) and board certificates, you can obtain verified digital copies and migration certificates via DigiLocker or official portals (such as CBSE Pariksha Sangam or State e-MarkSheet). "
+                    f"The recommended official service is '{first.name}' ({first.department_name}, processing time: ~{first.processing_days} days). "
+                    f"You can review the required details and apply directly below."
+                )
+            else:
+                resp = (
+                    f"Based on your query, the most suitable official service is '{first.name}' (Jurisdiction: {first.state_code}). "
+                    f"It is administered by the {first.department_name} with an estimated turnaround time of {first.processing_days} days. "
+                    f"You can review required documents and apply directly below."
+                )
     else:
         if is_marathi:
             resp = (
                 "क्षमस्व, तुमच्या शोध निकषांशी जुळणारी नेमकी शासकीय सेवा सापडली नाही. "
-                "कृपया 'उत्पन्नाचा दाखला', 'अधिवास', 'जात प्रमाणपत्र', '७/१२ उतारा', 'जन्म नोंदणी' किंवा 'नळ जोडणी' यासारखे शब्द वापरा."
+                "कृपया 'गुणपत्रिका (मार्कशीट)', 'सीबीएसई', 'शिष्यवृत्ती', 'उत्पन्नाचा दाखला', 'अधिवास', 'जात प्रमाणपत्र', '७/१२ उतारा', 'जन्म नोंदणी' किंवा 'नळ जोडणी' यासारखे शब्द वापरा."
             )
         elif is_hindi:
             resp = (
                 "क्षमा करें, आपकी खोज से मेल खाती सटीक सेवा नहीं मिल सकी। "
-                "कृपया 'आय प्रमाण पत्र', 'मूल निवास', 'जाति प्रमाण पत्र', 'राशन कार्ड', 'बिजली कनेक्शन' या 'ड्राइविंग लाइसेंस' जैसे शब्दों से खोजें।"
+                "कृपया 'अंकतालिका (मार्कशीट)', 'सीबीएसई बोर्ड', 'छात्रवृत्ति', 'आय प्रमाण पत्र', 'मूल निवास', 'जाति प्रमाण पत्र', 'राशन कार्ड' या 'बिजली कनेक्शन' जैसे शब्दों से खोजें।"
             )
         else:
             resp = (
                 "I could not find an exact match in the current public catalog. "
-                "Try searching with standard terms like 'Income Certificate', 'Domicile Certificate', 'Caste Certificate', 'Ration Card', or 'Water Connection'."
+                "Try searching with standard terms like 'CBSE Marksheet', 'Scholarship', 'Income Certificate', 'Domicile Certificate', 'Caste Certificate', or 'Ration Card'."
             )
 
     return AssistantQueryResponse(
@@ -279,7 +322,15 @@ def query_assistant(data: AssistantQueryRequest, db: Session = Depends(get_db)):
             # Query all active services from DB to feed as strict catalog grounding
             services_query = db.query(Service).filter(Service.is_active == True)
             if data.state_code and data.state_code.upper() != "ALL":
-                services_query = services_query.filter(Service.state_code == data.state_code.upper())
+                if data.state_code.upper() == "CENTRAL":
+                    services_query = services_query.filter(Service.state_code == "CENTRAL")
+                else:
+                    services_query = services_query.filter(
+                        or_(
+                            Service.state_code == data.state_code.upper(),
+                            Service.state_code == "CENTRAL"
+                        )
+                    )
             all_services = services_query.all()
 
             catalog_summary = []
@@ -300,11 +351,14 @@ def query_assistant(data: AssistantQueryRequest, db: Session = Depends(get_db)):
             system_instruction = (
                 "You are the official Smart Citizen Service Assistant for the Maha-Seva Integrator portal "
                 "(Smart India Hackathon 2026, PS-129). Your role is to help citizens find and understand "
-                "official government public services across all 28 States and 8 Union Territories of India. "
+                "official government public services across Central Government ministries and all 28 States and 8 Union Territories of India.\n"
                 "CRITICAL RULES:\n"
-                "1. Ground your answers ONLY on the provided official government services list. Never hallucinate fake services.\n"
+                "1. Ground your answers on the provided official government services list and official Indian governance procedures.\n"
+                "When asked about educational schemes, school marksheets (10th/12th), or examination boards (CBSE, Maharashtra State Board MSBSHSE, UP Board UPMSP, etc.): "
+                "explain how digital marksheets and migration certificates can be accessed through DigiLocker and official board portals (such as CBSE Pariksha Sangam and State e-MarkSheet), "
+                "as well as how duplicate certificates can be requested through the official services listed.\n"
                 "2. Respond in the requested language ('en' = English, 'mr' = Marathi, 'hi' = Hindi). Keep tone helpful, official, polite, and conversational.\n"
-                "3. In the 'response' field, provide a 2-4 sentence clear, friendly explanation answering the citizen's question or follow-up, covering: the recommended service, responsible state/department, estimated processing time, and government fees.\n"
+                "3. In the 'response' field, provide a 2-4 sentence clear, friendly explanation answering the citizen's question or follow-up, covering: the recommended service, responsible board/department/ministry, estimated processing time, and government fees.\n"
                 "4. In the 'matched_service_ids' array, return the integer IDs of the services that match the citizen's requirement (order by relevance, max 4).\n"
                 "5. Always return strictly valid JSON matching the requested schema."
             )

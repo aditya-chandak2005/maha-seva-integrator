@@ -40,6 +40,9 @@ STATES_AND_UTS: List[Dict[str, str]] = [
     {"code": "LA", "name": "Ladakh", "hi": "लद्दाख", "mr": "लडाख", "type": "UT"},
     {"code": "LD", "name": "Lakshadweep", "hi": "लक्षद्वीप", "mr": "लक्षद्वीप", "type": "UT"},
     {"code": "PY", "name": "Puducherry", "hi": "पुडुचेरी", "mr": "पुडुचेरी", "type": "UT"},
+
+    # CENTRAL GOVERNMENT
+    {"code": "CENTRAL", "name": "Central Government (Govt of India)", "hi": "भारत सरकार (केन्द्र सरकार)", "mr": "भारत सरकार (केंद्र सरकार)", "type": "CENTRAL"}
 ]
 
 STATE_CODE_MAP = {s["code"]: s for s in STATES_AND_UTS}
@@ -47,7 +50,7 @@ STATE_CODE_MAP = {s["code"]: s for s in STATES_AND_UTS}
 def is_valid_state_code(code: str) -> bool:
     if not code:
         return False
-    return code.upper() in STATE_CODE_MAP
+    return code.upper() in STATE_CODE_MAP or code.upper() in ("ALL", "IN", "GOI")
 
 def get_state_info(code: str) -> Optional[Dict[str, str]]:
     if not code:

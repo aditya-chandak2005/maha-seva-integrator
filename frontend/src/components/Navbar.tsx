@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { NotificationItem } from "../types";
 
-import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION } from "../constants/states";
+import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION, CENTRAL_OPTION } from "../constants/states";
 
 interface NavbarProps {
   currentTab: string;
@@ -101,6 +101,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <option value="ALL">
                 {i18n.language === "hi" ? ALL_OPTION.hi : i18n.language === "mr" ? ALL_OPTION.mr : ALL_OPTION.name}
+              </option>
+              <option value="CENTRAL" className="font-bold text-amber-300">
+                🏛️ {i18n.language === "hi" ? CENTRAL_OPTION.hi : i18n.language === "mr" ? CENTRAL_OPTION.mr : CENTRAL_OPTION.name}
               </option>
               <optgroup label={i18n.language === "hi" ? "--- 28 राज्य ---" : i18n.language === "mr" ? "--- २८ राज्य ---" : "--- 28 States ---"}>
                 {statesList.map((st) => (

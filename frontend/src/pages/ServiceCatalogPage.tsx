@@ -4,7 +4,7 @@ import api from "../services/api";
 import { ServiceItem, Department, ServiceCategory } from "../types";
 import { Search, Filter, Clock, Building, ArrowRight, CheckCircle2 } from "lucide-react";
 
-import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION } from "../constants/states";
+import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION, CENTRAL_OPTION } from "../constants/states";
 
 interface ServiceCatalogPageProps {
   initialSearch?: string;
@@ -142,6 +142,9 @@ export const ServiceCatalogPage: React.FC<ServiceCatalogPageProps> = ({
           >
             <option value="ALL">
               {i18n.language === "hi" ? ALL_OPTION.hi : i18n.language === "mr" ? ALL_OPTION.mr : ALL_OPTION.name}
+            </option>
+            <option value="CENTRAL" className="font-bold text-blue-900 bg-blue-50">
+              🏛️ {i18n.language === "hi" ? CENTRAL_OPTION.hi : i18n.language === "mr" ? CENTRAL_OPTION.mr : CENTRAL_OPTION.name}
             </option>
             <optgroup label={i18n.language === "hi" ? "--- 28 राज्य ---" : i18n.language === "mr" ? "--- २८ राज्य ---" : "--- 28 States ---"}>
               {statesList.map((st) => (

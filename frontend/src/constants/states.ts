@@ -3,8 +3,24 @@ export interface StateInfo {
   name: string;
   hi: string;
   mr: string;
-  type: "STATE" | "UT";
+  type: "CENTRAL" | "STATE" | "UT";
 }
+
+export const CENTRAL_OPTION: StateInfo = {
+  code: "CENTRAL",
+  name: "Central Government (Govt of India)",
+  hi: "भारत सरकार (केन्द्र सरकार / CBSE एवं राष्ट्रीय सेवाएं)",
+  mr: "भारत सरकार (केंद्र सरकार / CBSE व राष्ट्रीय सेवा)",
+  type: "CENTRAL"
+};
+
+export const ALL_OPTION: StateInfo = {
+  code: "ALL",
+  name: "All India / National (All 36 States, UTs & Central)",
+  hi: "अखिल भारतीय / सर्व भारत (सभी 36 राज्य, UT एवं केंद्र सरकार)",
+  mr: "अखिल भारतीय / सर्व भारत (सर्व ३६ राज्ये, UT व केंद्र सरकार)",
+  type: "STATE"
+};
 
 export const ALL_INDIA_STATES_AND_UTS: StateInfo[] = [
   // --- 28 STATES ---
@@ -48,17 +64,12 @@ export const ALL_INDIA_STATES_AND_UTS: StateInfo[] = [
   { code: "PY", name: "Puducherry", hi: "पुडुचेरी", mr: "पुडुचेरी", type: "UT" },
 ];
 
-export const ALL_OPTION: StateInfo = {
-  code: "ALL",
-  name: "All States and UTs (National)",
-  hi: "सभी राज्य एवं केंद्र शासित प्रदेश (अखिल भारतीय)",
-  mr: "सर्व राज्य आणि केंद्रशासित प्रदेश (अखिल भारतीय)",
-  type: "STATE"
-};
-
 export const getStateLabel = (stateCode: string, lang: string): string => {
   if (!stateCode || stateCode === "ALL") {
     return lang === "hi" ? ALL_OPTION.hi : lang === "mr" ? ALL_OPTION.mr : ALL_OPTION.name;
+  }
+  if (stateCode.toUpperCase() === "CENTRAL") {
+    return lang === "hi" ? CENTRAL_OPTION.hi : lang === "mr" ? CENTRAL_OPTION.mr : CENTRAL_OPTION.name;
   }
   const found = ALL_INDIA_STATES_AND_UTS.find((s) => s.code === stateCode.toUpperCase());
   if (!found) return stateCode;
@@ -68,6 +79,9 @@ export const getStateLabel = (stateCode: string, lang: string): string => {
 export const getStateShortName = (stateCode: string, lang: string): string => {
   if (!stateCode || stateCode === "ALL") {
     return lang === "hi" ? "अखिल भारतीय" : lang === "mr" ? "अखिल भारतीय" : "All India";
+  }
+  if (stateCode.toUpperCase() === "CENTRAL") {
+    return lang === "hi" ? "केंद्र सरकार" : lang === "mr" ? "केंद्र सरकार" : "Central Govt";
   }
   const found = ALL_INDIA_STATES_AND_UTS.find((s) => s.code === stateCode.toUpperCase());
   if (!found) return stateCode;

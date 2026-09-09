@@ -21,7 +21,7 @@ import {
   EyeOff
 } from "lucide-react";
 import { SuggestedService } from "../types";
-import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION, getStateShortName } from "../constants/states";
+import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION, CENTRAL_OPTION, getStateShortName } from "../constants/states";
 
 interface ChatMessage {
   id: string;
@@ -209,6 +209,21 @@ export const SmartAssistantModal: React.FC<SmartAssistantModalProps> = ({
 
   const samplePrompts = [
     {
+      en: "How do I get my CBSE 10th / 12th digital marksheet or duplicate certificate?",
+      mr: "सीबीएसई १० वी / १२ वी डिजिटल गुणपत्रिका किंवा द्वितीयक प्रत कशी मिळवावी?",
+      hi: "सीबीएसई 10वीं / 12वीं की डिजिटल मार्कशीट या माइग्रेशन सर्टिफिकेट कैसे प्राप्त करें?"
+    },
+    {
+      en: "How can I verify Maharashtra State Board SSC / HSC marksheet on e-MarkSheet?",
+      mr: "महाराष्ट्र राज्य मंडळाची १० वी व १२ वी गुणपत्रिका e-MarkSheet वर कशी पडताळावी?",
+      hi: "महाराष्ट्र बोर्ड 10वीं/12वीं अंकतालिका e-MarkSheet से कैसे सत्यापित करें?"
+    },
+    {
+      en: "How to apply for National Scholarship Portal (NSP) schemes?",
+      mr: "राष्ट्रीय शिष्यवृत्ती पोर्टल (NSP) योजनांसाठी अर्ज कसा करावा?",
+      hi: "राष्ट्रीय छात्रवृत्ति पोर्टल (NSP) योजनाओं के लिए आवेदन कैसे करें?"
+    },
+    {
       en: "How do I get an Income Certificate for college scholarship?",
       mr: "महाविद्यालयीन शिष्यवृत्तीसाठी उत्पन्नाचा दाखला कसा मिळवावा?",
       hi: "कॉलेज छात्रवृत्ति हेतु आय प्रमाण पत्र के लिए कैसे आवेदन करें?"
@@ -300,6 +315,9 @@ export const SmartAssistantModal: React.FC<SmartAssistantModalProps> = ({
             >
               <option value="ALL" className="text-slate-900">
                 {i18n.language === "hi" ? "अखिल भारतीय (All India)" : i18n.language === "mr" ? "अखिल भारतीय (All India)" : "All India (36 States & UTs)"}
+              </option>
+              <option value="CENTRAL" className="text-blue-950 font-bold bg-blue-50">
+                🏛️ {i18n.language === "hi" ? "भारत सरकार (केन्द्र सरकार / CBSE)" : i18n.language === "mr" ? "भारत सरकार (केंद्र सरकार / CBSE)" : "Central Govt (CBSE & National)"}
               </option>
               <optgroup label="28 States" className="text-slate-900">
                 {statesList.map((st) => (

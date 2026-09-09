@@ -7,6 +7,7 @@ class AssistantMessage(BaseModel):
 
 class SuggestedService(BaseModel):
     id: int
+    code: Optional[str] = None
     name: str
     name_mr: Optional[str] = None
     name_hi: Optional[str] = None

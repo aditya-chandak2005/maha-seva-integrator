@@ -317,6 +317,75 @@ class TestMahaSevaE2E(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertGreater(len(res["suggested_services"]), 0)
 
+    def test_10_central_gov_and_educational_marksheets(self):
+        # 1. Central Government services filter
+        status, res = make_request(f"{BASE_URL}/services?state_code=CENTRAL")
+        self.assertEqual(status, 200)
+        self.assertGreaterEqual(len(res), 4)
+        self.assertTrue(all(s["state_code"] == "CENTRAL" for s in res))
+        self.assertTrue(any(s["code"] == "CBSE_MARKSHEET_VERIFY" for s in res))
+        self.assertTrue(any(s["code"] == "NSP_SCHOLARSHIP" for s in res))
+        self.assertTrue(any(s["code"] == "APAAR_ABC_ID" for s in res))
+
+        # 2. Query Smart Assistant for school marksheet in English
+        status, res = make_request(
+            f"{BASE_URL}/assistant/chat",
+            method="POST",
+            data={"query": "How do I get my school marksheet document?", "language": "en"}
+        )
+        self.assertEqual(status, 200)
+        self.assertIn("marksheet", res["response"].lower())
+        self.assertGreater(len(res["suggested_services"]), 0)
+        self.assertTrue(any("Marksheet" in s["name"] or "CBSE" in s["name"] for s in res["suggested_services"]))
+
+        # 3. Query Smart Assistant for CBSE 10th marksheet
+        status, res = make_request(
+            f"{BASE_URL}/assistant/chat",
+            method="POST",
+            data={"query": "I need CBSE 10th marksheet and migration certificate", "language": "en"}
+        )
+        self.assertEqual(status, 200)
+        self.assertIn("CBSE", res["response"])
+        self.assertTrue(any(s["code"] == "CBSE_MARKSHEET_VERIFY" for s in res["suggested_services"]))
+
+        # 4. Marathi school marksheet query
+        status, res = make_request(
+            f"{BASE_URL}/assistant/chat",
+            method="POST",
+            data={"query": "मला १० वी ची गुणपत्रिका हवी आहे", "language": "mr"}
+        )
+        self.assertEqual(status, 200)
+        self.assertIn("गुणपत्रिका", res["response"])
+        self.assertTrue(any("गुणपत्रिका" in (s.get("name_mr") or "") for s in res["suggested_services"]))
+
+        # 5. Submit CBSE Marksheet Application
+        cbse_service = next((s for s in res["suggested_services"] if s["code"] == "CBSE_MARKSHEET_VERIFY"), None)
+        if not cbse_service:
+            status_s, cbse_list = make_request(f"{BASE_URL}/services?q=CBSE")
+            cbse_service = cbse_list[0] if cbse_list else None
+
+        if cbse_service:
+            app_payload = {
+                "service_id": cbse_service["id"],
+                "form_data": {
+                    "class_level": "Class X (Secondary / 10th)",
+                    "document_type": "Duplicate Marksheet / Marks Statement",
+                    "exam_year": 2024,
+                    "roll_number": "14125896",
+                    "school_code": "08521",
+                    "center_no": "8120"
+                },
+                "status": "SUBMITTED"
+            }
+            status, app_res = make_request(
+                f"{BASE_URL}/applications",
+                method="POST",
+                data=app_payload,
+                headers=self.citizen_headers
+            )
+            self.assertEqual(status, 200)
+            self.assertTrue(app_res["application_number"].startswith("CENTRAL-CBSE-"))
+
 
 if __name__ == "__main__":
     unittest.main()
