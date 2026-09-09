@@ -1,4 +1,4 @@
-﻿# Maha-Seva Integrator — SIH 2026 Demonstration Guide
+# Maha-Seva Integrator — SIH 2026 Demonstration Guide
 
 **Project Name:** Maha-Seva Integrator (महा-सेवा इंटिग्रेटर)  
 **Hackathon:** Smart India Hackathon 2026  
@@ -10,7 +10,7 @@
 
 ## 🎯 Demonstration Objective
 
-To demonstrate to the SIH 2026 Evaluation Jury how **Maha-Seva Integrator** solves departmental fragmentation in public service delivery across Maharashtra through a unified citizen gateway, dynamic schema-driven applications, an Integration Adapter Framework, role-scoped officer verification workbenches, and immutable audit transparency.
+To demonstrate to the SIH 2026 Evaluation Jury how **Maha-Seva Integrator** solves departmental fragmentation and interstate interoperability in digital public service delivery across India. The platform supports **multi-state federated access** (Maharashtra, Karnataka, Gujarat, Delhi NCT, Uttar Pradesh), a **trilingual citizen gateway** (English, Marathi `मराठी`, Hindi `हिन्दी`), **dynamic schema-driven forms**, an **Integration Adapter Framework**, a **Gemini 2.5 Flash AI Assistant** with seamless local fallback, role-scoped officer verification workbenches, and immutable audit transparency.
 
 ---
 
@@ -19,7 +19,7 @@ To demonstrate to the SIH 2026 Evaluation Jury how **Maha-Seva Integrator** solv
 - **Citizen & Government Portal:** `http://127.0.0.1:5173/`
 - **FastAPI Backend API Base:** `http://127.0.0.1:8000/`
 - **Interactive Swagger Documentation:** `http://127.0.0.1:8000/docs`
-- **System Health Telemetry:** `http://127.0.0.1:8000/health`
+- **System Health Telemetry:** `http://127.0.0.1:8000/health` or `http://127.0.0.1:8000/api/v1/health`
 
 ---
 
@@ -27,7 +27,7 @@ To demonstrate to the SIH 2026 Evaluation Jury how **Maha-Seva Integrator** solv
 
 | Role | Email | Password | Scope & Department |
 | :--- | :--- | :--- | :--- |
-| **Citizen** | `citizen@mahaseva.gov.in` | `Citizen@2026` | Resident Public (All Services) |
+| **Citizen** | `citizen@mahaseva.gov.in` | `Citizen@2026` | Resident Public (All States & Services) |
 | **Revenue Officer** | `officer.revenue@mahaseva.gov.in` | `Officer@2026` | Revenue & Forest Department (Tahsildar Desk) |
 | **Municipal Officer** | `officer.municipal@mahaseva.gov.in` | `Officer@2026` | Urban Development Department (ULB Desk) |
 | **Super Admin** | `admin@mahaseva.gov.in` | `Admin@2026` | State Platform Governance & Audit Oversight |
@@ -36,17 +36,25 @@ To demonstrate to the SIH 2026 Evaluation Jury how **Maha-Seva Integrator** solv
 
 ---
 
-## 🎬 4-Part Demonstration Flow
+## 🎬 5-Part Demonstration Flow
 
-### PART 1: Citizen Discovery & Dynamic Application Submission
+### PART 1: Multi-State Selection & Trilingual Citizen Discovery
 1. **Open Citizen Portal:** Open `http://127.0.0.1:5173` in your browser.
-2. **Language Localization:**
-   - Click the language toggle button in the top navigation strip (`मराठी` / `English`).
-   - Notice the complete instant UI translation (navigation, hero headings, status badges, buttons).
-3. **Smart Service Assistant:**
+2. **Trilingual Localization:**
+   - Click the language pills in the top navigation strip (`English` / `मराठी` / `हिन्दी`).
+   - Notice the instant UI translation across navigation, hero headings, status badges, and dynamic form labels.
+3. **Multi-State Platform Federation:**
+   - Click the State Selector dropdown in the navbar or the quick state chips under the hero search bar (`All States`, `Maharashtra (MH)`, `Karnataka (KA)`, `Gujarat (GJ)`, `Delhi NCT (DL)`, `Uttar Pradesh (UP)`).
+   - Select **"Karnataka (KA)"**: Notice how the catalog filters to Karnataka departments (Karnataka Revenue, BESCOM Urban Electricity) and services.
+   - Switch back to **"All States"** to see all 14 multi-state public services.
+4. **Smart Service Assistant (Gemini 2.5 Flash + Local Fallback):**
    - Click the floating **"✨ AI Service Assistant"** button in the bottom-right corner.
-   - Click one of the pre-configured prompt chips: *"I need an income certificate for my daughter's scholarship"* (or in Marathi: *"मुलीच्या शिष्यवृत्तीसाठी मला उत्पन्नाचा दाखला हवा आहे"*).
-   - Explain to the jury: The assistant is strictly grounded on the verified service catalog and guides citizens to the exact right service without hallucinating rules or fees.
+   - **Configure API Key (Optional):** Click the **"⚙️ API Key"** button to enter a Gemini API key. If provided, the assistant uses Google's `gemini-2.5-flash` model. If omitted or offline, the platform automatically switches to **"Local Intelligence"** with zero crashes.
+   - Click one of the quick query prompt pills:
+     - English: *"I need an electricity meter connection for my apartment"* (matches Karnataka BESCOM).
+     - Hindi: *"मुझे नया बिजली कनेक्शन चाहिए"* or *"मुझे आय प्रमाण पत्र चाहिए"*.
+     - Marathi: *"मला 7/12 उतारा आणि शेतजमीन नोंदणी हवी आहे"*.
+   - The assistant displays the recommended service card with fee, turnaround time, and direct **"Apply Now"** button.
    - Click **"Apply Now"** directly from the assistant dialog.
 4. **Service Inspection & Eligibility:**
    - Review the Income Certificate service overview: Department (Revenue & Forest), SLA (15 Days), Statutory Fee (₹33.60), and required documents (Aadhaar, Ration Card, Income Proof).

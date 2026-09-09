@@ -1,4 +1,4 @@
-﻿"""
+"""
 Maha-Seva Integrator - End-to-End Automated Test Suite
 Tests API endpoints, RBAC enforcement, dynamic form submission,
 officer status transitions, integration adapters, and smart assistant.
@@ -235,6 +235,52 @@ class TestMahaSevaE2E(unittest.TestCase):
         status, res = make_request(f"{BASE_URL}/admin/audit-logs", headers=self.admin_headers)
         self.assertEqual(status, 200)
         self.assertGreater(len(res), 0)
+
+    def test_08_multi_state_and_hindi(self):
+        # 1. Multi-state filter: Karnataka (KA)
+        status, res = make_request(f"{BASE_URL}/services?state_code=KA")
+        self.assertEqual(status, 200)
+        self.assertGreaterEqual(len(res), 2)
+        self.assertTrue(all(s["state_code"] == "KA" for s in res))
+
+        # 2. Multi-state filter: Delhi (DL)
+        status, res = make_request(f"{BASE_URL}/services?state_code=DL")
+        self.assertEqual(status, 200)
+        self.assertGreaterEqual(len(res), 2)
+        self.assertTrue(all(s["state_code"] == "DL" for s in res))
+
+        # 3. Hindi Query to Smart Assistant
+        status, res = make_request(
+            f"{BASE_URL}/assistant/chat",
+            method="POST",
+            data={"query": "मुझे नया बिजली कनेक्शन चाहिए", "language": "hi"}
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue("विद्युत" in res["response"] or "बिजली" in res["response"] or "बेस्कॉम" in res["response"])
+        self.assertGreater(len(res["suggested_services"]), 0)
+
+        # 4. Multi-state application submission: BESCOM electricity in Karnataka
+        ka_elec = next((s for s in res["suggested_services"] if s.get("state_code") == "KA" or "BESCOM" in s["name"]), None)
+        if ka_elec:
+            app_payload = {
+                "service_id": ka_elec["id"],
+                "form_data": {
+                    "consumer_name": "Aditya Patil",
+                    "property_pid": "089-W0123-99",
+                    "sanctioned_load_kw": 5,
+                    "bangalore_subdivision": "Indiranagar Sub-Division",
+                    "property_address": "100 Feet Rd, Indiranagar, Bengaluru"
+                },
+                "status": "SUBMITTED"
+            }
+            status, app_res = make_request(
+                f"{BASE_URL}/applications",
+                method="POST",
+                data=app_payload,
+                headers=self.citizen_headers
+            )
+            self.assertEqual(status, 200)
+            self.assertTrue(app_res["application_number"].startswith("KA-"))
 
 
 if __name__ == "__main__":

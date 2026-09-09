@@ -1,5 +1,5 @@
-﻿from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -10,8 +10,14 @@ from app.schemas.services import ServiceListItem
 router = APIRouter(prefix="/departments", tags=["Departments"])
 
 @router.get("", response_model=List[DepartmentResponse])
-def list_departments(db: Session = Depends(get_db)):
-    return db.query(Department).filter(Department.is_active == True).order_by(Department.id.asc()).all()
+def list_departments(
+    state_code: Optional[str] = Query(None, description="Filter departments by state code (e.g. MH, KA, GJ, DL, UP)"),
+    db: Session = Depends(get_db)
+):
+    query = db.query(Department).filter(Department.is_active == True)
+    if state_code:
+        query = query.filter(Department.state_code == state_code.upper())
+    return query.order_by(Department.id.asc()).all()
 
 @router.get("/{department_id}", response_model=DepartmentResponse)
 def get_department(department_id: int, db: Session = Depends(get_db)):
@@ -35,13 +41,16 @@ def get_department_services(department_id: int, db: Session = Depends(get_db)):
         result.append(ServiceListItem(
             id=s.id,
             code=s.code,
+            state_code=s.state_code or "MH",
             name=s.name,
             name_mr=s.name_mr,
+            name_hi=s.name_hi,
             department_id=s.department_id,
             department_name=s.department.name if s.department else None,
             category_id=s.category_id,
             category_name=s.category.name if s.category else None,
             description=s.description,
+            description_hi=s.description_hi,
             fee=s.fee,
             processing_days=s.processing_days,
             integration_type=s.integration_type,

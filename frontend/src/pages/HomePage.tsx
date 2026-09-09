@@ -23,13 +23,26 @@ interface HomePageProps {
   onSelectService: (serviceId: number) => void;
   onNavigate: (tab: string, param?: any) => void;
   onOpenAssistant: () => void;
+  selectedState?: string;
+  onSelectState?: (state: string) => void;
 }
+
+const STATE_CHIPS = [
+  { code: "ALL", name: "All States", mr: "सर्व राज्य", hi: "सभी राज्य" },
+  { code: "MH", name: "Maharashtra (MH)", mr: "महाराष्ट्र (MH)", hi: "महाराष्ट्र (MH)" },
+  { code: "KA", name: "Karnataka (KA)", mr: "कर्नाटक (KA)", hi: "कर्नाटक (KA)" },
+  { code: "GJ", name: "Gujarat (GJ)", mr: "गुजरात (GJ)", hi: "गुजरात (GJ)" },
+  { code: "DL", name: "Delhi NCT (DL)", mr: "दिल्ली (DL)", hi: "दिल्ली (DL)" },
+  { code: "UP", name: "Uttar Pradesh (UP)", mr: "उत्तर प्रदेश (UP)", hi: "उत्तर प्रदेश (UP)" },
+];
 
 export const HomePage: React.FC<HomePageProps> = ({
   services,
   onSelectService,
   onNavigate,
   onOpenAssistant,
+  selectedState = "ALL",
+  onSelectState,
 }) => {
   const { t, i18n } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,7 +60,10 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   };
 
-  const popularServices = services.slice(0, 4);
+  const filteredServices = selectedState && selectedState !== "ALL"
+    ? services.filter((s) => s.state_code === selectedState)
+    : services;
+  const popularServices = (filteredServices.length > 0 ? filteredServices : services).slice(0, 4);
 
   return (
     <div className="space-y-16 pb-16">
@@ -94,6 +110,27 @@ export const HomePage: React.FC<HomePageProps> = ({
             </button>
           </form>
 
+          {/* State Selector Quick Chips */}
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+            <span className="text-xs text-blue-200 font-medium mr-1 flex items-center">
+              {i18n.language === "hi" ? "राज्य चुनें:" : i18n.language === "mr" ? "राज्य निवडा:" : "Select State:"}
+            </span>
+            {STATE_CHIPS.map((st) => (
+              <button
+                key={st.code}
+                type="button"
+                onClick={() => onSelectState && onSelectState(st.code)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition border ${
+                  selectedState === st.code
+                    ? "bg-orange-500 border-orange-400 text-white shadow-md scale-105"
+                    : "bg-white/10 hover:bg-white/20 border-white/20 text-blue-100"
+                }`}
+              >
+                {i18n.language === "hi" ? st.hi : i18n.language === "mr" ? st.mr : st.name}
+              </button>
+            ))}
+          </div>
+
           {/* Quick Action Badges */}
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2 text-xs">
             <button
@@ -128,10 +165,14 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
             <div>
               <h3 className="font-bold text-slate-900 text-base">
-                Track Application in Real-Time
+                {i18n.language === "hi" ? "वास्तविक समय में आवेदन ट्रैक करें" : i18n.language === "mr" ? "रिअल-टाइममध्ये अर्ज ट्रॅक करा" : "Track Application in Real-Time"}
               </h3>
               <p className="text-xs text-slate-500">
-                Enter your unique application tracking reference (e.g., <code className="text-blue-600 font-mono">MH-REV-2026-00101</code>)
+                {i18n.language === "hi"
+                  ? "अपना विशिष्ट आवेदन संदर्भ दर्ज करें (उदा. MH-REV-2026-00101, KA-UDD-2026-00302)"
+                  : i18n.language === "mr"
+                  ? "आपला युनिक अर्ज ट्रॅकिंग क्रमांक प्रविष्ट करा (उदा. MH-REV-2026-00101)"
+                  : "Enter your unique application tracking reference (e.g. MH-REV-2026-00101, KA-UDD-2026-00302)"}
               </p>
             </div>
           </div>
@@ -148,7 +189,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               type="submit"
               className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold transition shrink-0"
             >
-              Track Status
+              {t("track.track_btn")}
             </button>
           </form>
         </div>
@@ -159,17 +200,25 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <div>
             <span className="text-xs font-bold text-orange-600 uppercase tracking-wider">
-              {i18n.language === "mr" ? "सर्वाधिक विचारल्या जाणाऱ्या सेवा" : "Most Applied Public Services"}
+              {i18n.language === "hi"
+                ? "सर्वाधिक लोकप्रिय लोक सेवाएं"
+                : i18n.language === "mr"
+                ? "सर्वाधिक विचारल्या जाणाऱ्या सेवा"
+                : "Most Applied Public Services"}
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
-              Popular Services
+              {i18n.language === "hi"
+                ? `लोकप्रिय सेवाएं ${selectedState !== "ALL" ? `(${selectedState})` : ""}`
+                : i18n.language === "mr"
+                ? `लोकप्रिय सेवा ${selectedState !== "ALL" ? `(${selectedState})` : ""}`
+                : `Popular Services ${selectedState !== "ALL" ? `(${selectedState})` : ""}`}
             </h2>
           </div>
           <button
             onClick={() => onNavigate("services")}
             className="text-sm font-bold text-blue-700 hover:text-blue-800 flex items-center"
           >
-            <span>View All Services Directory</span>
+            <span>{i18n.language === "hi" ? "सभी सेवाएं देखें" : i18n.language === "mr" ? "सर्व सेवांची सूची पहा" : "View All Services Directory"}</span>
             <ArrowRight className="w-4 h-4 ml-1" />
           </button>
         </div>
@@ -181,21 +230,32 @@ export const HomePage: React.FC<HomePageProps> = ({
               className="bg-white rounded-2xl p-6 border border-slate-200 hover:border-blue-400 hover:shadow-xl transition-all flex flex-col justify-between group"
             >
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
-                    {svc.department_name?.split(" ")[0] || "Department"}
-                  </span>
-                  <span className="text-xs font-bold text-emerald-600">
-                    {svc.fee === 0 ? "Free" : `₹${svc.fee}`}
+                <div className="flex items-center justify-between gap-1">
+                  <div className="flex items-center space-x-1.5">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-amber-100 text-amber-900 border border-amber-300">
+                      {svc.state_code || "MH"}
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200 truncate max-w-[105px]">
+                      {svc.department_name?.split(" ")[0] || "Department"}
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-600 shrink-0">
+                    {svc.fee === 0 ? (i18n.language === "hi" ? "निःशुल्क" : i18n.language === "mr" ? "मोफत" : "Free") : `₹${svc.fee}`}
                   </span>
                 </div>
 
                 <h3 className="font-bold text-slate-900 text-lg group-hover:text-blue-700 transition">
-                  {i18n.language === "mr" ? svc.name_mr || svc.name : svc.name}
+                  {i18n.language === "hi"
+                    ? svc.name_hi || svc.name
+                    : i18n.language === "mr"
+                    ? svc.name_mr || svc.name
+                    : svc.name}
                 </h3>
 
                 <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
-                  {svc.description}
+                  {i18n.language === "hi"
+                    ? svc.description_hi || svc.description
+                    : svc.description}
                 </p>
               </div>
 
@@ -227,7 +287,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               How Maha-Seva Integrator Works
             </h2>
             <p className="text-sm text-slate-600">
-              Eliminating departmental silos through automated interoperability, dynamic verification, and real-time synchronization.
+              Eliminating departmental silos through automated interoperability, dynamic verification, and real-time synchronization across states.
             </p>
           </div>
 
@@ -238,7 +298,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
               <h3 className="font-bold text-slate-900 text-base">Search & Discover</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Find the exact public service you need using multilingual keyword search or our AI Smart Assistant without guessing departments.
+                Find the exact public service you need across MH, KA, GJ, DL, UP using trilingual keyword search or our AI Smart Assistant.
               </p>
             </div>
 
@@ -282,17 +342,26 @@ export const HomePage: React.FC<HomePageProps> = ({
             Frequently Asked Questions
           </h2>
           <p className="text-sm text-slate-600">
-            Answers regarding Maharashtra digital public service delivery under the RTS Act.
+            Answers regarding multi-state digital public service delivery under the Right to Public Services (RTS) Acts across India.
           </p>
         </div>
 
         <div className="space-y-3">
           <div className="bg-white p-5 rounded-xl border border-slate-200">
             <h4 className="font-bold text-sm text-slate-900">
-              What is the Maharashtra Right to Public Services Act (RTS)?
+              Which states are currently supported in Maha-Seva Integrator?
             </h4>
             <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-              The Maharashtra Right to Public Services Act, 2015 guarantees citizens the right to receive eligible public services in a transparent, accountable, and time-bound manner with statutory remedies for delays.
+              Maha-Seva Integrator supports multi-state federated public service access across Maharashtra (MH), Karnataka (KA), Gujarat (GJ), Delhi NCT (DL), and Uttar Pradesh (UP), each integrated with state-specific departmental workflows and tracking.
+            </p>
+          </div>
+
+          <div className="bg-white p-5 rounded-xl border border-slate-200">
+            <h4 className="font-bold text-sm text-slate-900">
+              What is the Right to Public Services Act (RTS)?
+            </h4>
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+              State RTS Acts (such as the Maharashtra Right to Public Services Act 2015 and Sakala Karnataka) guarantee citizens the statutory right to receive eligible public services in a transparent, accountable, and time-bound manner with legal remedies for delays.
             </p>
           </div>
 
@@ -301,7 +370,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               How does Maha-Seva Integrator solve departmental silos (SIH PS-129)?
             </h4>
             <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-              Instead of forcing citizens to register and re-upload proofs across multiple disparate portals (Revenue, Municipal, Transport), Maha-Seva provides a single orchestration gateway with standardized adapters that synchronize data automatically across departments.
+              Instead of forcing citizens to register and re-upload proofs across multiple disparate portals (Revenue, Municipal, Transport, Food & Civil Supplies), Maha-Seva provides a single orchestration gateway with standardized adapters that synchronize data automatically across departments.
             </p>
           </div>
 

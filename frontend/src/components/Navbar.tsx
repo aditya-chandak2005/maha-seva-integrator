@@ -21,12 +21,25 @@ interface NavbarProps {
   currentTab: string;
   onNavigate: (tab: string, param?: any) => void;
   onOpenAssistant: () => void;
+  selectedState?: string;
+  onSelectState?: (state: string) => void;
 }
+
+const STATE_OPTIONS = [
+  { code: "ALL", name: "All States", mr: "सर्व राज्य", hi: "सभी राज्य" },
+  { code: "MH", name: "Maharashtra (MH)", mr: "महाराष्ट्र (MH)", hi: "महाराष्ट्र (MH)" },
+  { code: "KA", name: "Karnataka (KA)", mr: "कर्नाटक (KA)", hi: "कर्नाटक (KA)" },
+  { code: "GJ", name: "Gujarat (GJ)", mr: "गुजरात (GJ)", hi: "गुजरात (GJ)" },
+  { code: "DL", name: "Delhi NCT (DL)", mr: "दिल्ली (DL)", hi: "दिल्ली (DL)" },
+  { code: "UP", name: "Uttar Pradesh (UP)", mr: "उत्तर प्रदेश (UP)", hi: "उत्तर प्रदेश (UP)" },
+];
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentTab,
   onNavigate,
   onOpenAssistant,
+  selectedState = "ALL",
+  onSelectState,
 }) => {
   const { t, i18n } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
@@ -58,10 +71,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  const toggleLanguage = () => {
-    const nextLang = i18n.language === "en" ? "mr" : "en";
-    i18n.changeLanguage(nextLang);
-    localStorage.setItem("mahaseva_lang", nextLang);
+  const setLanguage = (lang: "en" | "mr" | "hi") => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem("mahaseva_lang", lang);
   };
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
@@ -69,21 +81,57 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
       {/* Top Government Strip */}
-      <div className="bg-slate-900 text-slate-300 text-[11px] py-1 px-4 sm:px-8 flex justify-between items-center">
+      <div className="bg-slate-900 text-slate-300 text-[11px] py-1.5 px-4 sm:px-8 flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center space-x-2">
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
-          <span>Government of Maharashtra | महाराष्ट्र शासन — Smart India Hackathon 2026 (PS-129)</span>
+          <span>
+            {i18n.language === "mr"
+              ? "महा-सेवा इंटिग्रेटर — अखिल भारतीय बहु-राज्य नागरिक सेवा मंच (SIH 2026 PS-129)"
+              : i18n.language === "hi"
+              ? "महा-सेवा इंटीग्रेटर — अखिल भारतीय बहु-राज्य नागरिक सेवा मंच (SIH 2026 PS-129)"
+              : "Maha-Seva Integrator — Multi-State Digital Public Services (SIH 2026 PS-129)"}
+          </span>
         </div>
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center space-x-1 font-semibold text-white hover:text-amber-300 transition"
-          >
-            <Globe className="w-3.5 h-3.5" />
-            <span>{i18n.language === "en" ? "मराठी" : "English"}</span>
-          </button>
-          <span className="text-slate-500">|</span>
-          <span className="hidden sm:inline">Toll Free Helpline: 1800-120-8040</span>
+        <div className="flex items-center space-x-3">
+          {/* State Selector */}
+          <div className="flex items-center space-x-1">
+            <span className="text-slate-400 font-medium hidden sm:inline text-[10px]">
+              {i18n.language === "mr" ? "राज्य:" : i18n.language === "hi" ? "राज्य:" : "State:"}
+            </span>
+            <select
+              value={selectedState}
+              onChange={(e) => onSelectState && onSelectState(e.target.value)}
+              className="bg-slate-800 text-amber-300 font-semibold text-[10px] px-2 py-0.5 rounded border border-slate-700 focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer"
+            >
+              {STATE_OPTIONS.map((st) => (
+                <option key={st.code} value={st.code}>
+                  {i18n.language === "mr" ? st.mr : i18n.language === "hi" ? st.hi : st.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <span className="text-slate-600">|</span>
+
+          {/* Trilingual Switcher */}
+          <div className="flex items-center bg-slate-800 p-0.5 rounded border border-slate-700">
+            {(["en", "mr", "hi"] as const).map((l) => (
+              <button
+                key={l}
+                onClick={() => setLanguage(l)}
+                className={`px-2 py-0.5 text-[10px] font-bold rounded transition ${
+                  i18n.language === l
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                {l === "en" ? "English" : l === "mr" ? "मराठी" : "हिन्दी"}
+              </button>
+            ))}
+          </div>
+
+          <span className="text-slate-600 hidden md:inline">|</span>
+          <span className="hidden md:inline text-[10px] text-slate-400">Helpline: 1800-120-8040</span>
         </div>
       </div>
 
@@ -103,7 +151,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="text-orange-600 ml-1">Integrator</span>
             </div>
             <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
-              {i18n.language === "mr" ? "एक व्यासपीठ. अनेक शासकीय सेवा." : "Digital Public Service Gateway"}
+              {i18n.language === "mr"
+                ? "एक व्यासपीठ. अनेक शासकीय सेवा."
+                : i18n.language === "hi"
+                ? "एक मंच. अनेक सरकारी सेवाएं."
+                : "Federated Digital Public Services Gateway"}
             </div>
           </div>
         </div>

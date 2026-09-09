@@ -1,4 +1,7 @@
-﻿from typing import List
+import os
+import json
+import logging
+from typing import List, Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
@@ -11,101 +14,286 @@ from app.schemas.assistant import (
     SuggestedService
 )
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/assistant", tags=["Smart Service Assistant"])
 
-# Keyword dictionary mapping intent terms to search patterns
+# Multilingual keyword dictionary mapping intent terms across English, Marathi, and Hindi
 INTENT_KEYWORDS = {
-    "income": ["income", "उत्पन्न", "tahsildar", "salary", "scholarship", "fees"],
-    "domicile": ["domicile", "अधिवास", "residence", "15 years", "mpsc", "college", "nationality"],
-    "birth": ["birth", "जन्म", "hospital", "child", "discharge", "municipal"],
-    "water": ["water", "पाणी", "connection", "nal", "plumbing", "pipe", "tap"],
-    "land": ["land", "7/12", "satbara", "जमीन", "mutation", "ferfar"],
-    "ration": ["ration", "धान्य", "food", "annapurna"]
+    "income": [
+        "income certificate", "income proof", "income", "salary", "scholarship", "fees", "tahsildar", "tahsil", "patwari", "kamai",
+        "उत्पन्नाचा दाखला", "उत्पन्न प्रमाणपत्र", "उत्पन्न", "उत्पन्नाचा", "तहसीलदार", "शिष्यवृत्ती",
+        "आय प्रमाण पत्र", "आय प्रमाणपत्र", "आय प्रमाण", "आय", "आमदनी", "वेतन"
+    ],
+    "domicile": [
+        "domicile certificate", "residence certificate", "domicile", "residence", "residential", "15 years", "mpsc", "nationality", "native",
+        "अधिवास प्रमाणपत्र", "राष्ट्रीयत्व प्रमाणपत्र", "अधिवास", "राष्ट्रीयत्व", "रहवासी", "वास्तव्य",
+        "निवास प्रमाण पत्र", "मूल निवास प्रमाण पत्र", "मूल निवास", "निवास प्रमाण", "स्थानीय निवासी"
+    ],
+    "caste": [
+        "caste", "social welfare", "sc", "st", "obc", "sebc", "tribal", "reservation",
+        "जात", "जाती", "दाखला", "आरक्षण",
+        "जाति", "जाति प्रमाण", "वर्ग प्रमाण"
+    ],
+    "land": [
+        "land", "7/12", "satbara", "mutation", "ferfar", "property card", "record of rights", "ror", "khata",
+        "जमीन", "सातबारा", "७/१२", "फेरफार", "गाव नमुना",
+        "भूमि", "जमीन रिकॉर्ड", "खसरा", "खतौनी", "दाखिल खारिज", "नामांतरण"
+    ],
+    "birth": [
+        "birth", "hospital", "newborn", "child", "discharge", "municipal", "infant",
+        "जन्म", "नोंदणी", "बाळ", "रुग्णालय", "महानगरपालिका",
+        "जन्म प्रमाण", "बच्चा", "शिशु", "अस्पताल", "नगर निगम"
+    ],
+    "water": [
+        "water", "tap", "nal", "water connection", "plumbing", "pipe", "pipeline",
+        "पाणी", "नळ", "नळ जोडणी", "नळपट्टी",
+        "पानी", "नल", "जल कनेक्शन", "पेयजल", "जल आपूर्ति", "नल जल"
+    ],
+    "electricity": [
+        "electricity", "power", "meter", "bescom", "light", "energy", "electrical", "electric",
+        "वीज", "विद्युत", "मीटर", "विद्युत जोडणी", "वीज जोडणी",
+        "बिजली", "विद्युत कनेक्शन", "मीटर कनेक्शन", "बिजली कनेक्शन"
+    ],
+    "trade": [
+        "trade", "license", "shop", "establishment", "gumasta", "business", "commercial",
+        "व्यापार", "दुकान", "परवाना", "गुमास्ता",
+        "व्यापार लाइसेंस", "दुकान लाइसेंस", "उद्योग"
+    ],
+    "ration": [
+        "ration", "food", "nfsa", "grain", "annapurna", "bpl", "apl", "civil supplies",
+        "रेशन", "धान्य", "अन्नपूर्णा", "रेशन कार्ड",
+        "राशन", "राशन कार्ड", "खाद्य सुरक्षा", "अन्न"
+    ],
+    "driving": [
+        "driving", "driver", "license", "dl", "noc", "rto", "vehicle", "transport",
+        "वाहन", "चालक", "परवाना", "आरटीओ",
+        "ड्राइविंग लाइसेंस", "वाहन", "एनओसी", "परिवहन"
+    ],
+    "senior": [
+        "senior", "citizen", "elderly", "aged", "pension", "old age", "vridha",
+        "ज्येष्ठ", "नागरिक", "वृद्ध",
+        "वरिष्ठ नागरिक", "बुजुर्ग", "वृद्ध पेंशन"
+    ]
 }
 
-@router.post("/chat", response_model=AssistantQueryResponse)
-def query_assistant(data: AssistantQueryRequest, db: Session = Depends(get_db)):
-    query_text = data.query.lower().strip()
-    is_marathi = data.language == "mr" or any(ord(c) >= 0x0900 and ord(c) <= 0x097F for c in query_text)
+def build_suggested_service(s: Service) -> SuggestedService:
+    return SuggestedService(
+        id=s.id,
+        name=s.name,
+        name_mr=s.name_mr,
+        name_hi=s.name_hi,
+        state_code=s.state_code or "MH",
+        department_name=s.department.name if s.department else "Government Department",
+        description=s.description,
+        fee=s.fee,
+        processing_days=s.processing_days
+    )
 
-    # 1. Identify matching intent keywords
+def run_local_fallback(
+    query_text: str,
+    lang: str,
+    state_code: Optional[str],
+    db: Session
+) -> AssistantQueryResponse:
+    is_marathi = lang == "mr"
+    is_hindi = lang == "hi"
+
     matched_services = []
-    matched_service_ids = set()
+    matched_ids = set()
 
+    # Intent score and rank search
+    scored_intents = []
     for intent, terms in INTENT_KEYWORDS.items():
-        if any(term in query_text for term in terms):
-            # Query services matching this intent
-            svcs = db.query(Service).filter(
-                Service.is_active == True,
-                or_(
-                    Service.name.ilike(f"%{intent}%"),
-                    Service.description.ilike(f"%{intent}%"),
-                    Service.code.ilike(f"%{intent}%")
-                )
-            ).all()
+        matches = [t for t in terms if t in query_text]
+        if matches:
+            scored_intents.append((intent, len(matches), max(len(t) for t in matches)))
 
-            for s in svcs:
-                if s.id not in matched_service_ids:
-                    matched_service_ids.add(s.id)
-                    matched_services.append(SuggestedService(
-                        id=s.id,
-                        name=s.name,
-                        name_mr=s.name_mr,
-                        department_name=s.department.name if s.department else "Government Department",
-                        description=s.description,
-                        fee=s.fee,
-                        processing_days=s.processing_days
-                    ))
+    scored_intents.sort(key=lambda x: (x[1], x[2]), reverse=True)
 
-    # If no specific intent matched, do a general text search
+    for intent, _, _ in scored_intents:
+        q = db.query(Service).filter(Service.is_active == True)
+        if state_code:
+            q = q.filter(Service.state_code == state_code.upper())
+
+        matches = q.filter(
+            or_(
+                Service.name.ilike(f"%{intent}%"),
+                Service.description.ilike(f"%{intent}%"),
+                Service.code.ilike(f"%{intent}%")
+            )
+        ).all()
+
+        for s in matches:
+            if s.id not in matched_ids:
+                matched_ids.add(s.id)
+                matched_services.append(build_suggested_service(s))
+
+    # General text search if no intent matched
     if not matched_services:
-        general_matches = db.query(Service).filter(
-            Service.is_active == True,
+        q = db.query(Service).filter(Service.is_active == True)
+        if state_code:
+            q = q.filter(Service.state_code == state_code.upper())
+        general_matches = q.filter(
             or_(
                 Service.name.ilike(f"%{query_text}%"),
+                Service.name_mr.ilike(f"%{query_text}%"),
+                Service.name_hi.ilike(f"%{query_text}%"),
                 Service.description.ilike(f"%{query_text}%")
             )
-        ).limit(3).all()
+        ).limit(4).all()
 
         for s in general_matches:
-            matched_services.append(SuggestedService(
-                id=s.id,
-                name=s.name,
-                name_mr=s.name_mr,
-                department_name=s.department.name if s.department else "Government Department",
-                description=s.description,
-                fee=s.fee,
-                processing_days=s.processing_days
-            ))
+            matched_services.append(build_suggested_service(s))
 
-    # Formulate verified response
+    # Formulate verified response message
     if matched_services:
-        first_svc = matched_services[0]
+        first = matched_services[0]
         if is_marathi:
-            resp_msg = (
-                f"तुमच्या चौकशीनुसार, '{first_svc.name_mr or first_svc.name}' ही सेवा उपलब्ध आहे. "
-                f"हा अर्ज {first_svc.department_name} अंतर्गत येतो आणि अंदाजे {first_svc.processing_days} दिवसांत पूर्ण होतो. "
-                f"अधिक माहितीसाठी खालील सेवेवर क्लिक करा."
+            title = first.name_mr or first.name
+            resp = (
+                f"तुमच्या गरजेनुसार '{title}' (राज्य: {first.state_code}) ही अधिकृत शासकीय सेवा उपलब्ध आहे. "
+                f"हा अर्ज {first.department_name} अंतर्गत येतो आणि अंदाजे {first.processing_days} दिवसांत पूर्ण होतो. "
+                f"अधिक माहिती व अर्जासाठी खालील सेवेवर क्लिक करा."
+            )
+        elif is_hindi:
+            title = first.name_hi or first.name
+            resp = (
+                f"आपकी आवश्यकता के अनुसार '{title}' (राज्य: {first.state_code}) आधिकारिक सरकारी सेवा उपलब्ध है। "
+                f"यह सेवा {first.department_name} द्वारा संचालित है और लगभग {first.processing_days} दिनों में संसाधित होती है। "
+                f"पात्रता व आवश्यक दस्तावेजों की जांच कर सीधे नीचे से आवेदन करें।"
             )
         else:
-            resp_msg = (
-                f"Based on your query, the most appropriate service is '{first_svc.name}'. "
-                f"This service is administered by the {first_svc.department_name} with an estimated processing time of {first_svc.processing_days} days. "
+            resp = (
+                f"Based on your query, the most suitable official service is '{first.name}' (State: {first.state_code}). "
+                f"It is administered by the {first.department_name} with an estimated turnaround time of {first.processing_days} days. "
                 f"You can review required documents and apply directly below."
             )
     else:
         if is_marathi:
-            resp_msg = (
-                "क्षमस्व, तुमच्या चौकशीशी जुळणारी नेमकी सेवा सापडली नाही. "
-                "कृपया 'उत्पन्नाचा दाखला', 'जन्म नोंदणी दाखला' किंवा 'नवीन नळ जोडणी' यासारख्या मुख्य शब्दांसह शोधून पहा."
+            resp = (
+                "क्षमस्व, तुमच्या शोध निकषांशी जुळणारी नेमकी शासकीय सेवा सापडली नाही. "
+                "कृपया 'उत्पन्नाचा दाखला', 'अधिवास', 'जात प्रमाणपत्र', '७/१२ उतारा', 'जन्म नोंदणी' किंवा 'नळ जोडणी' यासारखे शब्द वापरा."
+            )
+        elif is_hindi:
+            resp = (
+                "क्षमा करें, आपकी खोज से मेल खाती सटीक सेवा नहीं मिल सकी। "
+                "कृपया 'आय प्रमाण पत्र', 'मूल निवास', 'जाति प्रमाण पत्र', 'राशन कार्ड', 'बिजली कनेक्शन' या 'ड्राइविंग लाइसेंस' जैसे शब्दों से खोजें।"
             )
         else:
-            resp_msg = (
-                "I could not locate an exact match for your specific query in the current service catalog. "
-                "Try searching for keywords such as 'Income Certificate', 'Birth Certificate', 'Domicile', or 'Water Connection'."
+            resp = (
+                "I could not find an exact match in the current public catalog. "
+                "Try searching with standard terms like 'Income Certificate', 'Domicile Certificate', 'Caste Certificate', 'Ration Card', or 'Water Connection'."
             )
 
     return AssistantQueryResponse(
-        response=resp_msg,
-        suggested_services=matched_services
+        response=resp,
+        suggested_services=matched_services,
+        engine="local-catalog-intelligence"
     )
+
+@router.post("/chat", response_model=AssistantQueryResponse)
+@router.post("/suggest", response_model=AssistantQueryResponse)
+def query_assistant(data: AssistantQueryRequest, db: Session = Depends(get_db)):
+    query_text = data.query.lower().strip()
+    target_lang = (data.language or "en").lower()
+
+    # Detect script if user typed Devanagari without switching language toggle
+    has_devanagari = any(ord(c) >= 0x0900 and ord(c) <= 0x097F for c in query_text)
+    if has_devanagari and target_lang == "en":
+        if any(w in query_text for w in ["आहे", "हवा", "दाखला", "उतारा", "माझे", "कसा"]):
+            target_lang = "mr"
+        else:
+            target_lang = "hi"
+
+    # Determine Gemini API key (Client payload overrides server .env)
+    effective_api_key = (data.api_key or "").strip() or os.getenv("GEMINI_API_KEY", "").strip()
+
+    # If an API key is available, execute Gemini 2.5 Flash
+    if effective_api_key:
+        try:
+            from google import genai
+            from google.genai import types
+
+            # Query all active services from DB to feed as strict catalog grounding
+            services_query = db.query(Service).filter(Service.is_active == True)
+            if data.state_code:
+                services_query = services_query.filter(Service.state_code == data.state_code.upper())
+            all_services = services_query.all()
+
+            catalog_summary = []
+            for s in all_services:
+                catalog_summary.append({
+                    "id": s.id,
+                    "code": s.code,
+                    "state": s.state_code or "MH",
+                    "name": s.name,
+                    "name_mr": s.name_mr,
+                    "name_hi": s.name_hi,
+                    "department": s.department.name if s.department else "Department",
+                    "fee": s.fee,
+                    "processing_days": s.processing_days,
+                    "description": s.description
+                })
+
+            system_instruction = (
+                "You are the official Smart Citizen Service Assistant for the Maha-Seva Integrator portal "
+                "(Smart India Hackathon 2026, PS-129). Your role is to help citizens find and understand "
+                "official government public services across Indian states (Maharashtra, Karnataka, Gujarat, Delhi, Uttar Pradesh). "
+                "CRITICAL RULES:\n"
+                "1. Ground your answers ONLY on the provided official government services list. Never hallucinate fake services.\n"
+                "2. Respond in the requested language ('en' = English, 'mr' = Marathi, 'hi' = Hindi). Keep tone helpful, official, polite, and precise.\n"
+                "3. In the 'response' field, provide a 2-4 sentence clear explanation covering: the recommended service, responsible state/department, estimated processing time, and government fees.\n"
+                "4. In the 'matched_service_ids' array, return the integer IDs of the services that match the citizen's requirement (order by relevance, max 4).\n"
+                "5. Always return strictly valid JSON matching the requested schema."
+            )
+
+            user_prompt = f"""Citizen Query: "{data.query}"
+Target Language: "{target_lang}" (en=English, mr=Marathi, hi=Hindi)
+Available Official Services Catalog:
+{json.dumps(catalog_summary, ensure_ascii=False)}
+
+Respond strictly in valid JSON format:
+{{
+  "response": "<explanation in {target_lang}>",
+  "matched_service_ids": [<integer ids of matching services>]
+}}"""
+
+            client = genai.Client(api_key=effective_api_key)
+            ai_response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=user_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    response_mime_type="application/json",
+                    temperature=0.2
+                )
+            )
+
+            raw_text = (ai_response.text or "").strip()
+            parsed = json.loads(raw_text)
+
+            matched_ids = parsed.get("matched_service_ids", [])
+            suggested = []
+            if matched_ids:
+                service_map = {s.id: s for s in all_services}
+                for sid in matched_ids:
+                    if sid in service_map:
+                        suggested.append(build_suggested_service(service_map[sid]))
+
+            # If Gemini didn't return any matched IDs, fall back to semantic search for suggestions
+            if not suggested:
+                return run_local_fallback(query_text, target_lang, data.state_code, db)
+
+            return AssistantQueryResponse(
+                response=parsed.get("response", ""),
+                suggested_services=suggested,
+                engine="gemini-2.5-flash"
+            )
+
+        except Exception as e:
+            logger.warning(f"Gemini AI Assistant generation failed or key invalid: {e}. Falling back to local intelligence.")
+            return run_local_fallback(query_text, target_lang, data.state_code, db)
+
+    # If no API key provided, use the zero-crash local catalog intelligence
+    return run_local_fallback(query_text, target_lang, data.state_code, db)

@@ -17,11 +17,17 @@ export const DynamicFormRenderer: React.FC<DynamicFormRendererProps> = ({
 }) => {
   const { i18n } = useTranslation();
   const isMarathi = i18n.language === "mr";
+  const isHindi = i18n.language === "hi";
 
   return (
     <div className="space-y-5">
       {fields.map((field) => {
-        const fieldLabel = (isMarathi && field.label_mr) ? field.label_mr : field.label;
+        let fieldLabel = field.label;
+        if (i18n.language === "mr" && field.label_mr) {
+          fieldLabel = field.label_mr;
+        } else if (i18n.language === "hi" && field.label_hi) {
+          fieldLabel = field.label_hi;
+        }
         const fieldVal = values[field.key] !== undefined ? values[field.key] : "";
         const errorMsg = errors[field.key];
 
@@ -99,7 +105,7 @@ export const DynamicFormRenderer: React.FC<DynamicFormRendererProps> = ({
                     : "border-slate-300 focus:border-blue-500 focus:ring-blue-100"
                 }`}
               >
-                <option value="">-- {isMarathi ? "कृपया निवडा" : "Please Select"} --</option>
+                <option value="">-- {isHindi ? "कृपया चुनें" : isMarathi ? "कृपया निवडा" : "Please Select"} --</option>
                 {field.options?.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}

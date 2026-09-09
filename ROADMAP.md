@@ -1,218 +1,200 @@
-﻿# Maha-Seva Integrator — Implementation Roadmap
+﻿# Maha-Seva Integrator — Development Roadmap & Milestones
 
 **Hackathon:** Smart India Hackathon 2026  
 **Problem Statement:** SIH 2026 — PS-129 (SIH26129)  
 **Organization:** Government of Maharashtra  
 **Project:** Maha-Seva Integrator  
 
-This roadmap governs the milestone-based development lifecycle. Each milestone delivers testable, verifiable capability with zero regressions.
+This roadmap details the sequential milestone execution strategy for building the end-to-end digital government service orchestration platform.
 
 ---
 
 ## Milestone Overview
 
 ```text
-[M0: Inspection & Blueprints] ──► [M1: Backend Foundation] ──► [M2: RBAC & Auth]
-                                                                     │
-[M5: Citizen Apps] ◄── [M4: Dynamic Forms] ◄── [M3: Departments & Services]
-       │
-       ▼
-[M6: Document Management] ──► [M7: Workflow & Tracking] ──► [M8: Integration Adapters]
-                                                                     │
-[M11: Notifications] ◄── [M10: Admin & Analytics] ◄── [M9: Officer Dashboard]
-       │
-       ▼
-[M12: Marathi Localization] ──► [M13: Smart Assistant] ──► [M14: Security Hardening]
-                                                                     │
-[M16: Final Deployment] ◄── [M15: Comprehensive Testing] ◄───────────┘
+[M0] Inspection & Setup ────► [M1] Backend Foundation ────► [M2] Multi-Role RBAC
+                                                                   │
+┌──────────────────────────────────────────────────────────────────┘
+▼
+[M3] Departments & Services ─► [M4] Search & Dynamic Forms ─► [M5] Citizen Submission
+                                                                   │
+┌──────────────────────────────────────────────────────────────────┘
+▼
+[M6] Document Management ────► [M7] Workflow State Machine ─► [M8] Integration Adapters
+                                                                   │
+┌──────────────────────────────────────────────────────────────────┘
+▼
+[M9] Officer Dashboard ──────► [M10] Admin & Analytics ────► [M11] Notifications
+                                                                   │
+┌──────────────────────────────────────────────────────────────────┘
+▼
+[M12] Marathi Localization ──► [M13] Smart Assistant ──────► [M14] Security & Audits
+                                                                   │
+┌──────────────────────────────────────────────────────────────────┘
+▼
+[M15] Automated Testing ─────► [M16] Deployment & SIH Packaging
 ```
 
 ---
 
-## Detailed Milestones
+## Detailed Milestone Breakdown
 
-### MILESTONE 0 — Repository Inspection & Architecture (COMPLETED)
-- **Objective:** Deep audit of existing repository, runtime environment, and PS-129 requirements.
+### Milestone 0: Repository Inspection, Environment & Architecture (COMPLETED)
+- **Objective:** Deep inspection of existing workspace, validation of official SIH PS-129 details, resolution of encoding/setup blockers, and architecture baseline.
 - **Deliverables:**
-  - `PROJECT_STATUS.md`: Environment, existing components, and gap analysis.
-  - `ARCHITECTURE.md`: Full end-to-end system blueprints, diagrams, and schemas.
-  - `ROADMAP.md`: Granular milestone execution plan.
-  - UTF-8 normalization of dependencies and creation of `.env.example`.
-- **Verification:** Backend starts on port 8000; PostgreSQL connects; documentation verified.
+  - `PROJECT_STATUS.md` diagnostic report.
+  - `ARCHITECTURE.md` comprehensive system design.
+  - `ROADMAP.md` milestone progression plan.
+  - Updated `README.md` and `.env.example`.
+  - Resolution of `requirements.txt` UTF-16LE encoding.
+  - Verification of running FastAPI backend (PID 16452) and PostgreSQL 18.
 
 ---
 
-### MILESTONE 1 — Backend Foundation & Database Refactoring
-- **Objective:** Establish the foundational relational data models, migration setup, and clean architecture.
+### Milestone 1: Backend Foundation & Database Refactoring
+- **Objective:** Clean architecture refactoring with unified multi-role database models, migration setup, and system health telemetry.
 - **Tasks:**
-  - Define unified relational models in SQLAlchemy (`User`, `Role`, `Department`, `ServiceCategory`, `Service`, `Workflow`, `Application`, `Document`, `Notification`, `AuditLog`).
-  - Create database migration/seeding scripts under `database/`.
-  - Establish layered architecture packages (`core/`, `routers/`, `services/`, `repositories/`).
-  - Implement health telemetry endpoint returning DB connection latency and system status.
-- **Verification:** Automated tests verify database connectivity and model relationships.
+  - Create layered directory structure (`core/`, `routers/`, `services/`, `repositories/`, `models/`, `schemas/`, `integrations/`).
+  - Implement comprehensive SQLAlchemy ORM models: `User`, `Role`, `Department`, `ServiceCategory`, `Service`, `ServiceForm`, `Application`, `ApplicationEvent`, `Document`, `DocumentVerification`, `Notification`, `AuditLog`.
+  - Configure database seeder and table creation routines.
+  - Standardize error handling and response envelopes (`/api/v1/health`, `/api/v1/system-info`).
 
 ---
 
-### MILESTONE 2 — Authentication, Users & Role-Based Access Control (RBAC)
-- **Objective:** Secure, multi-role authentication and authorization engine.
+### Milestone 2: Authentication, Users & Role-Based Access Control (RBAC)
+- **Objective:** Secure, role-aware authentication for Citizens, Officers, Department Admins, and Super Admins.
 - **Tasks:**
-  - Multi-role support: `CITIZEN`, `OFFICER`, `DEPARTMENT_ADMIN`, `SUPER_ADMIN`.
-  - Department-scoping: Bind officers to specific government departments.
-  - JWT generation and verification with role claims.
-  - FastAPI dependency guards: `@require_roles(...)` and `@require_department(...)`.
-  - Password hashing with Bcrypt (salt + 12 rounds).
-- **Verification:** Unit tests verifying access isolation (e.g. Officer cannot access citizen-only actions; Officer A cannot view Department B applications).
+  - Expand JWT payload with `role` and `department_id`.
+  - Implement role dependency guards (`require_role`, `require_department`).
+  - Create `/api/v1/auth/register`, `/api/v1/auth/login`, and `/api/v1/auth/me`.
+  - Provide seed accounts for each role (`citizen@demo.gov.in`, `officer.revenue@demo.gov.in`, `admin@demo.gov.in`).
 
 ---
 
-### MILESTONE 3 — Departments, Categories & Government Service Catalog
-- **Objective:** Database-backed government service directory for Maharashtra departments.
+### Milestone 3: Departments, Categories & Government Service Catalog
+- **Objective:** Data-driven service catalog representing Maharashtra government services.
 - **Tasks:**
-  - Department entity management (Revenue, Urban Development, Rural Development, etc.).
-  - Service categories (Certificates, Land Records, Social Welfare, Licenses).
-  - Service catalog API with SLAs, fees, required documents, and eligibility rules.
-  - Bilingual service labels (English and Marathi).
-- **Verification:** API returns structured service catalog with department and category filtering.
+  - Seed verified Maharashtra departments (Revenue & Forest, Urban Development, Rural Development, Labour).
+  - Seed core services (Income Certificate, Domicile Certificate, Non-Creamy Layer, Trade License, 7/12 Land Record Extract).
+  - Create CRUD and query endpoints: `GET /api/v1/departments`, `GET /api/v1/services`.
 
 ---
 
-### MILESTONE 4 — Service Search Engine & Dynamic Form Engine
-- **Objective:** Discovery engine and schema-driven dynamic application forms.
+### Milestone 4: Service Discovery, Search & Dynamic Form Engine
+- **Objective:** Search engine and dynamic JSON schema form engine.
 - **Tasks:**
-  - Search engine supporting exact, keyword, category, and fuzzy matching.
-  - JSON-Schema based dynamic form configuration per service (`service_forms`).
-  - Form field types: `TEXT`, `NUMBER`, `DATE`, `DROPDOWN`, `RADIO`, `CHECKBOX`, `ADDRESS`, `PHONE`, `EMAIL`, `FILE`, `TEXTAREA`.
-  - Backend validation of submitted form responses against service schema.
-- **Verification:** Test submitting valid and invalid form responses against defined schemas.
+  - Implement search with keyword, category, department, and fuzzy matching.
+  - Define dynamic form schemas for each service in database (field types, validation rules, required documents).
+  - Expose `GET /api/v1/services/{id}/form-schema`.
 
 ---
 
-### MILESTONE 5 — Citizen Portal & Application Lifecycle
-- **Objective:** Public-facing citizen portal (React/Vite) with draft and submission lifecycle.
+### Milestone 5: Citizen Portal & Application Engine
+- **Objective:** Frontend citizen portal scaffold and end-to-end application submission.
 - **Tasks:**
   - Scaffold React 18 + Vite + TypeScript frontend with Tailwind CSS.
-  - Citizen landing page: Hero ("One Platform. Many Government Services."), Popular Services, Search.
-  - Citizen authentication: Login, Registration, Profile.
-  - Application builder: Dynamic form renderer, draft saving, and final submission.
-  - Unique application number generator (e.g. `MH-REV-2026-00102`).
-- **Verification:** Citizen submits application through the portal and receives unique application number.
+  - Build public citizen landing page, service catalog, and service detail views.
+  - Build dynamic form renderer in React rendering fields from API schema.
+  - Implement draft saving and `POST /api/v1/applications` returning unique tracking numbers (`MH-***-2026-*****`).
 
 ---
 
-### MILESTONE 6 — Document Management & Secure Storage
-- **Objective:** Secure upload pipeline, validation, and storage abstraction.
+### Milestone 6: Document Management & Verification Engine
+- **Objective:** Secure file upload pipeline and verification lifecycle.
 - **Tasks:**
-  - Secure storage abstraction (`StorageService` interface with LocalDisk implementation).
-  - Validation: 5MB size limit, MIME whitelist (PDF, JPG, PNG), SHA-256 integrity hash.
-  - Non-guessable storage naming and protected download routes with RBAC verification.
-  - Document verification statuses: `UPLOADED`, `UNDER_REVIEW`, `VERIFIED`, `REJECTED`, `RESUBMISSION_REQUIRED`.
-- **Verification:** Upload sample PDF/images; verify file size and type rejections.
+  - Build multipart file upload endpoint (`POST /api/v1/documents/upload`).
+  - Enforce file type (PDF, JPEG, PNG), size limit (5MB), and SHA-256 hash.
+  - Implement document verification states (`UPLOADED`, `UNDER_REVIEW`, `VERIFIED`, `REJECTED`).
+  - Build frontend document upload and preview widget.
 
 ---
 
-### MILESTONE 7 — Configurable Application Workflow & Real-Time Tracking
-- **Objective:** Configurable state transitions and citizen tracking timeline.
+### Milestone 7: Application Workflow, State Machine & Timeline Tracking
+- **Objective:** Enforceable state machine and citizen tracking timeline.
 - **Tasks:**
-  - Application states: `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `DOCUMENT_VERIFICATION`, `ADDITIONAL_INFORMATION_REQUIRED`, `PROCESSING`, `APPROVED`, `REJECTED`, `COMPLETED`.
-  - Service-configurable workflow state machine.
-  - Public & authenticated status tracking with step-by-step visual timeline.
-  - Near real-time status updates via polling / SSE.
-- **Verification:** Transition an application through each state; verify timeline and audit event persistence.
+  - Implement workflow transition validator (`DRAFT` -> `SUBMITTED` -> `UNDER_REVIEW` -> `DOCUMENT_VERIFICATION` -> `PROCESSING` -> `APPROVED` / `REJECTED` -> `COMPLETED`).
+  - Record each transition in `application_events`.
+  - Build interactive visual tracking timeline on frontend (`/track/{application_number}`).
 
 ---
 
-### MILESTONE 8 — Government Integration Adapter Framework
-- **Objective:** Pluggable integration layer solving SIH PS-129 platform interoperability.
+### Milestone 8: Government Integration Adapter Framework & Mock Adapters
+- **Objective:** Implement PS-129 core interoperability adapter architecture.
 - **Tasks:**
-  - Base adapter interface: `authenticate`, `submit_application`, `get_application_status`, `verify_document`, `cancel_application`.
-  - Normalized data exchange models (`NormalizedApplicationStatus`, `NormalizedDocumentStatus`).
-  - Realistic mock adapters clearly labeled: `MOCK GOVERNMENT INTEGRATION FOR SIH DEMONSTRATION` (Revenue Land Records, Aaple Sarkar, DigiLocker).
-  - Status synchronization orchestrator.
-- **Verification:** End-to-end simulated submission and status sync using mock adapters.
+  - Define `BaseGovernmentAdapter` interface.
+  - Implement `MaharashtraRevenueAdapter`, `UrbanLocalBodyAdapter`, and `MockGovernmentAdapter`.
+  - Label all mock integrations clearly: `MOCK GOVERNMENT INTEGRATION — FOR SIH DEMONSTRATION`.
+  - Simulate external department acknowledgement, document checks, and status callbacks.
 
 ---
 
-### MILESTONE 9 — Government Officer Workbench & Application Queue
-- **Objective:** Dedicated, secure government officer dashboard.
+### Milestone 9: Government Officer Dashboard & Verification Queue
+- **Objective:** Operational workbench for government officers.
 - **Tasks:**
-  - Department-scoped queue with search, filter (status, date, SLA urgency), and sorting.
-  - Application detail workbench: Citizen details, form data, document viewer.
-  - Officer actions: Verify/reject documents, request additional info, add remarks, advance status.
-  - Department workload indicators and daily task counts.
-- **Verification:** Officer verifies documents, enters remarks, advances status, and citizen portal reflects update.
+  - Build Officer Dashboard UI with department metrics (Pending, In Review, Approved, SLA breach).
+  - Build application queue with filters, priority sorting, and search.
+  - Build officer application review screen (Citizen info, form values, document verification modal, remarks).
+  - Allow officers to verify/reject documents and change application statuses with audit logging.
 
 ---
 
-### MILESTONE 10 — Super Admin Dashboard, Analytics & Department Management
-- **Objective:** Administrative portal for platform governance and performance telemetry.
+### Milestone 10: Super Admin & Department Admin Analytics
+- **Objective:** Administrative monitoring, service configuration, and analytics.
 - **Tasks:**
-  - Department and service management (create/edit services and schemas without code changes).
-  - Analytics KPIs: Total applications, pending workload, SLA breach warnings, rejection rates.
-  - Visual charts: Applications by department, status distribution, daily throughput.
-  - Immutable audit trail explorer.
-- **Verification:** Super admin creates a new service; service immediately appears in citizen directory.
+  - Build platform-wide telemetry dashboard (Applications by department, status distribution, average SLA days).
+  - Service configuration interface for admins to edit fees, SLAs, and dynamic form fields.
+  - Integration health monitor checking adapter status.
 
 ---
 
-### MILESTONE 11 — Notification System
-- **Objective:** Multi-channel notification pipeline for citizen transparency.
+### Milestone 11: Notification System
+- **Objective:** Event-driven notification dispatch.
 - **Tasks:**
-  - In-app notification bell and notification history center.
-  - Event listeners on application state changes.
-  - Extensible adapter architecture for SMS and Email.
-  - Unread notification badges and mark-as-read actions.
-- **Verification:** Status change in officer portal immediately produces an in-app notification for the citizen.
+  - Implement notification manager triggered by status changes and document reviews.
+  - Expose `GET /api/v1/notifications` and `PATCH /api/v1/notifications/{id}/read`.
+  - Build in-app notification bell and popover in citizen and officer portals.
 
 ---
 
-### MILESTONE 12 — Marathi / English Multilingual Localization (i18n)
-- **Objective:** Complete native language accessibility for citizens across Maharashtra.
+### Milestone 12: Multilingual Support (English & Marathi)
+- **Objective:** Accessible bilingual interface for Maharashtra citizens.
 - **Tasks:**
-  - `i18next` integration with English (`en.json`) and Marathi (`mr.json`).
-  - Top navigation language switcher toggle.
-  - Localized portal labels, form field hints, status badges, and notifications.
-  - Dynamic service titles and descriptions translated in Marathi.
-- **Verification:** Switch language toggle; verify seamless UI translation across citizen journeys.
+  - Configure `i18next` with `en.json` and `mr.json`.
+  - Translate all navigation, common UI elements, status badges, and service names.
+  - Implement prominent language toggle (English / मराठी) in header.
 
 ---
 
-### MILESTONE 13 — Smart Service Assistant (AI Discovery Layer)
-- **Objective:** Citizen-centric discovery assistant to match natural language queries to verified services.
+### Milestone 13: Smart Service Assistant (AI Discovery Layer)
+- **Objective:** Conversational service discovery for citizens with low digital literacy.
 - **Tasks:**
-  - Rule-based & semantic intent matching against database service catalog.
-  - Grounded in verified service database (never hallucinates requirements or fees).
-  - Suggested services with direct "Apply Now" links.
-  - Pluggable AI backend (local mock / Gemini API adapter).
-- **Verification:** Query "I want to apply for income proof" -> Assistant returns Revenue Income Certificate service.
+  - Implement intent understanding and semantic search matching citizen plain-language queries to official services.
+  - Use verified database catalog as ground truth; explicitly guard against hallucinating government rules.
+  - Provide interactive chat widget on citizen portal.
 
 ---
 
-### MILESTONE 14 — Security Hardening, Audit Logs & Rate Limiting
-- **Objective:** Production-grade security compliance.
+### Milestone 14: Security Hardening & Audit System
+- **Objective:** Enterprise compliance and security verification.
 - **Tasks:**
-  - Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options).
-  - Slowapi / rate-limiting on auth and search endpoints.
-  - Input sanitization against XSS and injection.
-  - Role-based authorization test matrix.
-- **Verification:** Run security audit; verify blocked unauthorized calls and invalid inputs.
+  - Implement immutable audit logger capturing actor, role, IP, entity ID, and diffs.
+  - Audit log viewer for Super Admins.
+  - Enforce strict security headers, CORS origin verification, and rate limiting.
 
 ---
 
-### MILESTONE 15 — Automated Testing Suite & Verification
-- **Objective:** Regression prevention and high test coverage.
+### Milestone 15: Automated Testing & Verification
+- **Objective:** High test coverage and stability.
 - **Tasks:**
-  - Unit tests for password hashing, token validation, and schema validation.
-  - API integration tests for auth, service catalog, application submission, and officer actions.
-  - End-to-end workflow tests simulating Citizen -> Officer -> Status Update -> Notification.
-- **Verification:** `pytest` runs and passes 100% of test cases cleanly.
+  - Write backend unit tests with `pytest` for auth, RBAC, workflows, and dynamic forms.
+  - Write API integration tests for complete citizen submission and officer approval flows.
+  - Frontend build and lint verification.
 
 ---
 
-### MILESTONE 16 — Demonstration Guide, Docker & Final Handover
-- **Objective:** Polish and packaging for winning Smart India Hackathon 2026 presentation.
+### Milestone 16: Packaging, Demonstration Guide & Presentation Readiness
+- **Objective:** Final packaging for SIH 2026 jury demonstration.
 - **Tasks:**
-  - `DEMO_GUIDE.md`: Step-by-step presentation script for jury demonstration.
-  - Seed script populating demo personas (Citizen, Revenue Officer, Super Admin) and sample applications.
-  - Production-ready README with architectural diagrams, screenshots, and run commands.
-  - Optional `docker-compose.yml` for containerized deployment.
-- **Verification:** Clean run from scratch using demo accounts matches presentation script flawlessly.
+  - Create `DEMO_GUIDE.md` with step-by-step presentation script.
+  - Create `API.md` documenting REST endpoints.
+  - Ensure local end-to-end execution without external internet/credentials required.

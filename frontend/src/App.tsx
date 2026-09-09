@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const [currentTab, setCurrentTab] = useState<string>("home");
   const [tabParam, setTabParam] = useState<any>(null);
+  const [selectedState, setSelectedState] = useState<string>("ALL");
 
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [assistantOpen, setAssistantOpen] = useState(false);
@@ -60,6 +61,8 @@ export const App: React.FC = () => {
         currentTab={currentTab}
         onNavigate={handleNavigate}
         onOpenAssistant={() => setAssistantOpen(true)}
+        selectedState={selectedState}
+        onSelectState={setSelectedState}
       />
 
       <main className="flex-1">
@@ -69,13 +72,17 @@ export const App: React.FC = () => {
             onSelectService={handleSelectService}
             onNavigate={handleNavigate}
             onOpenAssistant={() => setAssistantOpen(true)}
+            selectedState={selectedState}
+            onSelectState={setSelectedState}
           />
         )}
 
         {currentTab === "services" && (
           <ServiceCatalogPage
             initialSearch={tabParam?.q || ""}
+            initialState={tabParam?.state || selectedState}
             onSelectService={handleSelectService}
+            onStateChange={setSelectedState}
           />
         )}
 
@@ -140,6 +147,7 @@ export const App: React.FC = () => {
         isOpen={assistantOpen}
         onClose={() => setAssistantOpen(false)}
         onSelectService={handleSelectService}
+        selectedState={selectedState}
       />
     </div>
   );

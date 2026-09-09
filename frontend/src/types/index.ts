@@ -13,8 +13,10 @@ export interface User {
 export interface Department {
   id: number;
   code: string;
+  state_code?: string;
   name: string;
   name_mr?: string;
+  name_hi?: string;
   description?: string;
   contact_email?: string;
   contact_phone?: string;
@@ -26,6 +28,7 @@ export interface ServiceCategory {
   code: string;
   name: string;
   name_mr?: string;
+  name_hi?: string;
   description?: string;
   icon?: string;
 }
@@ -40,6 +43,7 @@ export interface FormField {
   key: string;
   label: string;
   label_mr?: string;
+  label_hi?: string;
   type: "TEXT" | "NUMBER" | "DATE" | "DROPDOWN" | "RADIO" | "CHECKBOX" | "ADDRESS" | "PHONE" | "EMAIL" | "TEXTAREA";
   required: boolean;
   placeholder?: string;
@@ -49,13 +53,16 @@ export interface FormField {
 export interface ServiceItem {
   id: number;
   code: string;
+  state_code?: string;
   name: string;
   name_mr?: string;
+  name_hi?: string;
   department_id: number;
   department_name?: string;
   category_id: number;
   category_name?: string;
   description?: string;
+  description_hi?: string;
   eligibility?: string;
   documents_required?: DocumentRequirement[];
   fee: number;
@@ -164,6 +171,8 @@ export interface SuggestedService {
   id: number;
   name: string;
   name_mr?: string;
+  name_hi?: string;
+  state_code?: string;
   department_name: string;
   description?: string;
   fee: number;

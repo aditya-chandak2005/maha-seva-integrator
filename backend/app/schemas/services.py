@@ -1,4 +1,4 @@
-﻿from typing import Optional, List, Any, Dict
+from typing import Optional, List, Any, Dict
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -7,6 +7,7 @@ class ServiceCategoryResponse(BaseModel):
     code: str
     name: str
     name_mr: Optional[str] = None
+    name_hi: Optional[str] = None
     description: Optional[str] = None
     icon: Optional[str] = None
 
@@ -16,13 +17,16 @@ class ServiceCategoryResponse(BaseModel):
 class ServiceListItem(BaseModel):
     id: int
     code: str
+    state_code: Optional[str] = "MH"
     name: str
     name_mr: Optional[str] = None
+    name_hi: Optional[str] = None
     department_id: int
     department_name: Optional[str] = None
     category_id: int
     category_name: Optional[str] = None
     description: Optional[str] = None
+    description_hi: Optional[str] = None
     fee: float
     processing_days: int
     integration_type: str
@@ -34,13 +38,16 @@ class ServiceListItem(BaseModel):
 class ServiceDetailResponse(BaseModel):
     id: int
     code: str
+    state_code: Optional[str] = "MH"
     name: str
     name_mr: Optional[str] = None
+    name_hi: Optional[str] = None
     department_id: int
     department_name: Optional[str] = None
     category_id: int
     category_name: Optional[str] = None
     description: Optional[str] = None
+    description_hi: Optional[str] = None
     eligibility: Optional[str] = None
     documents_required: Optional[List[Dict[str, Any]]] = None
     fee: float

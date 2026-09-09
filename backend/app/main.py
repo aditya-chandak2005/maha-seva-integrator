@@ -1,4 +1,4 @@
-﻿import time
+import time
 from datetime import datetime, timezone
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -94,6 +94,7 @@ def root():
     }
 
 @app.get("/health")
+@app.get("/api/v1/health")
 def health_check():
     db_status = "unknown"
     db_latency_ms = None

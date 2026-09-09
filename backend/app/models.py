@@ -1,4 +1,4 @@
-﻿from sqlalchemy import Column, Integer, String, Text, Boolean, Float, DateTime, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, Text, Boolean, Float, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -16,8 +16,10 @@ class Department(Base):
     __tablename__ = "departments"
 
     id = Column(Integer, primary_key=True, index=True)
+    state_code = Column(String(10), default="MH", index=True)
     name = Column(String(150), nullable=False)
     name_mr = Column(String(150), nullable=True)
+    name_hi = Column(String(150), nullable=True)
     code = Column(String(20), unique=True, nullable=False)
     description = Column(Text, nullable=True)
     contact_email = Column(String(100), nullable=True)
@@ -35,6 +37,7 @@ class ServiceCategory(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     name_mr = Column(String(100), nullable=True)
+    name_hi = Column(String(100), nullable=True)
     code = Column(String(30), unique=True, nullable=False)
     description = Column(Text, nullable=True)
     icon = Column(String(50), nullable=True)
@@ -46,12 +49,15 @@ class Service(Base):
     __tablename__ = "services"
 
     id = Column(Integer, primary_key=True, index=True)
+    state_code = Column(String(10), default="MH", index=True)
     department_id = Column(Integer, ForeignKey("departments.id"), nullable=False)
     category_id = Column(Integer, ForeignKey("service_categories.id"), nullable=False)
     name = Column(String(200), nullable=False)
     name_mr = Column(String(200), nullable=True)
+    name_hi = Column(String(200), nullable=True)
     code = Column(String(50), unique=True, nullable=False)
     description = Column(Text, nullable=True)
+    description_hi = Column(Text, nullable=True)
     eligibility = Column(Text, nullable=True)
     documents_required = Column(JSON, nullable=True)
     fee = Column(Float, default=0.0)

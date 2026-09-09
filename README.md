@@ -1,4 +1,4 @@
-﻿# Maha-Seva Integrator (महा-सेवा इंटिग्रेटर)
+# Maha-Seva Integrator (महा-सेवा इंटिग्रेटर)
 
 > **A Unified Digital Government Service Orchestration Platform**  
 > Aligned with **Smart India Hackathon 2026** — Problem Statement **SIH26129 (PS-129)**  
@@ -17,14 +17,15 @@ In public service delivery across Maharashtra, citizens often encounter fragment
 
 ## 🌟 Key Platform Capabilities
 
-- **Unified Citizen Gateway:** A single entry point for discovering, applying for, and tracking government services across multiple departments.
+- **Multi-State Platform Federation:** Multi-jurisdictional architecture supporting 5 Indian states—Maharashtra (`MH`), Karnataka (`KA`), Gujarat (`GJ`), Delhi NCT (`DL`), and Uttar Pradesh (`UP`)—with state-scoped departments, services, and application references (`{STATE}-{DEPT}-{YEAR}-{RANDOM}`).
+- **Trilingual Platform Localization (i18n):** Complete trilingual interface across English, Marathi (`मराठी`), and Hindi (`हिन्दी`), including dynamic form field labels and status timelines.
+- **Smart Service Assistant (Gemini 2.5 Flash + Local Fallback):** AI-powered citizen guidance engine built with the official `google-genai` SDK (`gemini-2.5-flash`), supporting custom API key input with automatic zero-crash fallback to multi-state local catalog semantic matching.
+- **Unified Citizen Gateway:** A single entry point for discovering, applying for, and tracking 14+ public services across 11 departments.
 - **Dynamic Form Engine:** Schema-driven dynamic forms that adapt fields, validation rules, and document requirements based on database configuration—no frontend recoding required for new services.
 - **Integration Adapter Framework:** Decouples core platform logic from external government departments via standardized adapters (`RevenueAdapter`, `MunicipalAdapter`, and verified `MockGovernmentAdapter` for SIH demonstration).
 - **Secure Document Pipeline:** Enforces file type, size (5MB), and SHA-256 integrity validation with controlled, role-scoped access.
 - **Government Officer Workbench:** Dedicated departmental queue enabling officers to inspect applications, verify/reject documents, input remarks, and transition application states.
 - **Real-Time Tracking & Notifications:** Transparent, step-by-step visual status timeline with instant in-app alerts on status transitions.
-- **Multilingual Support (i18n):** Complete localization in English and Marathi (`मराठी`).
-- **Smart Service Assistant:** Semantic service discovery layer guiding citizens to the correct service without hallucinating official facts.
 - **Immutable Audit Logging:** Append-only security and operational audit trail tracking every status alteration, document action, and administrative operation.
 
 ---
@@ -34,8 +35,8 @@ In public service delivery across Maharashtra, citizens often encounter fragment
 ```mermaid
 flowchart LR
     subgraph Citizens["Citizens"]
-        Portal["Citizen Web Portal<br/>(English / मराठी)"]
-        Assistant["Smart Service Assistant<br/>(AI Discovery)"]
+        Portal["Citizen Web Portal<br/>(English / मराठी / हिन्दी)"]
+        Assistant["Smart Service Assistant<br/>(Gemini 2.5 Flash / Local)"]
     end
 
     subgraph CorePlatform["Maha-Seva Integrator Platform Core"]

@@ -1,4 +1,4 @@
-﻿import random
+import random
 from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -20,10 +20,11 @@ from app.integrations.orchestrator import orchestrator
 
 router = APIRouter(prefix="/applications", tags=["Applications"])
 
-def generate_application_number(dept_code: str) -> str:
+def generate_application_number(dept_code: str, state_code: str = "MH") -> str:
     year = datetime.now().year
     random_digits = random.randint(10000, 99999)
-    return f"MH-{dept_code}-{year}-{random_digits}"
+    prefix = (state_code or "MH").upper()
+    return f"{prefix}-{dept_code}-{year}-{random_digits}"
 
 @router.post("", response_model=ApplicationDetailResponse)
 def submit_application(
@@ -40,8 +41,9 @@ def submit_application(
 
     dept = db.query(Department).filter(Department.id == service.department_id).first()
     dept_code = dept.code if dept else "GEN"
+    state_code = service.state_code or (dept.state_code if dept else "MH")
 
-    app_number = generate_application_number(dept_code)
+    app_number = generate_application_number(dept_code, state_code)
 
     # Invoke Integration Adapter to simulate external department registration
     adapter = orchestrator.get_adapter(service.integration_type)
