@@ -19,9 +19,19 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == data.email).first()
     if existing_user:
+        if data.email in [
+            "admin.mh@mahaseva.gov.in", "admin.ka@mahaseva.gov.in", "admin.dl@mahaseva.gov.in",
+            "admin.up@mahaseva.gov.in", "admin.central@mahaseva.gov.in", "admin@mahaseva.gov.in",
+            "officer.revenue@mahaseva.gov.in", "officer.municipal@mahaseva.gov.in",
+            "officer.bescom@mahaseva.gov.in", "officer.delhi@mahaseva.gov.in", "officer.cbse@mahaseva.gov.in"
+        ]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"An account with email '{data.email}' already exists. This is a pre-configured official account — please click 'Sign in to Portal' to login directly with password 'Admin@2026' or 'Officer@2026', or use your personalized name (e.g. yourname.{data.state_code.lower() if data.state_code else 'mh'}@mahaseva.gov.in) to register a new administrator."
+            )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="An account with this email already exists."
+            detail=f"An account with email '{data.email}' already exists. Please choose a unique email or sign in directly."
         )
 
     if data.phone:

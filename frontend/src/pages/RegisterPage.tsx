@@ -19,6 +19,21 @@ import {
 } from "lucide-react";
 import { ALL_INDIA_STATES_AND_UTS, CENTRAL_OPTION } from "../constants/states";
 
+const PRE_CONFIGURED_ACCOUNTS: Record<string, { role: string; name: string; passwordHint: string }> = {
+  "admin@mahaseva.gov.in": { role: "National Chief Administrator", name: "National Admin", passwordHint: "Admin@2026" },
+  "admin.mh@mahaseva.gov.in": { role: "Maharashtra State Admin", name: "Rajesh Kadam", passwordHint: "Admin@2026" },
+  "admin.ka@mahaseva.gov.in": { role: "Karnataka State Admin", name: "Suresh Gowda", passwordHint: "Admin@2026" },
+  "admin.dl@mahaseva.gov.in": { role: "Delhi NCT State Admin", name: "Meenakshi Verma", passwordHint: "Admin@2026" },
+  "admin.up@mahaseva.gov.in": { role: "UP State Admin", name: "Akhilesh Tiwari", passwordHint: "Admin@2026" },
+  "admin.central@mahaseva.gov.in": { role: "Central Government Admin", name: "Dr. Arvind Saxena", passwordHint: "Admin@2026" },
+  "officer.revenue@mahaseva.gov.in": { role: "Revenue Department Officer", name: "Suresh Deshmukh", passwordHint: "Officer@2026" },
+  "officer.municipal@mahaseva.gov.in": { role: "Municipal Administration Officer", name: "Sunita Patil", passwordHint: "Officer@2026" },
+  "officer.bescom@mahaseva.gov.in": { role: "BESCOM Engineer", name: "R. Chandrasekhar", passwordHint: "Officer@2026" },
+  "officer.delhi@mahaseva.gov.in": { role: "Delhi Civil Supplies Officer", name: "Harish Mehra", passwordHint: "Officer@2026" },
+  "officer.cbse@mahaseva.gov.in": { role: "CBSE Regional Officer", name: "Rameshwar Prasad", passwordHint: "Officer@2026" },
+  "citizen@mahaseva.gov.in": { role: "Citizen Account", name: "Aarav Sharma", passwordHint: "Citizen@2026" },
+};
+
 interface RegisterPageProps {
   onSuccess: () => void;
   onNavigateLogin: (prefillEmail?: string, notice?: string) => void;
@@ -79,19 +94,48 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     ? selectedDept.code.toLowerCase().replace(/^(goi_|mh_|ka_|dl_|up_|gj_|ap_|tn_)/, "")
     : "dept";
 
-  // Compute suggested email formats based on role
-  const getSuggestedEmail = () => {
-    const rawName = fullName.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
-    const prefix = rawName || (role === "SUPER_ADMIN" ? "admin" : role === "OFFICER" ? "officer" : "citizen");
+  // Compute suggested email formats based on role and user name
+  const getSuggestedEmail = (customName?: string) => {
+    const targetName = customName !== undefined ? customName : fullName;
+    const rawName = targetName.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
     
     if (role === "SUPER_ADMIN") {
       const stateInitials = stateCode.toLowerCase();
-      return `${prefix}.${stateInitials}@mahaseva.gov.in`;
+      // If full name is entered, use personalized official format
+      if (rawName) {
+        return `${rawName}.${stateInitials}@mahaseva.gov.in`;
+      }
+      // If empty, suggest a unique pattern to avoid colliding with pre-seeded accounts
+      return `admin.${stateInitials}.new@mahaseva.gov.in`;
     }
     if (role === "OFFICER") {
-      return `${prefix}.${cleanDeptTag}@mahaseva.gov.in`;
+      if (rawName) {
+        return `${rawName}.${cleanDeptTag}@mahaseva.gov.in`;
+      }
+      return `officer.${cleanDeptTag}.new@mahaseva.gov.in`;
     }
-    return email || (rawName ? `${rawName}@example.com` : "");
+    return email || (rawName ? `${rawName}@gmail.com` : "");
+  };
+
+  const handleFullNameChange = (val: string) => {
+    setFullName(val);
+    const rawName = val.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
+    
+    // Auto-update email if empty or if it was auto-generated
+    const isAutoOrPre = 
+      !email || 
+      email.startsWith("admin.") || 
+      email.startsWith("officer.") || 
+      Object.keys(PRE_CONFIGURED_ACCOUNTS).includes(email.toLowerCase().trim());
+
+    if (isAutoOrPre && rawName && role !== "CITIZEN") {
+      if (role === "SUPER_ADMIN") {
+        const stateInitials = stateCode.toLowerCase();
+        setEmail(`${rawName}.${stateInitials}@mahaseva.gov.in`);
+      } else if (role === "OFFICER") {
+        setEmail(`${rawName}.${cleanDeptTag}@mahaseva.gov.in`);
+      }
+    }
   };
 
   // Check email validity per role
@@ -130,9 +174,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     const rawName = fullName.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
     if (newRole === "SUPER_ADMIN") {
       const stateInitials = stateCode.toLowerCase();
-      setEmail(`${rawName || "admin"}.${stateInitials}@mahaseva.gov.in`);
+      setEmail(rawName ? `${rawName}.${stateInitials}@mahaseva.gov.in` : "");
     } else if (newRole === "OFFICER") {
-      setEmail(`${rawName || "officer"}.${cleanDeptTag}@mahaseva.gov.in`);
+      setEmail(rawName ? `${rawName}.${cleanDeptTag}@mahaseva.gov.in` : "");
     } else {
       if (email.endsWith("@mahaseva.gov.in")) {
         setEmail(rawName ? `${rawName}@gmail.com` : "");
@@ -144,7 +188,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     setStateCode(newState);
     if (role === "SUPER_ADMIN") {
       const rawName = fullName.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
-      setEmail(`${rawName || "admin"}.${newState.toLowerCase()}@mahaseva.gov.in`);
+      if (rawName) {
+        setEmail(`${rawName}.${newState.toLowerCase()}@mahaseva.gov.in`);
+      }
     }
   };
 
@@ -154,7 +200,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     if (dept && role === "OFFICER") {
       const tag = dept.code.toLowerCase().replace(/^(goi_|mh_|ka_|dl_|up_|gj_|ap_|tn_)/, "");
       const rawName = fullName.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
-      setEmail(`${rawName || "officer"}.${tag}@mahaseva.gov.in`);
+      if (rawName) {
+        setEmail(`${rawName}.${tag}@mahaseva.gov.in`);
+      }
     }
   };
 
@@ -365,7 +413,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               type="text"
               required
               value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              onChange={(e) => handleFullNameChange(e.target.value)}
               placeholder={role === "CITIZEN" ? "e.g. Rameshwar Patil" : role === "OFFICER" ? "e.g. Suresh Deshmukh" : "e.g. Dr. Rajesh Kadam"}
               className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
@@ -510,6 +558,30 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               ) : (
                 <span className="text-amber-600 font-medium">Include .{stateCode.toLowerCase()}@...</span>
               )}
+            </div>
+          )}
+
+          {/* Pre-configured Account Warning Banner */}
+          {PRE_CONFIGURED_ACCOUNTS[email.toLowerCase().trim()] && (
+            <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-2xl text-amber-900 text-xs flex items-start space-x-2.5 animate-fadeIn mt-2">
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1.5">
+                <div>
+                  <strong>Pre-Configured Official Account:</strong> The email <code className="font-mono font-bold bg-amber-100 text-amber-950 px-1 py-0.5 rounded">{email}</code> is already registered in the system for <em>{PRE_CONFIGURED_ACCOUNTS[email.toLowerCase().trim()].name}</em>.
+                </div>
+                <div>
+                  👉 <button
+                    type="button"
+                    onClick={() => onNavigateLogin && onNavigateLogin(email)}
+                    className="text-blue-700 underline font-bold hover:text-blue-900 cursor-pointer"
+                  >
+                    Click here to Sign In directly (Default Password: {PRE_CONFIGURED_ACCOUNTS[email.toLowerCase().trim()].passwordHint})
+                  </button>
+                </div>
+                <div className="text-[11px] text-amber-800 leading-relaxed">
+                  To register a <strong>new</strong> account, please use your own name in the email (e.g. <code>{fullName ? fullName.toLowerCase().trim().replace(/[^a-z0-9]/g, '.') : 'yourname'}.{stateCode.toLowerCase()}@mahaseva.gov.in</code>).
+                </div>
+              </div>
             </div>
           )}
         </div>
