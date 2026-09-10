@@ -14,7 +14,9 @@ import {
   Shield,
   Briefcase,
   UserCheck,
-  User
+  User,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 interface LoginPageProps {
@@ -33,6 +35,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const { login } = useAuth();
   const [username, setUsername] = useState(initialEmail);
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(registrationNotice || null);
@@ -189,19 +192,56 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
         {/* Password */}
         <div className="space-y-1">
-          <label className="text-xs font-bold text-slate-700 block">
-            Secure Password
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-700 block">
+              Secure Password
+            </label>
+            {username.toLowerCase().includes("admin") && (
+              <button
+                type="button"
+                onClick={() => setPassword("Admin@2026")}
+                className="text-[10px] text-purple-700 hover:text-purple-900 font-bold hover:underline cursor-pointer"
+              >
+                Autofill Password (Admin@2026)
+              </button>
+            )}
+            {username.toLowerCase().includes("officer") && (
+              <button
+                type="button"
+                onClick={() => setPassword("Officer@2026")}
+                className="text-[10px] text-indigo-700 hover:text-indigo-900 font-bold hover:underline cursor-pointer"
+              >
+                Autofill Password (Officer@2026)
+              </button>
+            )}
+            {username.toLowerCase().includes("citizen") && (
+              <button
+                type="button"
+                onClick={() => setPassword("Citizen@2026")}
+                className="text-[10px] text-blue-700 hover:text-blue-900 font-bold hover:underline cursor-pointer"
+              >
+                Autofill Password (Citizen@2026)
+              </button>
+            )}
+          </div>
           <div className="relative flex items-center">
             <Lock className="w-4 h-4 text-slate-400 absolute left-3.5" />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
+              title={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
         </div>
 
