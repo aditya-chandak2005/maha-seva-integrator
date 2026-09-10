@@ -73,11 +73,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-22 flex items-center justify-between">
+      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 h-20 sm:h-22 flex items-center justify-between gap-6">
         {/* Brand Logo */}
         <div
           onClick={() => onNavigate("home")}
-          className="flex items-center space-x-3 cursor-pointer group"
+          className="flex items-center space-x-3 cursor-pointer group shrink-0"
         >
           <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-800 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition">
             <Building2 className="w-6 h-6 sm:w-7 sm:h-7" />
@@ -98,7 +98,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 text-sm font-medium text-slate-700">
+        <nav className="hidden md:flex items-center space-x-2 lg:space-x-3 text-sm font-semibold text-slate-700">
           <button
             onClick={() => onNavigate("home")}
             className={`px-3 py-2 rounded-lg transition ${
@@ -176,9 +176,9 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
+        <div className="flex items-center space-x-2.5 sm:space-x-3.5 shrink-0">
           {/* Language Dropdown Selector */}
-          <div className="flex items-center space-x-1.5 bg-slate-100/90 hover:bg-slate-200/80 px-2.5 sm:px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 transition focus-within:ring-2 focus-within:ring-blue-500 shadow-2xs">
+          <div className="flex items-center space-x-2 bg-blue-50/70 hover:bg-blue-50 px-3 py-2 rounded-xl border border-blue-200 hover:border-blue-400 text-xs font-semibold text-slate-800 transition focus-within:ring-2 focus-within:ring-blue-500 shadow-2xs">
             <Globe className="w-4 h-4 text-blue-600 shrink-0" />
             <select
               aria-label="Select Language"
@@ -195,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Smart Assistant Trigger */}
           <button
             onClick={onOpenAssistant}
-            className="hidden sm:flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold shadow-sm hover:opacity-95 transition"
+            className="hidden sm:flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold shadow-xs hover:shadow transition"
           >
             <span>✨</span>
             <span>{i18n.language === "mr" ? "स्मार्ट मदतनीस" : i18n.language === "hi" ? "स्मार्ट सहायक" : "AI Assistant"}</span>
@@ -305,16 +305,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
           ) : (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 sm:space-x-2.5">
               <button
                 onClick={() => onNavigate("login")}
-                className="px-3.5 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+                className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-100 transition shadow-2xs"
               >
                 {t("nav.login")}
               </button>
               <button
                 onClick={() => onNavigate("register")}
-                className="px-3.5 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold shadow-sm transition"
+                className="px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold shadow-xs hover:shadow transition"
               >
                 {t("nav.register")}
               </button>
