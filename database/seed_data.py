@@ -898,151 +898,54 @@ def seed():
 
         # Seed Demonstration Users (Diverse Citizens, Officers & State Super Admins)
         demo_users = [
-            # Citizens
-            {
-                "email": "citizen@mahaseva.gov.in",
-                "phone": "9876543210",
-                "full_name": "Aarav Sharma",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "MH",
-                "department_id": None
-            },
-            {
-                "email": "rahul.deshmukh@mahaseva.gov.in",
-                "phone": "9876543220",
-                "full_name": "Rahul Deshmukh",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "MH",
-                "department_id": None
-            },
-            {
-                "email": "priya.patil@mahaseva.gov.in",
-                "phone": "9876543221",
-                "full_name": "Priya Patil",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "MH",
-                "department_id": None
-            },
-            {
-                "email": "aditya.kulkarni@mahaseva.gov.in",
-                "phone": "9876543222",
-                "full_name": "Aditya Kulkarni",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "MH",
-                "department_id": None
-            },
-            {
-                "email": "sunita.jadhav@mahaseva.gov.in",
-                "phone": "9876543223",
-                "full_name": "Sunita Jadhav",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "MH",
-                "department_id": None
-            },
-            {
-                "email": "k.venkatesh@mahaseva.gov.in",
-                "phone": "9876543224",
-                "full_name": "K. Venkatesh",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "KA",
-                "department_id": None
-            },
-            {
-                "email": "lakshmi.rao@mahaseva.gov.in",
-                "phone": "9876543225",
-                "full_name": "Lakshmi Rao",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "KA",
-                "department_id": None
-            },
-            {
-                "email": "gurpreet.singh@mahaseva.gov.in",
-                "phone": "9876543226",
-                "full_name": "Gurpreet Singh",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "DL",
-                "department_id": None
-            },
-            {
-                "email": "neha.sharma@mahaseva.gov.in",
-                "phone": "9876543227",
-                "full_name": "Neha Sharma",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "DL",
-                "department_id": None
-            },
-            {
-                "email": "amit.kumar@mahaseva.gov.in",
-                "phone": "9876543228",
-                "full_name": "Amit Kumar",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "UP",
-                "department_id": None
-            },
-            {
-                "email": "pooja.verma@mahaseva.gov.in",
-                "phone": "9876543229",
-                "full_name": "Pooja Verma",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "UP",
-                "department_id": None
-            },
-            {
-                "email": "ananya.chatterjee@mahaseva.gov.in",
-                "phone": "9876543230",
-                "full_name": "Ananya Chatterjee",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "CENTRAL",
-                "department_id": None
-            },
-            {
-                "email": "vikram.joshi@mahaseva.gov.in",
-                "phone": "9876543231",
-                "full_name": "Vikram Joshi",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "CENTRAL",
-                "department_id": None
-            },
-            {
-                "email": "suresh.meena@mahaseva.gov.in",
-                "phone": "9876543232",
-                "full_name": "Suresh Meena",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "RJ",
-                "department_id": None
-            },
-            {
-                "email": "mohammed.altaf@mahaseva.gov.in",
-                "phone": "9876543233",
-                "full_name": "Mohammed Altaf",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "JK",
-                "department_id": None
-            },
-            {
-                "email": "meenakshi.sundaram@mahaseva.gov.in",
-                "phone": "9876543234",
-                "full_name": "Meenakshi Sundaram",
-                "password_hash": get_password_hash("Citizen@2026"),
-                "role": RoleEnum.CITIZEN,
-                "state_code": "TN",
-                "department_id": None
-            },
+            # Citizens (Diverse across States & UTs)
+            {"email": "citizen@mahaseva.gov.in", "phone": "9876543210", "full_name": "Aarav Sharma", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "rahul.deshmukh@mahaseva.gov.in", "phone": "9820010001", "full_name": "Rahul Deshmukh", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "priya.patil@mahaseva.gov.in", "phone": "9820010002", "full_name": "Priya Patil", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "aditya.kulkarni@mahaseva.gov.in", "phone": "9820010003", "full_name": "Aditya Kulkarni", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "sunita.jadhav@mahaseva.gov.in", "phone": "9820010004", "full_name": "Sunita Jadhav", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "kavita.rane@mahaseva.gov.in", "phone": "9820010005", "full_name": "Kavita Rane", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "sachin.tendulkar@mahaseva.gov.in", "phone": "9820010006", "full_name": "Sachin Tendulkar", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "rajesh.shinde@mahaseva.gov.in", "phone": "9820010007", "full_name": "Rajesh Shinde", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "dipali.more@mahaseva.gov.in", "phone": "9820010008", "full_name": "Dipali More", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "sandeep.gaikwad@mahaseva.gov.in", "phone": "9820010009", "full_name": "Sandeep Gaikwad", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "nilesh.pawar@mahaseva.gov.in", "phone": "9820010010", "full_name": "Nilesh Pawar", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "pooja.bhosale@mahaseva.gov.in", "phone": "9820010011", "full_name": "Pooja Bhosale", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "ganesh.kale@mahaseva.gov.in", "phone": "9820010012", "full_name": "Ganesh Kale", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "anita.joshi@mahaseva.gov.in", "phone": "9820010013", "full_name": "Anita Joshi", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "pramod.wagh@mahaseva.gov.in", "phone": "9820010014", "full_name": "Pramod Wagh", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "manisha.salunke@mahaseva.gov.in", "phone": "9820010015", "full_name": "Manisha Salunke", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "vinod.kamble@mahaseva.gov.in", "phone": "9820010016", "full_name": "Vinod Kamble", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "meera.chavan@mahaseva.gov.in", "phone": "9820010017", "full_name": "Meera Chavan", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "amol.dhumal@mahaseva.gov.in", "phone": "9820010018", "full_name": "Amol Dhumal", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {"email": "sneha.bagal@mahaseva.gov.in", "phone": "9820010019", "full_name": "Sneha Bagal", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            # Karnataka
+            {"email": "k.venkatesh@mahaseva.gov.in", "phone": "9830010001", "full_name": "K. Venkatesh", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "KA", "department_id": None},
+            {"email": "lakshmi.rao@mahaseva.gov.in", "phone": "9830010002", "full_name": "Lakshmi Rao", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "KA", "department_id": None},
+            {"email": "basavaraj.gowda@mahaseva.gov.in", "phone": "9830010003", "full_name": "Basavaraj Gowda", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "KA", "department_id": None},
+            {"email": "deepa.hegde@mahaseva.gov.in", "phone": "9830010004", "full_name": "Deepa Hegde", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "KA", "department_id": None},
+            {"email": "praveen.kumar.ka@mahaseva.gov.in", "phone": "9830010005", "full_name": "Praveen Kumar", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "KA", "department_id": None},
+            # Delhi
+            {"email": "gurpreet.singh@mahaseva.gov.in", "phone": "9840010001", "full_name": "Gurpreet Singh", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "DL", "department_id": None},
+            {"email": "neha.sharma@mahaseva.gov.in", "phone": "9840010002", "full_name": "Neha Sharma", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "DL", "department_id": None},
+            {"email": "rajesh.khanna@mahaseva.gov.in", "phone": "9840010003", "full_name": "Rajesh Khanna", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "DL", "department_id": None},
+            {"email": "manpreet.kaur@mahaseva.gov.in", "phone": "9840010004", "full_name": "Manpreet Kaur", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "DL", "department_id": None},
+            # Uttar Pradesh
+            {"email": "amit.kumar@mahaseva.gov.in", "phone": "9850010001", "full_name": "Amit Kumar", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "UP", "department_id": None},
+            {"email": "pooja.verma@mahaseva.gov.in", "phone": "9850010002", "full_name": "Pooja Verma", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "UP", "department_id": None},
+            {"email": "akhilesh.yadav@mahaseva.gov.in", "phone": "9850010003", "full_name": "Akhilesh Yadav", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "UP", "department_id": None},
+            {"email": "shreya.shukla@mahaseva.gov.in", "phone": "9850010004", "full_name": "Shreya Shukla", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "UP", "department_id": None},
+            # Central & Education
+            {"email": "ananya.chatterjee@mahaseva.gov.in", "phone": "9860010001", "full_name": "Ananya Chatterjee", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "CENTRAL", "department_id": None},
+            {"email": "vikram.joshi@mahaseva.gov.in", "phone": "9860010002", "full_name": "Vikram Joshi", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "CENTRAL", "department_id": None},
+            {"email": "rohan.mehra@mahaseva.gov.in", "phone": "9860010003", "full_name": "Rohan Mehra", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "CENTRAL", "department_id": None},
+            {"email": "sneha.sen@mahaseva.gov.in", "phone": "9860010004", "full_name": "Sneha Sen", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "CENTRAL", "department_id": None},
+            {"email": "arjun.kapoor@mahaseva.gov.in", "phone": "9860010005", "full_name": "Arjun Kapoor", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "CENTRAL", "department_id": None},
+            {"email": "tanvi.sharma@mahaseva.gov.in", "phone": "9860010006", "full_name": "Tanvi Sharma", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "CENTRAL", "department_id": None},
+            # Other States
+            {"email": "suresh.meena@mahaseva.gov.in", "phone": "9870010001", "full_name": "Suresh Meena", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "RJ", "department_id": None},
+            {"email": "mohammed.altaf@mahaseva.gov.in", "phone": "9880010001", "full_name": "Mohammed Altaf", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "JK", "department_id": None},
+            {"email": "meenakshi.sundaram@mahaseva.gov.in", "phone": "9890010001", "full_name": "Meenakshi Sundaram", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "TN", "department_id": None},
 
             # Department Officers
             {
@@ -1341,16 +1244,33 @@ def seed():
                     existing.department_id = svc.department_id
                     existing.status = app["status"]
 
-        # Also diversify any pre-existing duplicate applications so they don't all show the same person
+        # Also diversify all applications to ensure authentic names across jurisdictions
         existing_apps = db.query(Application).all()
         named_citizens = [u for u in db.query(User).filter(User.role == RoleEnum.CITIZEN).all() if u.email != "citizen@mahaseva.gov.in"]
         if named_citizens:
             import itertools
-            c_iter = itertools.cycle(named_citizens)
+            citizens_by_state = {}
+            for u in named_citizens:
+                st = u.state_code or "MH"
+                citizens_by_state.setdefault(st, []).append(u)
+            
+            state_iters = {st: itertools.cycle(ulist) for st, ulist in citizens_by_state.items()}
+            all_iter = itertools.cycle(named_citizens)
+
             for a in existing_apps:
-                if a.application_number not in [sa["application_number"] for sa in sample_apps]:
-                    chosen_cit = next(c_iter)
-                    a.citizen_id = chosen_cit.id
+                app_num = a.application_number or ""
+                # Determine state from prefix or service
+                st_code = "MH"
+                for prefix in ["CENTRAL", "MH", "KA", "DL", "UP", "RJ", "JK", "TN"]:
+                    if app_num.startswith(prefix):
+                        st_code = prefix
+                        break
+                
+                if st_code in state_iters:
+                    chosen_cit = next(state_iters[st_code])
+                else:
+                    chosen_cit = next(all_iter)
+                a.citizen_id = chosen_cit.id
 
         db.commit()
         print("[OK] Sample Multi-State Applications seeded with diverse citizens.")

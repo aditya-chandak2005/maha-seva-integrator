@@ -19,3 +19,4 @@ echo.
 echo All Maha-Seva servers have been stopped successfully.
 echo.
 pause
+

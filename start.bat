@@ -20,3 +20,4 @@ echo Opening portal in default browser...
 start http://127.0.0.1:5173
 echo.
 pause
+

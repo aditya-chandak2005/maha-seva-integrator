@@ -16,7 +16,9 @@ import {
   UserCheck,
   User,
   Eye,
-  EyeOff
+  EyeOff,
+  Zap,
+  Loader2
 } from "lucide-react";
 
 interface LoginPageProps {
@@ -40,6 +42,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(registrationNotice || null);
   const [showDemoHelp, setShowDemoHelp] = useState(false);
+  const [quickLoginRole, setQuickLoginRole] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialEmail) {
@@ -63,6 +66,25 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       setErrorMsg(err.response?.data?.detail || "Invalid credentials. Please verify your email and password.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleQuickLogin = async (email: string, pass: string, roleKey: string) => {
+    setUsername(email);
+    setPassword(pass);
+    setErrorMsg(null);
+    setSuccessNotice(null);
+    setQuickLoginRole(roleKey);
+    setLoading(true);
+
+    try {
+      await login(email.trim(), pass);
+      onSuccess();
+    } catch (err: any) {
+      setErrorMsg(err.response?.data?.detail || "Quick login failed. Please try again.");
+    } finally {
+      setLoading(false);
+      setQuickLoginRole(null);
     }
   };
 
@@ -129,7 +151,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const detectedRole = detectRole(username);
 
   return (
-    <div className="max-w-md mx-auto px-4 py-12 space-y-6">
+    <div className="max-w-xl mx-auto px-4 py-10 space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="w-12 h-12 rounded-2xl bg-blue-700 text-white flex items-center justify-center mx-auto shadow-md">
@@ -150,6 +172,134 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <span>{successNotice}</span>
         </div>
       )}
+
+      {/* 1-Click Instant Role Login Banner */}
+      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-5 rounded-3xl text-white shadow-xl space-y-3.5 border border-indigo-500/30">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold border border-amber-400/30">
+              <Zap className="w-4 h-4 text-amber-400" />
+            </div>
+            <div>
+              <h2 className="text-sm font-extrabold tracking-tight text-white flex items-center space-x-2">
+                <span>1-Click Instant Role Login</span>
+                <span className="text-[10px] bg-amber-400/20 text-amber-300 font-mono px-2 py-0.5 rounded-full border border-amber-400/30 font-bold">
+                  Zero Typing
+                </span>
+              </h2>
+              <p className="text-[11px] text-slate-300">
+                Click any role below to authenticate and enter that workspace immediately:
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          {/* 1. Maharashtra Admin */}
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleQuickLogin("admin.mh@mahaseva.gov.in", "Admin@2026", "admin-mh")}
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-purple-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50"
+          >
+            <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0 border border-purple-400/30 group-hover:scale-105 transition">
+              {quickLoginRole === "admin-mh" ? <Loader2 className="w-4 h-4 animate-spin text-purple-300" /> : <Shield className="w-4 h-4" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-[12px] text-purple-200 flex items-center space-x-1 truncate">
+                <span>MH State Admin</span>
+                <span className="text-[9px] px-1 rounded bg-purple-900/60 border border-purple-400/30 text-purple-200">.mh</span>
+              </div>
+              <div className="text-[10px] text-slate-400 truncate">Rajesh Kadam (State Console)</div>
+            </div>
+          </button>
+
+          {/* 2. National Chief Admin */}
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleQuickLogin("admin@mahaseva.gov.in", "Admin@2026", "admin-all")}
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-blue-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50"
+          >
+            <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-300 flex items-center justify-center shrink-0 border border-blue-400/30 group-hover:scale-105 transition">
+              {quickLoginRole === "admin-all" ? <Loader2 className="w-4 h-4 animate-spin text-blue-300" /> : <Building2 className="w-4 h-4" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-[12px] text-blue-200 flex items-center space-x-1 truncate">
+                <span>National Chief Admin</span>
+                <span className="text-[9px] px-1 rounded bg-blue-900/60 border border-blue-400/30 text-blue-200">All India</span>
+              </div>
+              <div className="text-[10px] text-slate-400 truncate">Platform Governance Console</div>
+            </div>
+          </button>
+
+          {/* 3. MH Revenue Officer */}
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleQuickLogin("officer.revenue@mahaseva.gov.in", "Officer@2026", "officer-rev")}
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-indigo-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50"
+          >
+            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center shrink-0 border border-indigo-400/30 group-hover:scale-105 transition">
+              {quickLoginRole === "officer-rev" ? <Loader2 className="w-4 h-4 animate-spin text-indigo-300" /> : <Briefcase className="w-4 h-4" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-[12px] text-indigo-200 flex items-center space-x-1 truncate">
+                <span>MH Revenue Officer</span>
+                <span className="text-[9px] px-1 rounded bg-indigo-900/60 border border-indigo-400/30 text-indigo-200">Tahsildar</span>
+              </div>
+              <div className="text-[10px] text-slate-400 truncate">Suresh Deshmukh (Desk queue)</div>
+            </div>
+          </button>
+
+          {/* 4. CBSE Exam Officer */}
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleQuickLogin("officer.cbse@mahaseva.gov.in", "Officer@2026", "officer-cbse")}
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-amber-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50"
+          >
+            <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0 border border-amber-400/30 group-hover:scale-105 transition">
+              {quickLoginRole === "officer-cbse" ? <Loader2 className="w-4 h-4 animate-spin text-amber-300" /> : <Briefcase className="w-4 h-4" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-[12px] text-amber-200 flex items-center space-x-1 truncate">
+                <span>CBSE Exam Officer</span>
+                <span className="text-[9px] px-1 rounded bg-amber-900/60 border border-amber-400/30 text-amber-200">Central</span>
+              </div>
+              <div className="text-[10px] text-slate-400 truncate">Rameshwar Prasad (Board Desk)</div>
+            </div>
+          </button>
+
+          {/* 5. Citizen (Rahul Deshmukh - MH) */}
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleQuickLogin("rahul.deshmukh@mahaseva.gov.in", "Citizen@2026", "citizen-rahul")}
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-emerald-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50 sm:col-span-2"
+          >
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 border border-emerald-400/30 group-hover:scale-105 transition">
+              {quickLoginRole === "citizen-rahul" ? <Loader2 className="w-4 h-4 animate-spin text-emerald-300" /> : <UserCheck className="w-4 h-4" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-[12px] text-emerald-200 flex items-center space-x-1.5 truncate">
+                <span>Citizen Dashboard (Rahul Deshmukh)</span>
+                <span className="text-[9px] px-1 rounded bg-emerald-900/60 border border-emerald-400/30 text-emerald-200">Verified Citizen</span>
+              </div>
+              <div className="text-[10px] text-slate-400 truncate">rahul.deshmukh@mahaseva.gov.in (Tracks Income Cert, 7/12 & more)</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="relative flex py-1 items-center">
+        <div className="flex-grow border-t border-slate-200"></div>
+        <span className="flex-shrink mx-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+          or sign in manually
+        </span>
+        <div className="flex-grow border-t border-slate-200"></div>
+      </div>
 
       {/* Main Login Form */}
       <form onSubmit={handleSubmit} className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
