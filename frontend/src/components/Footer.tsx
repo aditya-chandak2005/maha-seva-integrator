@@ -37,20 +37,28 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Col 3: Support & Contacts */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <h4 className="text-white font-bold text-sm tracking-wider uppercase text-[11px]">
-              Helpline & Support
+              National Helpline & Support
             </h4>
-            <div className="space-y-1.5 text-xs">
-              <p className="flex items-center text-slate-300">
-                <Phone className="w-3.5 h-3.5 mr-1.5 text-orange-400" />
-                <span>Toll-Free: 1800-120-8040 (24x7)</span>
+            <div className="p-3.5 bg-slate-800/90 rounded-xl border border-slate-700/80 space-y-2">
+              <div className="flex items-center space-x-2 text-amber-400 font-bold text-xs">
+                <Phone className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>24x7 Citizen Helpline</span>
+              </div>
+              <div className="text-base font-extrabold text-white tracking-wider font-mono">
+                1800-120-8040
+              </div>
+              <div className="text-[10px] text-slate-400">
+                Toll-Free All India Public Service Inquiries
+              </div>
+            </div>
+            <div className="space-y-1 text-xs">
+              <p className="text-slate-300">
+                <span className="text-slate-400">Email:</span> helpdesk@mahaseva.gov.in
               </p>
-              <p className="text-slate-400">
-                Email: helpdesk@mahaseva.gov.in
-              </p>
-              <p className="text-slate-400">
-                Mantralaya, Madam Cama Road, Nariman Point, Mumbai 400032
+              <p className="text-slate-400 text-[11px]">
+                Mantralaya, Madam Cama Road, Mumbai 400032
               </p>
             </div>
           </div>

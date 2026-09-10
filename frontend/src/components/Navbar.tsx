@@ -18,8 +18,6 @@ import {
 } from "lucide-react";
 import { NotificationItem } from "../types";
 
-import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION, CENTRAL_OPTION } from "../constants/states";
-
 interface NavbarProps {
   currentTab: string;
   onNavigate: (tab: string, param?: any) => void;
@@ -27,9 +25,6 @@ interface NavbarProps {
   selectedState?: string;
   onSelectState?: (state: string) => void;
 }
-
-const statesList = ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "STATE");
-const utsList = ALL_INDIA_STATES_AND_UTS.filter((s) => s.type === "UT");
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentTab,
@@ -77,92 +72,22 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
-      {/* Top Government Strip */}
-      <div className="bg-slate-900 text-slate-300 text-[11px] py-1.5 px-4 sm:px-8 flex flex-wrap justify-between items-center gap-2">
-        <div className="flex items-center space-x-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
-          <span>
-            {i18n.language === "mr"
-              ? "महा-सेवा इंटिग्रेटर — अखिल भारतीय बहु-राज्य नागरिक सेवा मंच"
-              : i18n.language === "hi"
-              ? "महा-सेवा इंटीग्रेटर — अखिल भारतीय बहु-राज्य नागरिक सेवा मंच"
-              : "Maha-Seva Integrator — Multi-State Digital Public Services Gateway"}
-          </span>
-        </div>
-        <div className="flex items-center space-x-3">
-          {/* State Selector */}
-          <div className="flex items-center space-x-1">
-            <span className="text-slate-400 font-medium hidden sm:inline text-[10px]">
-              {i18n.language === "mr" ? "राज्य:" : i18n.language === "hi" ? "राज्य:" : "State:"}
-            </span>
-            <select
-              value={selectedState}
-              onChange={(e) => onSelectState && onSelectState(e.target.value)}
-              className="bg-slate-800 text-amber-300 font-semibold text-[10px] px-2 py-0.5 rounded border border-slate-700 focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer max-w-[190px]"
-            >
-              <option value="ALL">
-                {i18n.language === "hi" ? ALL_OPTION.hi : i18n.language === "mr" ? ALL_OPTION.mr : ALL_OPTION.name}
-              </option>
-              <option value="CENTRAL" className="font-bold text-amber-300">
-                🏛️ {i18n.language === "hi" ? CENTRAL_OPTION.hi : i18n.language === "mr" ? CENTRAL_OPTION.mr : CENTRAL_OPTION.name}
-              </option>
-              <optgroup label={i18n.language === "hi" ? "--- 28 राज्य ---" : i18n.language === "mr" ? "--- २८ राज्य ---" : "--- 28 States ---"}>
-                {statesList.map((st) => (
-                  <option key={st.code} value={st.code}>
-                    {i18n.language === "hi" ? `${st.hi} (${st.code})` : i18n.language === "mr" ? `${st.mr} (${st.code})` : `${st.name} (${st.code})`}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label={i18n.language === "hi" ? "--- 8 केंद्र शासित प्रदेश ---" : i18n.language === "mr" ? "--- ८ केंद्रशासित प्रदेश ---" : "--- 8 Union Territories ---"}>
-                {utsList.map((ut) => (
-                  <option key={ut.code} value={ut.code}>
-                    {i18n.language === "hi" ? `${ut.hi} (${ut.code})` : i18n.language === "mr" ? `${ut.mr} (${ut.code})` : `${ut.name} (${ut.code})`}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
-          </div>
-
-          <span className="text-slate-600">|</span>
-
-          {/* Trilingual Switcher */}
-          <div className="flex items-center bg-slate-800 p-0.5 rounded border border-slate-700">
-            {(["en", "mr", "hi"] as const).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLanguage(l)}
-                className={`px-2 py-0.5 text-[10px] font-bold rounded transition ${
-                  i18n.language === l
-                    ? "bg-blue-600 text-white shadow-xs"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                {l === "en" ? "English" : l === "mr" ? "मराठी" : "हिन्दी"}
-              </button>
-            ))}
-          </div>
-
-          <span className="text-slate-600 hidden md:inline">|</span>
-          <span className="hidden md:inline text-[10px] text-slate-400">Helpline: 1800-120-8040</span>
-        </div>
-      </div>
-
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-22 flex items-center justify-between">
         {/* Brand Logo */}
         <div
           onClick={() => onNavigate("home")}
           className="flex items-center space-x-3 cursor-pointer group"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-800 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition">
-            <Building2 className="w-6 h-6" />
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-800 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition">
+            <Building2 className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <div className="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-none flex items-center">
+            <div className="font-extrabold text-xl sm:text-2xl text-slate-900 tracking-tight leading-none flex items-center">
               Maha-Seva
-              <span className="text-orange-600 ml-1">Integrator</span>
+              <span className="text-orange-600 ml-1.5">Integrator</span>
             </div>
-            <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+            <div className="text-[10px] sm:text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-1">
               {i18n.language === "mr"
                 ? "एक व्यासपीठ. अनेक शासकीय सेवा."
                 : i18n.language === "hi"
@@ -252,13 +177,28 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Actions */}
         <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Language Dropdown Selector */}
+          <div className="flex items-center space-x-1.5 bg-slate-100/90 hover:bg-slate-200/80 px-2.5 sm:px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 transition focus-within:ring-2 focus-within:ring-blue-500 shadow-2xs">
+            <Globe className="w-4 h-4 text-blue-600 shrink-0" />
+            <select
+              aria-label="Select Language"
+              value={i18n.language}
+              onChange={(e) => setLanguage(e.target.value as "en" | "mr" | "hi")}
+              className="bg-transparent border-0 focus:outline-none cursor-pointer text-xs font-bold text-slate-800 pr-1"
+            >
+              <option value="en">English (EN)</option>
+              <option value="mr">मराठी (MR)</option>
+              <option value="hi">हिन्दी (HI)</option>
+            </select>
+          </div>
+
           {/* Smart Assistant Trigger */}
           <button
             onClick={onOpenAssistant}
-            className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold shadow-sm hover:opacity-95 transition"
+            className="hidden sm:flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold shadow-sm hover:opacity-95 transition"
           >
             <span>✨</span>
-            <span>{i18n.language === "mr" ? "स्मार्ट मदतनीस" : "AI Assistant"}</span>
+            <span>{i18n.language === "mr" ? "स्मार्ट मदतनीस" : i18n.language === "hi" ? "स्मार्ट सहायक" : "AI Assistant"}</span>
           </button>
 
           {/* Notifications Bell */}
@@ -429,8 +369,29 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => { onOpenAssistant(); setMobileMenuOpen(false); }}
             className="block w-full text-left px-3 py-2 rounded-lg text-sm font-bold text-amber-600 bg-amber-50"
           >
-            ✨ Smart Service Assistant
+            ✨ {i18n.language === "mr" ? "स्मार्ट मदतनीस" : i18n.language === "hi" ? "स्मार्ट सहायक" : "Smart Service Assistant"}
           </button>
+
+          {/* Mobile Language Selector */}
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between px-2">
+            <span className="text-xs font-bold text-slate-600 flex items-center">
+              <Globe className="w-4 h-4 mr-1.5 text-blue-600" />
+              {i18n.language === "mr" ? "भाषा निवडा:" : i18n.language === "hi" ? "भाषा चुनें:" : "Language:"}
+            </span>
+            <select
+              aria-label="Select Language"
+              value={i18n.language}
+              onChange={(e) => {
+                setLanguage(e.target.value as "en" | "mr" | "hi");
+                setMobileMenuOpen(false);
+              }}
+              className="bg-slate-100 border border-slate-300 text-xs font-bold text-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none"
+            >
+              <option value="en">English (EN)</option>
+              <option value="mr">मराठी (MR)</option>
+              <option value="hi">हिन्दी (HI)</option>
+            </select>
+          </div>
         </div>
       )}
     </header>
