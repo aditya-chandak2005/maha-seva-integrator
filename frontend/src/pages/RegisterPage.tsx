@@ -12,7 +12,10 @@ import {
   CheckCircle2, 
   ShieldCheck, 
   Briefcase, 
-  KeyRound
+  KeyRound,
+  Sparkles,
+  Check,
+  Info
 } from "lucide-react";
 import { ALL_INDIA_STATES_AND_UTS, CENTRAL_OPTION } from "../constants/states";
 
@@ -71,9 +74,105 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     stateCode === "ALL" ? true : d.state_code === stateCode
   );
 
+  const selectedDept = departments.find((d) => d.id === Number(departmentId));
+  const cleanDeptTag = selectedDept
+    ? selectedDept.code.toLowerCase().replace(/^(goi_|mh_|ka_|dl_|up_|gj_|ap_|tn_)/, "")
+    : "dept";
+
+  // Compute suggested email formats based on role
+  const getSuggestedEmail = () => {
+    const rawName = fullName.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
+    const prefix = rawName || (role === "SUPER_ADMIN" ? "admin" : role === "OFFICER" ? "officer" : "citizen");
+    
+    if (role === "SUPER_ADMIN") {
+      const stateInitials = stateCode.toLowerCase();
+      return `${prefix}.${stateInitials}@mahaseva.gov.in`;
+    }
+    if (role === "OFFICER") {
+      return `${prefix}.${cleanDeptTag}@mahaseva.gov.in`;
+    }
+    return email || (rawName ? `${rawName}@example.com` : "");
+  };
+
+  // Check email validity per role
+  const isEmailFormatValid = () => {
+    if (!email) return false;
+    const lower = email.toLowerCase();
+    if (role === "SUPER_ADMIN") {
+      return stateCode === "ALL" || lower.includes(stateCode.toLowerCase());
+    }
+    if (role === "OFFICER") {
+      return (
+        lower.includes("officer") ||
+        lower.includes(cleanDeptTag) ||
+        lower.includes("dept") ||
+        lower.includes("revenue") ||
+        lower.includes("cbse") ||
+        lower.includes("municipal") ||
+        lower.includes("bescom")
+      );
+    }
+    return lower.includes("@") && lower.includes(".");
+  };
+
+  const applySuggestedEmail = () => {
+    const suggested = getSuggestedEmail();
+    if (suggested) {
+      setEmail(suggested);
+      setErrorMsg(null);
+    }
+  };
+
+  // When role or state changes, auto-suggest official email format if empty or default
+  const handleRoleChange = (newRole: RoleType) => {
+    setRole(newRole);
+    setErrorMsg(null);
+    const rawName = fullName.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
+    if (newRole === "SUPER_ADMIN") {
+      const stateInitials = stateCode.toLowerCase();
+      setEmail(`${rawName || "admin"}.${stateInitials}@mahaseva.gov.in`);
+    } else if (newRole === "OFFICER") {
+      setEmail(`${rawName || "officer"}.${cleanDeptTag}@mahaseva.gov.in`);
+    } else {
+      if (email.endsWith("@mahaseva.gov.in")) {
+        setEmail(rawName ? `${rawName}@gmail.com` : "");
+      }
+    }
+  };
+
+  const handleStateChange = (newState: string) => {
+    setStateCode(newState);
+    if (role === "SUPER_ADMIN") {
+      const rawName = fullName.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
+      setEmail(`${rawName || "admin"}.${newState.toLowerCase()}@mahaseva.gov.in`);
+    }
+  };
+
+  const handleDeptChange = (newDeptId: number) => {
+    setDepartmentId(newDeptId);
+    const dept = departments.find((d) => d.id === newDeptId);
+    if (dept && role === "OFFICER") {
+      const tag = dept.code.toLowerCase().replace(/^(goi_|mh_|ka_|dl_|up_|gj_|ap_|tn_)/, "");
+      const rawName = fullName.toLowerCase().trim().replace(/[^a-z0-9]/g, ".");
+      setEmail(`${rawName || "officer"}.${tag}@mahaseva.gov.in`);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+
+    // Client-side format checks
+    if (role === "SUPER_ADMIN" && stateCode !== "ALL" && !email.toLowerCase().includes(stateCode.toLowerCase())) {
+      setErrorMsg(`State Administrator email must contain state initials '${stateCode.toLowerCase()}' (e.g. admin.${stateCode.toLowerCase()}@mahaseva.gov.in or <name>.${stateCode.toLowerCase()}@mahaseva.gov.in).`);
+      return;
+    }
+
+    if (role === "OFFICER" && !isEmailFormatValid()) {
+      setErrorMsg(`Departmental login email must include department identifier '${cleanDeptTag}' or 'officer' (e.g. officer.${cleanDeptTag}@mahaseva.gov.in or <name>.${cleanDeptTag}@mahaseva.gov.in).`);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -97,7 +196,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
 
   if (registeredSuccess) {
     const roleLabel = role === "SUPER_ADMIN" 
-      ? "Super Administrator" 
+      ? "State Administrator" 
       : role === "OFFICER" 
       ? "Department Administrator / Officer" 
       : "Citizen";
@@ -114,8 +213,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               Registration Successful!
             </h2>
             <p className="text-xs text-slate-600">
-              Your official <strong className="text-slate-900">{roleLabel}</strong> account ({stateCode}) has been created for <span className="font-mono text-blue-700">{email}</span>.
+              Your official <strong className="text-slate-900">{roleLabel}</strong> account ({stateCode}) has been created with mandatory format login ID:
             </p>
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl font-mono text-sm font-bold text-blue-800 break-all">
+              {email}
+            </div>
           </div>
 
           <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left text-xs space-y-2">
@@ -124,7 +226,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               <span className="font-bold text-slate-800">{fullName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Registered Email:</span>
+              <span className="text-slate-500">Official Login ID:</span>
               <span className="font-bold font-mono text-slate-800">{email}</span>
             </div>
             <div className="flex justify-between">
@@ -160,7 +262,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
           Government Unified Registration
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
-          Create a verified profile to apply for public services, manage department SLA queues, or govern state administration.
+          Create a verified dynamic profile to apply for public services, manage department SLA queues, or govern state administration.
         </p>
       </div>
 
@@ -168,10 +270,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
       <div className="bg-slate-200/80 p-1.5 rounded-2xl grid grid-cols-3 gap-1 shadow-inner">
         <button
           type="button"
-          onClick={() => {
-            setRole("CITIZEN");
-            setErrorMsg(null);
-          }}
+          onClick={() => handleRoleChange("CITIZEN")}
           className={`py-2.5 px-2 rounded-xl text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
             role === "CITIZEN"
               ? "bg-white text-blue-800 shadow-sm"
@@ -184,10 +283,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
 
         <button
           type="button"
-          onClick={() => {
-            setRole("OFFICER");
-            setErrorMsg(null);
-          }}
+          onClick={() => handleRoleChange("OFFICER")}
           className={`py-2.5 px-2 rounded-xl text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
             role === "OFFICER"
               ? "bg-white text-indigo-800 shadow-sm"
@@ -200,10 +296,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
 
         <button
           type="button"
-          onClick={() => {
-            setRole("SUPER_ADMIN");
-            setErrorMsg(null);
-          }}
+          onClick={() => handleRoleChange("SUPER_ADMIN")}
           className={`py-2.5 px-2 rounded-xl text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
             role === "SUPER_ADMIN"
               ? "bg-white text-purple-800 shadow-sm"
@@ -211,7 +304,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
           }`}
         >
           <ShieldCheck className="w-4 h-4 text-purple-600 shrink-0" />
-          <span>Super Admin</span>
+          <span>State Admin</span>
         </button>
       </div>
 
@@ -237,7 +330,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
             <Briefcase className="w-5 h-5 text-indigo-600 shrink-0" />
             <div>
               <span className="font-bold block">Department Officer / Admin (विभागीय अधिकारी)</span>
-              <span className="text-[11px] text-indigo-700">Access Officer Workbench, review citizen applications, verify attached documents, and enforce service SLAs.</span>
+              <span className="text-[11px] text-indigo-700">Mandatory departmental format login (e.g. <code>officer.{cleanDeptTag}@mahaseva.gov.in</code>) to inspect department applications and SLAs.</span>
             </div>
           </>
         )}
@@ -245,8 +338,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
           <>
             <ShieldCheck className="w-5 h-5 text-purple-600 shrink-0" />
             <div>
-              <span className="font-bold block">Super Administrator (मुख्य प्रशासक)</span>
-              <span className="text-[11px] text-purple-700">Oversee state-wide or national governance telemetry, department workloads, SLA analytics, and security audit logs.</span>
+              <span className="font-bold block">State Administrator (राज्य मुख्य प्रशासक)</span>
+              <span className="text-[11px] text-purple-700">Mandatory state initials login (e.g. <code>admin.{stateCode.toLowerCase()}@mahaseva.gov.in</code>) to govern state telemetry and workloads.</span>
             </div>
           </>
         )}
@@ -273,43 +366,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder={role === "CITIZEN" ? "e.g. Rameshwar Patil" : "e.g. Dr. Rajesh Kadam"}
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Email */}
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-slate-700 block">
-            {role === "CITIZEN" ? "Email Address" : "Official / Government Email Address"}
-          </label>
-          <div className="relative flex items-center">
-            <Mail className="w-4 h-4 text-slate-400 absolute left-3.5" />
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={role === "CITIZEN" ? "citizen@example.com" : "officer@mahaseva.gov.in"}
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Phone */}
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-slate-700 block">
-            Mobile Number (For OTP & SMS Alerts)
-          </label>
-          <div className="relative flex items-center">
-            <Phone className="w-4 h-4 text-slate-400 absolute left-3.5" />
-            <input
-              type="tel"
-              required
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="10-digit Mobile Number"
+              placeholder={role === "CITIZEN" ? "e.g. Rameshwar Patil" : role === "OFFICER" ? "e.g. Suresh Deshmukh" : "e.g. Dr. Rajesh Kadam"}
               className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
@@ -319,14 +376,14 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
         <div className="space-y-1">
           <label className="text-xs font-bold text-slate-700 block">
             {role === "SUPER_ADMIN" 
-              ? "Administrative Jurisdiction Scope" 
+              ? "State Administrator Jurisdiction Scope" 
               : role === "OFFICER" 
               ? "Department State Jurisdiction" 
               : "State / UT of Residence"}
           </label>
           <select
             value={stateCode}
-            onChange={(e) => setStateCode(e.target.value)}
+            onChange={(e) => handleStateChange(e.target.value)}
             className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-slate-800 font-medium"
           >
             {role === "SUPER_ADMIN" && (
@@ -359,7 +416,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
             <select
               required
               value={departmentId}
-              onChange={(e) => setDepartmentId(e.target.value ? Number(e.target.value) : "")}
+              onChange={(e) => handleDeptChange(Number(e.target.value))}
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-slate-800"
             >
               {availableDepts.length > 0 ? (
@@ -378,6 +435,102 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
             </select>
           </div>
         )}
+
+        {/* Email Address with Mandatory Format Helper */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-700 block">
+              {role === "CITIZEN" 
+                ? "Citizen Email Address" 
+                : role === "OFFICER" 
+                ? "Departmental Format Login Email (Mandatory)" 
+                : "State Administrator Email (Mandatory State Initials)"}
+            </label>
+            {(role === "OFFICER" || role === "SUPER_ADMIN") && (
+              <button
+                type="button"
+                onClick={applySuggestedEmail}
+                className="text-[10px] text-blue-700 hover:text-blue-800 font-bold flex items-center space-x-1"
+              >
+                <Sparkles className="w-3 h-3" />
+                <span>Auto-Generate Format</span>
+              </button>
+            )}
+          </div>
+
+          <div className="relative flex items-center">
+            <Mail className="w-4 h-4 text-slate-400 absolute left-3.5" />
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={
+                role === "CITIZEN" 
+                  ? "citizen@example.com" 
+                  : role === "OFFICER" 
+                  ? `officer.${cleanDeptTag}@mahaseva.gov.in` 
+                  : `admin.${stateCode.toLowerCase()}@mahaseva.gov.in`
+              }
+              className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-sm focus:outline-none ${
+                role !== "CITIZEN" && isEmailFormatValid()
+                  ? "border-emerald-400 bg-emerald-50/20 focus:ring-2 focus:ring-emerald-500 font-mono text-emerald-900"
+                  : "border-slate-300 focus:ring-2 focus:ring-blue-500"
+              }`}
+            />
+          </div>
+
+          {/* Real-time Format Feedback */}
+          {role === "OFFICER" && (
+            <div className="flex items-center justify-between text-[11px] px-1">
+              <span className="text-slate-500">
+                Departmental tag required: <code className="font-bold text-indigo-700">{cleanDeptTag}</code> or <code className="font-bold text-indigo-700">officer</code>
+              </span>
+              {isEmailFormatValid() ? (
+                <span className="text-emerald-700 font-bold flex items-center space-x-1">
+                  <Check className="w-3 h-3 text-emerald-600" />
+                  <span>Valid Format</span>
+                </span>
+              ) : (
+                <span className="text-amber-600 font-medium">Include .{cleanDeptTag}@...</span>
+              )}
+            </div>
+          )}
+
+          {role === "SUPER_ADMIN" && (
+            <div className="flex items-center justify-between text-[11px] px-1">
+              <span className="text-slate-500">
+                Mandatory state initials: <code className="font-bold text-purple-700">.{stateCode.toLowerCase()}@</code>
+              </span>
+              {isEmailFormatValid() ? (
+                <span className="text-emerald-700 font-bold flex items-center space-x-1">
+                  <Check className="w-3 h-3 text-emerald-600" />
+                  <span>Valid State Initials</span>
+                </span>
+              ) : (
+                <span className="text-amber-600 font-medium">Include .{stateCode.toLowerCase()}@...</span>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Number */}
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-slate-700 block">
+            Mobile Number (For Alerts)
+          </label>
+          <div className="relative flex items-center">
+            <Phone className="w-4 h-4 text-slate-400 absolute left-3.5" />
+            <input
+              type="tel"
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="10-digit Mobile Number"
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+        </div>
 
         {/* Designation for Officers */}
         {role === "OFFICER" && (
@@ -412,7 +565,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               />
             </div>
             <span className="text-[10px] text-slate-400 block">
-              Default authorized passcode for hackathon evaluation: <code className="font-mono text-purple-700 font-bold">ADMIN2026</code>
+              Default authorized passcode: <code className="font-mono text-purple-700 font-bold">ADMIN2026</code>
             </span>
           </div>
         )}
@@ -449,8 +602,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
         >
           <span>
             {loading 
-              ? "Registering Account..." 
-              : `Register as ${role === "CITIZEN" ? "Citizen" : role === "OFFICER" ? "Department Officer" : "Super Admin"}`}
+              ? "Creating Dynamic Account..." 
+              : `Register as ${role === "CITIZEN" ? "Citizen" : role === "OFFICER" ? "Department Officer" : "State Administrator"}`}
           </span>
           <ArrowRight className="w-4 h-4" />
         </button>

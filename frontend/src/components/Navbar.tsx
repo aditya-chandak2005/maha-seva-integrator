@@ -13,7 +13,8 @@ import {
   ShieldAlert, 
   Menu, 
   X,
-  Search
+  Search,
+  RefreshCw
 } from "lucide-react";
 import { NotificationItem } from "../types";
 
@@ -317,15 +318,44 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Auth Button or User Menu */}
           {isAuthenticated ? (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <div className="hidden sm:flex flex-col text-right">
-                <span className="text-xs font-bold text-slate-900 truncate max-w-[120px]">
-                  {user?.full_name}
-                </span>
-                <span className="text-[10px] text-slate-500 font-semibold">
-                  {user?.role}
+                <div className="flex items-center justify-end space-x-1.5">
+                  <span className="text-xs font-bold text-slate-900 truncate max-w-[130px]">
+                    {user?.full_name}
+                  </span>
+                  {user?.role === "SUPER_ADMIN" ? (
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">
+                      🛡️ {user?.state_code === "ALL" ? "National" : user?.state_code} Admin
+                    </span>
+                  ) : user?.role === "OFFICER" || user?.role === "DEPARTMENT_ADMIN" ? (
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+                      🏢 Officer ({user?.state_code || "MH"})
+                    </span>
+                  ) : (
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                      👤 Citizen ({user?.state_code || "MH"})
+                    </span>
+                  )}
+                </div>
+                <span className="font-mono text-[10px] text-slate-400 truncate max-w-[160px]">
+                  {user?.email}
                 </span>
               </div>
+
+              {/* Quick Switch Role / Login as Another User */}
+              <button
+                onClick={() => {
+                  logout();
+                  onNavigate("login");
+                }}
+                title="Switch Role / Login as Another User"
+                className="hidden md:flex items-center space-x-1 px-2.5 py-1 text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg transition"
+              >
+                <RefreshCw className="w-3 h-3 text-slate-500" />
+                <span>Switch Role</span>
+              </button>
+
               <button
                 onClick={logout}
                 title="Logout"

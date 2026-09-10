@@ -10,7 +10,7 @@ from app.core.security import (
     get_current_user,
     RoleEnum
 )
-from app.models import User, Citizen, Role
+from app.models import User, Citizen, Role, Department
 from app.schemas.auth import RegisterRequest, TokenResponse, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -34,16 +34,58 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
 
     hashed_password = get_password_hash(data.password)
 
+    email_clean = data.email.lower().strip()
+
     # Determine assigned role, department, and state
     req_role = (data.role or "CITIZEN").upper().strip()
     if req_role in ["SUPER_ADMIN", "ADMIN"]:
         assigned_role = RoleEnum.SUPER_ADMIN
         assigned_dept_id = None
         assigned_state = (data.state_code or "ALL").upper().strip()
+
+        # Enforce state initials in Administrator email
+        if assigned_state != "ALL":
+            state_lower = assigned_state.lower()
+            if state_lower not in email_clean and f".{state_lower}" not in email_clean:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"State Administrator email must contain state initials '{state_lower}' (e.g. admin.{state_lower}@mahaseva.gov.in or <name>.{state_lower}@mahaseva.gov.in)."
+                )
+
     elif req_role in ["OFFICER", "DEPARTMENT_ADMIN", "DEPT_ADMIN"]:
         assigned_role = RoleEnum.OFFICER
         assigned_dept_id = data.department_id
         assigned_state = (data.state_code or "MH").upper().strip()
+
+        if not assigned_dept_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Departmental officers must select their assigned government department."
+            )
+
+        dept = db.query(Department).filter(Department.id == assigned_dept_id).first()
+        clean_dept = ""
+        if dept:
+            dept_code_lower = dept.code.lower()
+            clean_dept = dept_code_lower.split("_")[-1] if "_" in dept_code_lower else dept_code_lower
+
+        # Enforce departmental format: must contain 'officer', or dept code/name, or .gov.in
+        valid_dept = (
+            "officer" in email_clean or
+            (clean_dept and clean_dept in email_clean) or
+            "dept" in email_clean or
+            "revenue" in email_clean or
+            "cbse" in email_clean or
+            "municipal" in email_clean or
+            "bescom" in email_clean or
+            "gov.in" in email_clean
+        )
+        if not valid_dept:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Departmental email must follow official departmental format (e.g. officer.{clean_dept or 'dept'}@mahaseva.gov.in or <name>.{clean_dept or 'dept'}@mahaseva.gov.in)."
+            )
+
     else:
         assigned_role = RoleEnum.CITIZEN
         assigned_dept_id = None
