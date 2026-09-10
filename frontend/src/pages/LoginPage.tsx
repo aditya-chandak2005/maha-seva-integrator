@@ -1,26 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
-import { Building2, Lock, Mail, ArrowRight, AlertCircle, ShieldCheck, UserCheck } from "lucide-react";
+import { 
+  Building2, 
+  Lock, 
+  Mail, 
+  ArrowRight, 
+  AlertCircle, 
+  CheckCircle2, 
+  KeyRound, 
+  ChevronDown, 
+  ChevronUp,
+  Shield,
+  Briefcase,
+  UserCheck
+} from "lucide-react";
 
 interface LoginPageProps {
   onSuccess: () => void;
   onNavigateRegister: () => void;
+  initialEmail?: string;
+  registrationNotice?: string;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({
   onSuccess,
   onNavigateRegister,
+  initialEmail = "",
+  registrationNotice = "",
 }) => {
   const { login } = useAuth();
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(initialEmail);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successNotice, setSuccessNotice] = useState<string | null>(registrationNotice || null);
+  const [showDemoHelp, setShowDemoHelp] = useState(false);
+
+  useEffect(() => {
+    if (initialEmail) {
+      setUsername(initialEmail);
+    }
+    if (registrationNotice) {
+      setSuccessNotice(registrationNotice);
+    }
+  }, [initialEmail, registrationNotice]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+    setSuccessNotice(null);
     setLoading(true);
 
     try {
@@ -33,23 +62,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     }
   };
 
-  const handleQuickLogin = async (demoUser: string, demoPass: string) => {
-    setUsername(demoUser);
-    setPassword(demoPass);
+  const handleFillCredentials = (email: string, pass: string) => {
+    setUsername(email);
+    setPassword(pass);
     setErrorMsg(null);
-    setLoading(true);
-    try {
-      await login(demoUser, demoPass);
-      onSuccess();
-    } catch (err: any) {
-      setErrorMsg("Demo login failed.");
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
     <div className="max-w-md mx-auto px-4 py-12 space-y-6">
+      {/* Header */}
       <div className="text-center space-y-2">
         <div className="w-12 h-12 rounded-2xl bg-blue-700 text-white flex items-center justify-center mx-auto shadow-md">
           <Building2 className="w-6 h-6" />
@@ -62,136 +83,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         </p>
       </div>
 
-      {/* Demo Credentials Box with State Super Admin Selector */}
-      <div className="bg-amber-50/90 border border-amber-200 rounded-2xl p-4 text-xs space-y-3 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-1.5 text-amber-900 font-bold">
-            <UserCheck className="w-4 h-4 text-amber-600" />
-            <span>Demonstration Accounts (1-Click Login):</span>
-          </div>
-          <span className="text-[10px] text-amber-700 bg-amber-200/60 px-2 py-0.5 rounded-full font-medium">
-            Pre-configured
-          </span>
+      {/* Registration Success Banner */}
+      {successNotice && (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2.5 shadow-sm">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+          <span>{successNotice}</span>
         </div>
-
-        {/* State-Specific Super Admin Selector */}
-        <div className="bg-white p-3 rounded-xl border border-amber-200/80 space-y-2">
-          <div className="flex items-center justify-between text-[11px] font-bold text-purple-900">
-            <span className="flex items-center space-x-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-purple-700" />
-              <span>Select State Super Admin to Login:</span>
-            </span>
-            <span className="text-[10px] text-purple-600 font-normal">State-scoped telemetry</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("admin.mh@mahaseva.gov.in", "Admin@2026")}
-              className="p-2 bg-purple-50 hover:bg-purple-100/80 border border-purple-200 rounded-lg text-left transition text-slate-800"
-              title="Maharashtra State Super Admin"
-            >
-              <span className="block text-[9px] text-purple-700 font-bold uppercase">Maharashtra</span>
-              <span className="font-semibold text-xs truncate block">Rajesh Kadam</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("admin.ka@mahaseva.gov.in", "Admin@2026")}
-              className="p-2 bg-purple-50 hover:bg-purple-100/80 border border-purple-200 rounded-lg text-left transition text-slate-800"
-              title="Karnataka State Super Admin"
-            >
-              <span className="block text-[9px] text-purple-700 font-bold uppercase">Karnataka</span>
-              <span className="font-semibold text-xs truncate block">Suresh Gowda</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("admin.dl@mahaseva.gov.in", "Admin@2026")}
-              className="p-2 bg-purple-50 hover:bg-purple-100/80 border border-purple-200 rounded-lg text-left transition text-slate-800"
-              title="Delhi NCT Super Admin"
-            >
-              <span className="block text-[9px] text-purple-700 font-bold uppercase">Delhi NCT</span>
-              <span className="font-semibold text-xs truncate block">Meenakshi V.</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("admin.up@mahaseva.gov.in", "Admin@2026")}
-              className="p-2 bg-purple-50 hover:bg-purple-100/80 border border-purple-200 rounded-lg text-left transition text-slate-800"
-              title="Uttar Pradesh Super Admin"
-            >
-              <span className="block text-[9px] text-purple-700 font-bold uppercase">Uttar Pradesh</span>
-              <span className="font-semibold text-xs truncate block">Akhilesh Tiwari</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("admin.central@mahaseva.gov.in", "Admin@2026")}
-              className="p-2 bg-blue-50 hover:bg-blue-100/80 border border-blue-200 rounded-lg text-left transition text-slate-800"
-              title="Central Government Super Admin (CBSE / NSP)"
-            >
-              <span className="block text-[9px] text-blue-700 font-bold uppercase">Central (CBSE/NSP)</span>
-              <span className="font-semibold text-xs truncate block">Dr. A. Saxena</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("admin@mahaseva.gov.in", "Admin@2026")}
-              className="p-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-left transition text-slate-800"
-              title="National Chief Super Admin (All India)"
-            >
-              <span className="block text-[9px] text-slate-700 font-bold uppercase">🇮🇳 All India</span>
-              <span className="font-semibold text-xs truncate block">Chief Admin</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Citizens & Officers Quick Login */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="space-y-1.5">
-            <span className="text-[10px] font-bold text-blue-900 uppercase tracking-wider block">Citizens:</span>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("rahul.deshmukh@mahaseva.gov.in", "Citizen@2026")}
-              className="w-full p-2 bg-white hover:bg-blue-50 border border-slate-200 rounded-xl text-left transition font-semibold text-slate-800 block"
-            >
-              <span className="block text-[9px] text-blue-700 font-bold uppercase">Maharashtra Citizen</span>
-              <span className="text-xs">Rahul Deshmukh</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("ananya.chatterjee@mahaseva.gov.in", "Citizen@2026")}
-              className="w-full p-2 bg-white hover:bg-blue-50 border border-slate-200 rounded-xl text-left transition font-semibold text-slate-800 block"
-            >
-              <span className="block text-[9px] text-blue-700 font-bold uppercase">CBSE / Student</span>
-              <span className="text-xs">Ananya Chatterjee</span>
-            </button>
-          </div>
-
-          <div className="space-y-1.5">
-            <span className="text-[10px] font-bold text-indigo-900 uppercase tracking-wider block">Department Officers:</span>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("officer.revenue@mahaseva.gov.in", "Officer@2026")}
-              className="w-full p-2 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-left transition font-semibold text-slate-800 block"
-            >
-              <span className="block text-[9px] text-indigo-700 font-bold uppercase">MH Revenue Officer</span>
-              <span className="text-xs">Suresh Deshmukh</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("officer.cbse@mahaseva.gov.in", "Officer@2026")}
-              className="w-full p-2 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-left transition font-semibold text-slate-800 block"
-            >
-              <span className="block text-[9px] text-indigo-700 font-bold uppercase">CBSE Examination</span>
-              <span className="text-xs">Rameshwar Prasad</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Main Login Form */}
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+      <form onSubmit={handleSubmit} className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
         {errorMsg && (
           <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center space-x-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
@@ -243,16 +144,113 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         </button>
 
         <div className="pt-2 text-center text-xs text-slate-500">
-          Don't have a citizen account?{" "}
+          Don't have an account?{" "}
           <button
             type="button"
             onClick={onNavigateRegister}
             className="text-blue-700 font-bold hover:underline"
           >
-            Register as a new Citizen
+            Register as Citizen, Officer, or Super Admin
           </button>
         </div>
       </form>
+
+      {/* Collapsible Demo Credentials Reference Guide */}
+      <div className="border border-slate-200 rounded-2xl bg-slate-50/80 overflow-hidden text-xs">
+        <button
+          type="button"
+          onClick={() => setShowDemoHelp(!showDemoHelp)}
+          className="w-full p-3.5 flex items-center justify-between text-slate-600 hover:text-slate-900 transition font-medium"
+        >
+          <span className="flex items-center space-x-2">
+            <KeyRound className="w-4 h-4 text-slate-500" />
+            <span>Pre-configured Demo Credentials (Reference Guide)</span>
+          </span>
+          {showDemoHelp ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+        </button>
+
+        {showDemoHelp && (
+          <div className="p-4 pt-0 border-t border-slate-200/60 space-y-3 animate-fadeIn text-[11px]">
+            <p className="text-slate-500">
+              For testing and hackathon evaluation, the following accounts are pre-seeded in the system:
+            </p>
+
+            {/* Super Admins */}
+            <div className="space-y-1">
+              <span className="font-bold text-purple-900 uppercase tracking-wider block flex items-center space-x-1">
+                <Shield className="w-3 h-3 text-purple-700" />
+                <span>Super Admins (Password: <code className="bg-purple-100 px-1 py-0.5 rounded font-mono text-purple-900">Admin@2026</code>)</span>
+              </span>
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200 space-y-1">
+                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded" onClick={() => handleFillCredentials("admin@mahaseva.gov.in", "Admin@2026")}>
+                  <span>🇮🇳 All India Chief Admin:</span>
+                  <code className="font-mono text-blue-700 font-bold">admin@mahaseva.gov.in</code>
+                </div>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded" onClick={() => handleFillCredentials("admin.mh@mahaseva.gov.in", "Admin@2026")}>
+                  <span>Maharashtra Super Admin:</span>
+                  <code className="font-mono text-blue-700 font-bold">admin.mh@mahaseva.gov.in</code>
+                </div>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded" onClick={() => handleFillCredentials("admin.ka@mahaseva.gov.in", "Admin@2026")}>
+                  <span>Karnataka Super Admin:</span>
+                  <code className="font-mono text-blue-700 font-bold">admin.ka@mahaseva.gov.in</code>
+                </div>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded" onClick={() => handleFillCredentials("admin.central@mahaseva.gov.in", "Admin@2026")}>
+                  <span>Central Govt (CBSE/NSP):</span>
+                  <code className="font-mono text-blue-700 font-bold">admin.central@mahaseva.gov.in</code>
+                </div>
+              </div>
+            </div>
+
+            {/* Department Admins / Officers */}
+            <div className="space-y-1">
+              <span className="font-bold text-indigo-900 uppercase tracking-wider block flex items-center space-x-1">
+                <Briefcase className="w-3 h-3 text-indigo-700" />
+                <span>Department Admins / Officers (Password: <code className="bg-indigo-100 px-1 py-0.5 rounded font-mono text-indigo-900">Officer@2026</code>)</span>
+              </span>
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200 space-y-1">
+                <div className="flex justify-between items-center cursor-pointer hover:bg-indigo-50/50 p-1 rounded" onClick={() => handleFillCredentials("officer.revenue@mahaseva.gov.in", "Officer@2026")}>
+                  <span>MH Revenue Officer:</span>
+                  <code className="font-mono text-blue-700 font-bold">officer.revenue@mahaseva.gov.in</code>
+                </div>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-indigo-50/50 p-1 rounded" onClick={() => handleFillCredentials("officer.cbse@mahaseva.gov.in", "Officer@2026")}>
+                  <span>CBSE Exam Officer:</span>
+                  <code className="font-mono text-blue-700 font-bold">officer.cbse@mahaseva.gov.in</code>
+                </div>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-indigo-50/50 p-1 rounded" onClick={() => handleFillCredentials("officer.bescom@mahaseva.gov.in", "Officer@2026")}>
+                  <span>KA BESCOM Officer:</span>
+                  <code className="font-mono text-blue-700 font-bold">officer.bescom@mahaseva.gov.in</code>
+                </div>
+              </div>
+            </div>
+
+            {/* Citizens */}
+            <div className="space-y-1">
+              <span className="font-bold text-blue-900 uppercase tracking-wider block flex items-center space-x-1">
+                <UserCheck className="w-3 h-3 text-blue-700" />
+                <span>Citizens (Password: <code className="bg-blue-100 px-1 py-0.5 rounded font-mono text-blue-900">Citizen@2026</code>)</span>
+              </span>
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200 space-y-1">
+                <div className="flex justify-between items-center cursor-pointer hover:bg-blue-50/50 p-1 rounded" onClick={() => handleFillCredentials("citizen@mahaseva.gov.in", "Citizen@2026")}>
+                  <span>Demo Citizen:</span>
+                  <code className="font-mono text-blue-700 font-bold">citizen@mahaseva.gov.in</code>
+                </div>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-blue-50/50 p-1 rounded" onClick={() => handleFillCredentials("rahul.deshmukh@mahaseva.gov.in", "Citizen@2026")}>
+                  <span>Rahul Deshmukh (MH):</span>
+                  <code className="font-mono text-blue-700 font-bold">rahul.deshmukh@mahaseva.gov.in</code>
+                </div>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-blue-50/50 p-1 rounded" onClick={() => handleFillCredentials("ananya.chatterjee@mahaseva.gov.in", "Citizen@2026")}>
+                  <span>Ananya Chatterjee (Student):</span>
+                  <code className="font-mono text-blue-700 font-bold">ananya.chatterjee@mahaseva.gov.in</code>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-[10px] text-slate-400 italic">
+              Tip: Clicking any row above automatically fills the email & password into the sign-in form.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -5,8 +5,12 @@ from datetime import datetime
 class RegisterRequest(BaseModel):
     full_name: str
     email: EmailStr
-    phone: str
+    phone: Optional[str] = None
     password: str
+    role: Optional[str] = "CITIZEN"
+    state_code: Optional[str] = "MH"
+    department_id: Optional[int] = None
+    admin_code: Optional[str] = None
 
 class LoginRequest(BaseModel):
     username: str

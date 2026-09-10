@@ -8,7 +8,15 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (username: string, password: string) => Promise<void>;
-  register: (fullName: string, email: string, phone: string, password: string) => Promise<void>;
+  register: (
+    fullName: string,
+    email: string,
+    phone: string,
+    password: string,
+    role?: string,
+    stateCode?: string,
+    departmentId?: number | null
+  ) => Promise<void>;
   logout: () => void;
 }
 
@@ -55,12 +63,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(profileRes.data);
   };
 
-  const register = async (fullName: string, email: string, phone: string, password: string) => {
+  const register = async (
+    fullName: string,
+    email: string,
+    phone: string,
+    password: string,
+    role: string = "CITIZEN",
+    stateCode: string = "MH",
+    departmentId?: number | null
+  ) => {
     const res = await api.post("/auth/register", {
       full_name: fullName,
       email,
       phone,
       password,
+      role,
+      state_code: stateCode,
+      department_id: departmentId,
     });
 
     const accessToken = res.data.access_token;

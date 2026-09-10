@@ -51,7 +51,24 @@ export const App: React.FC = () => {
 
   // Redirect after login based on role
   const handleLoginSuccess = () => {
-    // Check local token role or wait for state
+    const token = localStorage.getItem("mahaseva_token");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        if (payload.role === "SUPER_ADMIN") {
+          handleNavigate("admin-dashboard");
+          return;
+        } else if (payload.role === "OFFICER" || payload.role === "DEPARTMENT_ADMIN") {
+          handleNavigate("officer-workbench");
+          return;
+        } else {
+          handleNavigate("citizen-dashboard");
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
     handleNavigate("home");
   };
 
@@ -97,7 +114,10 @@ export const App: React.FC = () => {
         )}
 
         {currentTab === "track" && (
-          <TrackApplicationPage initialNumber={tabParam?.number || ""} />
+          <TrackApplicationPage 
+            initialNumber={tabParam?.number || ""} 
+            onNavigate={handleNavigate}
+          />
         )}
 
         {currentTab === "citizen-dashboard" && (
@@ -119,13 +139,17 @@ export const App: React.FC = () => {
           <LoginPage
             onSuccess={handleLoginSuccess}
             onNavigateRegister={() => handleNavigate("register")}
+            initialEmail={tabParam?.prefillEmail || ""}
+            registrationNotice={tabParam?.notice || ""}
           />
         )}
 
         {currentTab === "register" && (
           <RegisterPage
             onSuccess={handleLoginSuccess}
-            onNavigateLogin={() => handleNavigate("login")}
+            onNavigateLogin={(prefillEmail, notice) => 
+              handleNavigate("login", { prefillEmail, notice })
+            }
           />
         )}
       </main>

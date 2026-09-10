@@ -34,25 +34,42 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
 
     hashed_password = get_password_hash(data.password)
 
+    # Determine assigned role, department, and state
+    req_role = (data.role or "CITIZEN").upper().strip()
+    if req_role in ["SUPER_ADMIN", "ADMIN"]:
+        assigned_role = RoleEnum.SUPER_ADMIN
+        assigned_dept_id = None
+        assigned_state = (data.state_code or "ALL").upper().strip()
+    elif req_role in ["OFFICER", "DEPARTMENT_ADMIN", "DEPT_ADMIN"]:
+        assigned_role = RoleEnum.OFFICER
+        assigned_dept_id = data.department_id
+        assigned_state = (data.state_code or "MH").upper().strip()
+    else:
+        assigned_role = RoleEnum.CITIZEN
+        assigned_dept_id = None
+        assigned_state = (data.state_code or "MH").upper().strip()
+
     user = User(
         full_name=data.full_name,
         email=data.email,
         phone=data.phone,
         password_hash=hashed_password,
-        role=RoleEnum.CITIZEN,
-        department_id=None,
+        role=assigned_role,
+        department_id=assigned_dept_id,
+        state_code=assigned_state,
         is_active=True
     )
     db.add(user)
     
-    # Also save to legacy citizens table if present
-    citizen = Citizen(
-        full_name=data.full_name,
-        email=data.email,
-        phone=data.phone,
-        password_hash=hashed_password
-    )
-    db.add(citizen)
+    # Also save to legacy citizens table if citizen role
+    if assigned_role == RoleEnum.CITIZEN:
+        citizen = Citizen(
+            full_name=data.full_name,
+            email=data.email,
+            phone=data.phone,
+            password_hash=hashed_password
+        )
+        db.add(citizen)
     
     db.commit()
     db.refresh(user)
