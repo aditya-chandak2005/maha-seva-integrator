@@ -65,12 +65,6 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
         
         <div className="relative max-w-5xl mx-auto text-center space-y-6">
-          {/* Badge */}
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-semibold backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-orange-400" />
-            <span>Smart India Hackathon 2026 — Problem Statement SIH26129 (PS-129)</span>
-          </div>
-
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
             {t("brand.slogan")}
           </h1>
@@ -153,51 +147,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </select>
               </div>
             </div>
-
-            {/* Active Jurisdiction Status Badge */}
-            {selectedState !== "ALL" && (
-              <div className="flex items-center justify-center">
-                <div className="inline-flex items-center space-x-2 text-xs text-amber-200 bg-black/20 px-3.5 py-1.5 rounded-full border border-amber-400/30">
-                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
-                  <span>
-                    {i18n.language === "hi" ? "वर्तमान में प्रदर्शित सेवाएं:" : i18n.language === "mr" ? "सध्या दर्शविलेल्या सेवा:" : "Currently viewing services for:"}{" "}
-                    <strong className="text-white font-bold underline underline-offset-2">
-                      {getStateLabel(selectedState, i18n.language)}
-                    </strong>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => onSelectState && onSelectState("ALL")}
-                    className="ml-2 text-blue-200 hover:text-white underline text-[11px]"
-                  >
-                    ({i18n.language === "hi" ? "सभी राज्य देखें" : i18n.language === "mr" ? "सर्व राज्ये पहा" : "View All India"})
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Quick Action Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2 text-xs">
-            <button
-              onClick={onOpenAssistant}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 font-bold text-white shadow-lg transition"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>{t("hero.ask_assistant")}</span>
-            </button>
-            <button
-              onClick={() => onNavigate("services")}
-              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium border border-white/20 transition"
-            >
-              {t("hero.explore_btn")}
-            </button>
-            <button
-              onClick={() => onNavigate("track")}
-              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium border border-white/20 transition"
-            >
-              {t("hero.track_btn")}
-            </button>
           </div>
         </div>
       </section>
@@ -413,7 +362,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           <div className="bg-white p-5 rounded-xl border border-slate-200">
             <h4 className="font-bold text-sm text-slate-900">
-              How does Maha-Seva Integrator solve departmental silos (SIH PS-129)?
+              How does Maha-Seva Integrator solve departmental silos?
             </h4>
             <p className="text-xs text-slate-600 mt-1 leading-relaxed">
               Instead of forcing citizens to register and re-upload proofs across multiple disparate portals (Revenue, Municipal, Transport, Food & Civil Supplies), Maha-Seva provides a single orchestration gateway with standardized adapters that synchronize data automatically across departments.

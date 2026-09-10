@@ -83,10 +83,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
           <span>
             {i18n.language === "mr"
-              ? "महा-सेवा इंटिग्रेटर — अखिल भारतीय बहु-राज्य नागरिक सेवा मंच (SIH 2026 PS-129)"
+              ? "महा-सेवा इंटिग्रेटर — अखिल भारतीय बहु-राज्य नागरिक सेवा मंच"
               : i18n.language === "hi"
-              ? "महा-सेवा इंटीग्रेटर — अखिल भारतीय बहु-राज्य नागरिक सेवा मंच (SIH 2026 PS-129)"
-              : "Maha-Seva Integrator — Multi-State Digital Public Services (SIH 2026 PS-129)"}
+              ? "महा-सेवा इंटीग्रेटर — अखिल भारतीय बहु-राज्य नागरिक सेवा मंच"
+              : "Maha-Seva Integrator — Multi-State Digital Public Services Gateway"}
           </span>
         </div>
         <div className="flex items-center space-x-3">

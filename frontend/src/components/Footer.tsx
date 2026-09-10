@@ -15,7 +15,7 @@ export const Footer: React.FC = () => {
               </span>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed max-w-md">
-              A unified digital government service orchestration platform designed for the Government of Maharashtra under Smart India Hackathon 2026 (SIH26129 / PS-129). Integrating departmental platforms to eliminate service delivery silos.
+              A unified digital government service orchestration platform integrating state and central government services to eliminate departmental delivery silos.
             </p>
             <div className="flex items-center space-x-2 text-emerald-400 pt-1 text-[11px] font-semibold">
               <ShieldCheck className="w-4 h-4" />
@@ -57,7 +57,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-          <p>© 2026 Government of Maharashtra. Developed for Smart India Hackathon 2026.</p>
+          <p>© 2026 National & State Public Services Gateway. All Rights Reserved.</p>
           <div className="flex space-x-6">
             <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>
             <span className="hover:text-slate-400 cursor-pointer">Terms of Service</span>
