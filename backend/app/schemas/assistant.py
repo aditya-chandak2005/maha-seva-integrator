@@ -16,6 +16,12 @@ class SuggestedService(BaseModel):
     description: Optional[str] = None
     fee: float
     processing_days: int
+    service_type: Optional[str] = "DOCUMENT"
+    scheme_type: Optional[str] = None
+    benefit_amount: Optional[str] = None
+    documents_required: Optional[List[str]] = []
+    eligibility: Optional[str] = None
+
 
 class AssistantQueryRequest(BaseModel):
     query: str
@@ -36,3 +42,9 @@ class KeyValidationResponse(BaseModel):
     valid: bool
     model: Optional[str] = None
     message: str
+
+class AssistantStatusResponse(BaseModel):
+    has_server_key: bool
+    model: Optional[str] = "gemini-2.0-flash"
+    is_active: bool
+    source: str = "none"

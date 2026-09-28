@@ -200,7 +200,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             type="button"
             disabled={loading}
             onClick={() => handleQuickLogin("admin.mh@mahaseva.gov.in", "Admin@2026", "admin-mh")}
-            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-purple-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50"
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-purple-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50 shadow-2xs"
           >
             <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0 border border-purple-400/30 group-hover:scale-105 transition">
               {quickLoginRole === "admin-mh" ? <Loader2 className="w-4 h-4 animate-spin text-purple-300" /> : <Shield className="w-4 h-4" />}
@@ -219,7 +219,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             type="button"
             disabled={loading}
             onClick={() => handleQuickLogin("admin@mahaseva.gov.in", "Admin@2026", "admin-all")}
-            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-blue-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50"
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-blue-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50 shadow-2xs"
           >
             <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-300 flex items-center justify-center shrink-0 border border-blue-400/30 group-hover:scale-105 transition">
               {quickLoginRole === "admin-all" ? <Loader2 className="w-4 h-4 animate-spin text-blue-300" /> : <Building2 className="w-4 h-4" />}
@@ -238,7 +238,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             type="button"
             disabled={loading}
             onClick={() => handleQuickLogin("officer.revenue@mahaseva.gov.in", "Officer@2026", "officer-rev")}
-            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-indigo-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50"
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-indigo-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50 shadow-2xs"
           >
             <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center shrink-0 border border-indigo-400/30 group-hover:scale-105 transition">
               {quickLoginRole === "officer-rev" ? <Loader2 className="w-4 h-4 animate-spin text-indigo-300" /> : <Briefcase className="w-4 h-4" />}
@@ -257,7 +257,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             type="button"
             disabled={loading}
             onClick={() => handleQuickLogin("officer.cbse@mahaseva.gov.in", "Officer@2026", "officer-cbse")}
-            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-amber-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50"
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-amber-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50 shadow-2xs"
           >
             <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0 border border-amber-400/30 group-hover:scale-105 transition">
               {quickLoginRole === "officer-cbse" ? <Loader2 className="w-4 h-4 animate-spin text-amber-300" /> : <Briefcase className="w-4 h-4" />}
@@ -276,7 +276,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             type="button"
             disabled={loading}
             onClick={() => handleQuickLogin("rahul.deshmukh@mahaseva.gov.in", "Citizen@2026", "citizen-rahul")}
-            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-emerald-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50 sm:col-span-2"
+            className="group text-left p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-emerald-400/50 transition flex items-center space-x-2.5 cursor-pointer disabled:opacity-50 sm:col-span-2 shadow-2xs"
           >
             <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 border border-emerald-400/30 group-hover:scale-105 transition">
               {quickLoginRole === "citizen-rahul" ? <Loader2 className="w-4 h-4 animate-spin text-emerald-300" /> : <UserCheck className="w-4 h-4" />}
@@ -305,7 +305,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       <form onSubmit={handleSubmit} className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
         {errorMsg && (
           <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center space-x-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{errorMsg}</span>
           </div>
         )}
@@ -332,10 +332,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="e.g. citizen@example.com, officer.revenue@..., admin.mh@..."
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-400 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
-          <span className="text-[10px] text-slate-400 block">
+          <span className="text-[10px] text-slate-500 block">
             Departmental format: <code>officer.&lt;dept&gt;@...</code> | State Admin: <code>admin.&lt;state&gt;@...</code>
           </span>
         </div>
@@ -382,7 +382,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder-slate-400 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
             <button
               type="button"
@@ -399,7 +399,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center space-x-1.5"
+          className="w-full py-3 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center space-x-1.5 cursor-pointer"
         >
           <span>{loading ? "Authenticating..." : "Sign In to Portal"}</span>
           <ArrowRight className="w-4 h-4" />
@@ -411,7 +411,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <button
             type="button"
             onClick={onNavigateRegister}
-            className="text-blue-700 font-bold hover:underline"
+            className="text-blue-700 font-bold hover:underline cursor-pointer"
           >
             Register as Citizen, Officer, or State Admin
           </button>
@@ -423,7 +423,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         <button
           type="button"
           onClick={() => setShowDemoHelp(!showDemoHelp)}
-          className="w-full p-3.5 flex items-center justify-between text-slate-600 hover:text-slate-900 transition font-medium"
+          className="w-full p-3.5 flex items-center justify-between text-slate-600 hover:text-slate-900 transition font-medium cursor-pointer"
         >
           <span className="flex items-center space-x-2">
             <KeyRound className="w-4 h-4 text-slate-500" />
@@ -445,23 +445,23 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <span>State Admins with State Initials (Password: <code className="bg-purple-100 px-1 py-0.5 rounded font-mono text-purple-900">Admin@2026</code>)</span>
               </span>
               <div className="bg-white p-2.5 rounded-xl border border-slate-200 space-y-1">
-                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded" onClick={() => handleFillCredentials("admin.mh@mahaseva.gov.in", "Admin@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("admin.mh@mahaseva.gov.in", "Admin@2026")}>
                   <span>Maharashtra Admin (.mh):</span>
                   <code className="font-mono text-purple-700 font-bold">admin.mh@mahaseva.gov.in</code>
                 </div>
-                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded" onClick={() => handleFillCredentials("admin.ka@mahaseva.gov.in", "Admin@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("admin.ka@mahaseva.gov.in", "Admin@2026")}>
                   <span>Karnataka Admin (.ka):</span>
                   <code className="font-mono text-purple-700 font-bold">admin.ka@mahaseva.gov.in</code>
                 </div>
-                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded" onClick={() => handleFillCredentials("admin.dl@mahaseva.gov.in", "Admin@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("admin.dl@mahaseva.gov.in", "Admin@2026")}>
                   <span>Delhi NCT Admin (.dl):</span>
                   <code className="font-mono text-purple-700 font-bold">admin.dl@mahaseva.gov.in</code>
                 </div>
-                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded" onClick={() => handleFillCredentials("admin.central@mahaseva.gov.in", "Admin@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("admin.central@mahaseva.gov.in", "Admin@2026")}>
                   <span>Central Govt Admin (.central):</span>
                   <code className="font-mono text-purple-700 font-bold">admin.central@mahaseva.gov.in</code>
                 </div>
-                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded" onClick={() => handleFillCredentials("admin@mahaseva.gov.in", "Admin@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-purple-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("admin@mahaseva.gov.in", "Admin@2026")}>
                   <span>All India Chief Admin:</span>
                   <code className="font-mono text-purple-700 font-bold">admin@mahaseva.gov.in</code>
                 </div>
@@ -475,15 +475,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <span>Department Officers with Dept Format (Password: <code className="bg-indigo-100 px-1 py-0.5 rounded font-mono text-indigo-900">Officer@2026</code>)</span>
               </span>
               <div className="bg-white p-2.5 rounded-xl border border-slate-200 space-y-1">
-                <div className="flex justify-between items-center cursor-pointer hover:bg-indigo-50/50 p-1 rounded" onClick={() => handleFillCredentials("officer.revenue@mahaseva.gov.in", "Officer@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-indigo-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("officer.revenue@mahaseva.gov.in", "Officer@2026")}>
                   <span>MH Revenue (.revenue):</span>
                   <code className="font-mono text-indigo-700 font-bold">officer.revenue@mahaseva.gov.in</code>
                 </div>
-                <div className="flex justify-between items-center cursor-pointer hover:bg-indigo-50/50 p-1 rounded" onClick={() => handleFillCredentials("officer.cbse@mahaseva.gov.in", "Officer@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-indigo-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("officer.cbse@mahaseva.gov.in", "Officer@2026")}>
                   <span>CBSE Exam Officer (.cbse):</span>
                   <code className="font-mono text-indigo-700 font-bold">officer.cbse@mahaseva.gov.in</code>
                 </div>
-                <div className="flex justify-between items-center cursor-pointer hover:bg-indigo-50/50 p-1 rounded" onClick={() => handleFillCredentials("officer.bescom@mahaseva.gov.in", "Officer@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-indigo-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("officer.bescom@mahaseva.gov.in", "Officer@2026")}>
                   <span>KA BESCOM Officer (.bescom):</span>
                   <code className="font-mono text-indigo-700 font-bold">officer.bescom@mahaseva.gov.in</code>
                 </div>
@@ -497,11 +497,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <span>Citizens (Password: <code className="bg-blue-100 px-1 py-0.5 rounded font-mono text-blue-900">Citizen@2026</code>)</span>
               </span>
               <div className="bg-white p-2.5 rounded-xl border border-slate-200 space-y-1">
-                <div className="flex justify-between items-center cursor-pointer hover:bg-blue-50/50 p-1 rounded" onClick={() => handleFillCredentials("rahul.deshmukh@mahaseva.gov.in", "Citizen@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-blue-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("rahul.deshmukh@mahaseva.gov.in", "Citizen@2026")}>
                   <span>Rahul Deshmukh (MH Citizen):</span>
                   <code className="font-mono text-blue-700 font-bold">rahul.deshmukh@mahaseva.gov.in</code>
                 </div>
-                <div className="flex justify-between items-center cursor-pointer hover:bg-blue-50/50 p-1 rounded" onClick={() => handleFillCredentials("ananya.chatterjee@mahaseva.gov.in", "Citizen@2026")}>
+                <div className="flex justify-between items-center cursor-pointer hover:bg-blue-50/50 p-1 rounded text-slate-800" onClick={() => handleFillCredentials("ananya.chatterjee@mahaseva.gov.in", "Citizen@2026")}>
                   <span>Ananya Chatterjee (Student / CBSE):</span>
                   <code className="font-mono text-blue-700 font-bold">ananya.chatterjee@mahaseva.gov.in</code>
                 </div>

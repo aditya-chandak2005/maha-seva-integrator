@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.core.database import get_db
 from app.core.security import get_current_user
@@ -40,6 +41,20 @@ def submit_application(
             detail="Specified service does not exist or is inactive"
         )
 
+    # Prevent duplicate active applications for the same service by this citizen
+    inactive_statuses = ["REJECTED", "CANCELLED"]
+    existing_active = db.query(Application).filter(
+        Application.citizen_id == current_user.id,
+        Application.service_id == service.id,
+        ~Application.status.in_(inactive_statuses)
+    ).order_by(Application.submitted_at.desc()).first()
+
+    if existing_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"You already have an active application ({existing_active.application_number}) for '{service.name}' with status '{existing_active.status}'. Duplicate submissions are not permitted."
+        )
+
     dept = db.query(Department).filter(Department.id == service.department_id).first()
     dept_code = dept.code if dept else "GEN"
     state_code = service.state_code or (dept.state_code if dept else "MH")
@@ -65,9 +80,39 @@ def submit_application(
         tracking_data=external_ack,
         remarks="Application successfully accepted by Maha-Seva gateway."
     )
-    db.add(application)
-    db.commit()
-    db.refresh(application)
+    try:
+        db.add(application)
+        db.commit()
+        db.refresh(application)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"An active application for '{service.name}' already exists. Duplicate submissions are not permitted."
+        )
+
+    # Attach any pre-existing vault documents to this application
+    if data.vault_document_ids:
+        for v_id in data.vault_document_ids:
+            v_doc = db.query(Document).filter(
+                Document.id == v_id,
+                Document.citizen_id == current_user.id
+            ).first()
+            if v_doc:
+                app_doc = Document(
+                    application_id=application.id,
+                    citizen_id=current_user.id,
+                    document_type=v_doc.document_type,
+                    file_name=v_doc.file_name,
+                    original_file_name=v_doc.original_file_name,
+                    mime_type=v_doc.mime_type,
+                    file_size=v_doc.file_size,
+                    storage_path=v_doc.storage_path,
+                    file_hash=v_doc.file_hash,
+                    verification_status="VERIFIED"
+                )
+                db.add(app_doc)
+        db.commit()
 
     # Record initial timeline event
     initial_event = ApplicationEvent(
@@ -132,6 +177,29 @@ def get_my_applications(
             updated_at=a.updated_at
         ))
     return result
+
+
+@router.get("/check-active")
+def check_active_application(
+    service_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    inactive_statuses = ["REJECTED", "CANCELLED"]
+    existing = db.query(Application).filter(
+        Application.citizen_id == current_user.id,
+        Application.service_id == service_id,
+        ~Application.status.in_(inactive_statuses)
+    ).order_by(Application.submitted_at.desc()).first()
+
+    if existing:
+        return {
+            "has_active": True,
+            "application_number": existing.application_number,
+            "status": existing.status,
+            "submitted_at": existing.submitted_at.isoformat() if existing.submitted_at else None
+        }
+    return {"has_active": False}
 
 
 @router.get("/track/{application_number}", response_model=ApplicationDetailResponse)

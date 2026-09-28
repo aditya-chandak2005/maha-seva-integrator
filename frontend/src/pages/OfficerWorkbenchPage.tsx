@@ -22,10 +22,13 @@ import {
   Phone,
   Mail,
   Send,
-  MapPin
+  MapPin,
+  Eye
 } from "lucide-react";
+import { DocumentPreviewModal, PreviewableDocument } from "../components/DocumentPreviewModal";
 
 export const OfficerWorkbenchPage: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [queue, setQueue] = useState<ApplicationListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +43,7 @@ export const OfficerWorkbenchPage: React.FC = () => {
   const [selectedAppId, setSelectedAppId] = useState<number | null>(null);
   const [selectedApp, setSelectedApp] = useState<ApplicationDetail | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState<PreviewableDocument | null>(null);
 
   // Status Update State
   const [newStatus, setNewStatus] = useState("PROCESSING");
@@ -125,23 +129,31 @@ export const OfficerWorkbenchPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Workbench Header */}
-      <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center space-x-2 text-indigo-400 text-xs font-bold uppercase tracking-wider">
+          <div className="flex items-center space-x-2 text-amber-300 text-xs font-bold uppercase tracking-wider">
             <Building className="w-4 h-4" />
-            <span>Official Government Verification Workbench</span>
+            <span>
+              {i18n.language === "mr"
+                ? "शासकीय पडताळणी डेस्क"
+                : i18n.language === "hi"
+                ? "सरकारी सत्यापन डेस्क"
+                : "Official Government Verification Workbench"}
+            </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold mt-1 text-white">
             Department Officer Queue
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Logged in as: <strong className="text-white">{user?.full_name}</strong> | Department ID: <span className="text-indigo-300 font-mono font-bold">{user?.department_id || "Cross-Departmental"}</span>
+          <p className="text-xs sm:text-sm text-blue-100 mt-1">
+            Logged in as: <strong className="text-white">{user?.full_name}</strong> | Department ID: <span className="text-amber-300 font-mono font-bold">#{user?.department_id || 1}</span> ({user?.state_code || "MH"} Jurisdiction)
           </p>
         </div>
 
-        <div className="bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-center">
-          <span className="text-[10px] text-slate-400 block uppercase font-semibold">Active Workload</span>
-          <span className="text-xl font-extrabold text-indigo-300">{queue.length} Pending</span>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-5 py-3 text-center shadow-xs">
+            <span className="text-[10px] text-blue-200 block uppercase font-bold tracking-wider">Active Workload</span>
+            <span className="text-2xl font-extrabold text-amber-300">{queue.length} Pending</span>
+          </div>
         </div>
       </div>
 
@@ -154,7 +166,7 @@ export const OfficerWorkbenchPage: React.FC = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search citizen or reference number..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
@@ -292,7 +304,7 @@ export const OfficerWorkbenchPage: React.FC = () => {
                     <td className="py-3.5 px-4 text-right">
                       <button
                         onClick={() => handleInspect(app.id)}
-                        className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition"
+                        className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition cursor-pointer"
                       >
                         Inspect & Action
                       </button>
@@ -312,23 +324,23 @@ export const OfficerWorkbenchPage: React.FC = () => {
             {/* Modal Header */}
             <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider block">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
                   Application Inspection & Verification Desk
                 </span>
-                <h3 className="font-extrabold text-lg sm:text-xl font-mono text-indigo-200">
+                <h3 className="font-extrabold text-lg sm:text-xl font-mono text-amber-400">
                   {selectedApp?.application_number || "Loading..."}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedAppId(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+                className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs bg-white text-slate-800">
               {modalLoading ? (
                 <div className="py-20 text-center text-slate-500 text-sm">
                   Loading application dossier...
@@ -406,6 +418,15 @@ export const OfficerWorkbenchPage: React.FC = () => {
                               <div className="text-slate-500 text-[11px] font-mono">{doc.original_file_name}</div>
                             </div>
                             <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setPreviewDoc(doc)}
+                                className="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-lg font-semibold text-[11px] flex items-center space-x-1 transition border border-slate-200 cursor-pointer"
+                                title="Inspect attached PDF with verification analysis"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-blue-600" />
+                                <span>Inspect & Preview</span>
+                              </button>
                               <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                                 doc.verification_status === "VERIFIED"
                                   ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
@@ -471,7 +492,7 @@ export const OfficerWorkbenchPage: React.FC = () => {
                           value={remarks}
                           onChange={(e) => setRemarks(e.target.value)}
                           placeholder="Enter reason, verification notes, or instructions for citizen..."
-                          className="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-indigo-500"
+                          className="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white text-slate-800 focus:ring-2 focus:ring-indigo-500"
                         />
                       </div>
                     </div>
@@ -501,6 +522,13 @@ export const OfficerWorkbenchPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Document Preview & Verification Inspection Modal */}
+      <DocumentPreviewModal
+        isOpen={!!previewDoc}
+        onClose={() => setPreviewDoc(null)}
+        document={previewDoc}
+      />
     </div>
   );
 };

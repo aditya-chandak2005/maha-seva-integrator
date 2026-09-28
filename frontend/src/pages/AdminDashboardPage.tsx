@@ -2,51 +2,38 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
-import { AdminAnalytics, AuditLogItem } from "../types";
-import { ALL_INDIA_STATES_AND_UTS } from "../constants/states";
-import { 
-  ShieldAlert, 
-  BarChart3, 
-  Building, 
-  FileText, 
-  CheckCircle2, 
-  Clock, 
-  Users, 
-  Activity,
-  Calendar,
-  Layers,
-  MapPin
-} from "lucide-react";
+import { AdminAnalytics, AuditLogItem, ALL_INDIA_STATES_AND_UTS } from "../types";
+import { ShieldAlert, Activity, FileCheck, Users, Clock, AlertTriangle, MapPin } from "lucide-react";
 
 export const AdminDashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const userAssignedState = user?.state_code && user?.state_code !== "ALL" ? user.state_code : "ALL";
   const isNationalAdmin = !user?.state_code || user?.state_code === "ALL";
-  const [selectedState, setSelectedState] = useState<string>(userAssignedState);
+  const [selectedState, setSelectedState] = useState<string>(user?.state_code || "ALL");
 
   useEffect(() => {
     fetchAdminData(selectedState);
   }, []);
 
-  const fetchAdminData = async (stateToFetch = selectedState) => {
+  const fetchAdminData = async (targetState: string) => {
     setLoading(true);
     try {
       const params: any = {};
-      if (stateToFetch && stateToFetch !== "ALL") {
-        params.state_code = stateToFetch;
+      if (targetState && targetState !== "ALL") {
+        params.state_code = targetState;
       }
-      const [analyticsRes, logsRes] = await Promise.all([
-        api.get("/admin/analytics/overview", { params }),
-        api.get("/admin/audit-logs?limit=25")
+      const [analyticsRes, auditRes] = await Promise.all([
+        api.get("/admin/analytics", { params }),
+        api.get("/admin/audit-logs", { params: { limit: 20 } }),
       ]);
       setAnalytics(analyticsRes.data);
-      setAuditLogs(logsRes.data || []);
+      setAuditLogs(auditRes.data);
     } catch (err) {
-      console.error(err);
+      console.error("Admin telemetry fetch error", err);
     } finally {
       setLoading(false);
     }
@@ -60,7 +47,7 @@ export const AdminDashboardPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="flex items-center space-x-2 text-purple-300 text-xs font-bold uppercase tracking-wider">
             <ShieldAlert className="w-4 h-4 text-amber-400" />
@@ -68,7 +55,7 @@ export const AdminDashboardPage: React.FC = () => {
               {analytics?.state_label ? `${analytics.state_label} Platform Governance Console` : "State Platform Governance Console"}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold mt-1 text-white">
             {analytics?.state_label ? `${analytics.state_label} Administrator Telemetry` : "Super Administrator Telemetry"}
           </h1>
           <p className="text-xs sm:text-sm text-purple-200 mt-1">
@@ -95,7 +82,7 @@ export const AdminDashboardPage: React.FC = () => {
               <select
                 value={selectedState}
                 onChange={(e) => handleStateChange(e.target.value)}
-                className="bg-slate-900 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg border border-purple-400/40 focus:outline-none cursor-pointer"
+                className="bg-white text-slate-900 text-xs font-bold px-2.5 py-1.5 rounded-lg border-0 shadow-inner focus:outline-none cursor-pointer"
               >
                 <option value="ALL">🇮🇳 All India (National Overview)</option>
                 <option value="CENTRAL">🏛️ Central Government (CBSE/NSP)</option>
@@ -181,7 +168,7 @@ export const AdminDashboardPage: React.FC = () => {
                       <tr key={idx} className="hover:bg-slate-50/60 transition">
                         <td className="py-3 px-4 font-bold text-slate-900">{dw.department_name}</td>
                         <td className="py-3 px-4 font-mono font-semibold text-indigo-600">{dw.department_code}</td>
-                        <td className="py-3 px-4 font-bold">{dw.total_applications}</td>
+                        <td className="py-3 px-4 font-bold text-slate-800">{dw.total_applications}</td>
                         <td className="py-3 px-4 text-amber-600 font-bold">{dw.pending}</td>
                         <td className="py-3 px-4 text-emerald-600 font-bold">{dw.approved}</td>
                         <td className="py-3 px-4 text-rose-600 font-bold">{dw.rejected}</td>

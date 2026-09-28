@@ -20,7 +20,7 @@ from app.core.database import SessionLocal
 from app.core.security import get_password_hash, RoleEnum
 from app.models import (
     Role, Department, ServiceCategory, Service, ServiceForm,
-    User, Application, ApplicationEvent, Notification, AuditLog
+    User, Application, ApplicationEvent, Notification, AuditLog, Document
 )
 
 def seed():
@@ -118,6 +118,14 @@ def seed():
                 "icon": "GraduationCap",
                 "description": "School marksheets, CBSE and State Board certificates, scholarships, and student IDs."
             },
+            {
+                "name": "Agriculture & Farmer Welfare",
+                "name_mr": "कृषी व शेतकरी कल्याण",
+                "name_hi": "कृषि एवं किसान कल्याण",
+                "code": "AGRI",
+                "icon": "Sprout",
+                "description": "Farmer direct benefit transfers, crop insurance, solar pumps, and agricultural subsidies."
+            }
         ]
         cat_map = {}
         for c in cat_data:
@@ -247,10 +255,19 @@ def seed():
             {"code": "GOI_CBSE", "state_code": "CENTRAL", "name": "Central Board of Secondary Education (CBSE)", "name_mr": "केंद्रीय माध्यमिक शिक्षण मंडळ (CBSE)", "name_hi": "केन्द्रीय माध्यमिक शिक्षा बोर्ड (CBSE)", "description": "National secondary and senior secondary school examination board, marksheet issuance, Pariksha Sangam, and academic records verification."},
             {"code": "GOI_EDU", "state_code": "CENTRAL", "name": "Ministry of Education & National Scholarship Portal", "name_mr": "केंद्रीय शिक्षण मंत्रालय व राष्ट्रीय शिष्यवृत्ती पोर्टल", "name_hi": "शिक्षा मंत्रालय एवं राष्ट्रीय छात्रवृत्ति पोर्टल (NSP)", "description": "Higher education welfare, Central Sector Schemes, pre/post-matric scholarships, and APAAR One Nation One Student ID."},
             {"code": "GOI_HEALTH", "state_code": "CENTRAL", "name": "National Health Authority (Ayushman Bharat)", "name_mr": "राष्ट्रीय आरोग्य प्राधिकरण (आयुष्मान भारत)", "name_hi": "राष्ट्रीय स्वास्थ्य प्राधिकरण (आयुष्मान भारत / ABHA)", "description": "Ayushman Bharat PM-JAY 5 lakh health coverage and 14-digit ABHA digital health accounts."},
+            {"code": "GOI_AGRI", "state_code": "CENTRAL", "name": "Ministry of Agriculture & Farmers Welfare (PM-KISAN)", "name_mr": "कृषी आणि शेतकरी कल्याण मंत्रालय", "name_hi": "कृषि एवं किसान कल्याण मंत्रालय", "description": "Pradhan Mantri Kisan Samman Nidhi, PM Fasal Bima Yojana, and agricultural subsidies."},
+            {"code": "GOI_MSME", "state_code": "CENTRAL", "name": "Ministry of Micro, Small & Medium Enterprises (PMEGP)", "name_mr": "सूक्ष्म, लघु व मध्यम उद्योग मंत्रालय", "name_hi": "सूक्ष्म, लघु एवं मध्यम उद्यम मंत्रालय", "description": "PMEGP credit linked capital subsidies, Udyam registration, and MSME entrepreneurship grants."},
+            {"code": "GOI_RD", "state_code": "CENTRAL", "name": "Ministry of Rural Development (PMAY-G Housing)", "name_mr": "केंद्रीय ग्रामीण विकास मंत्रालय (आवास योजना)", "name_hi": "ग्रामीण विकास मंत्रालय (PMAY-G ग्रामीण आवास)", "description": "Pradhan Mantri Awas Yojana Gramin, rural pucca housing subsidies, and rural infrastructure."},
+            {"code": "GOI_FIN", "state_code": "CENTRAL", "name": "Department of Financial Services (MUDRA & Stand-Up India)", "name_mr": "केंद्रीय वित्तीय सेवा विभाग (मुद्रा व स्टँड-अप)", "name_hi": "वित्तीय सेवाएं विभाग (MUDRA एवं स्टैंड-अप इंडिया ऋण)", "description": "Collateral-free institutional micro enterprise credit, Stand-Up India entrepreneurship loans, and financial inclusion."},
 
-            # --- STATE EDUCATION BOARDS ---
+            # --- STATE EDUCATION BOARDS & DEPARTMENTS ---
             {"code": "MH_BOARD", "state_code": "MH", "name": "Maharashtra State Board of Secondary & Higher Secondary Education (MSBSHSE)", "name_mr": "महाराष्ट्र राज्य माध्यमिक व उच्च माध्यमिक शिक्षण मंडळ (e-MarkSheet)", "name_hi": "महाराष्ट्र राज्य माध्यमिक एवं उच्च माध्यमिक शिक्षा बोर्ड (e-MarkSheet)", "description": "SSC (10th) and HSC (12th) digital marksheet verification, duplicate passing certificate, and migration."},
-            {"code": "UP_MSP", "state_code": "UP", "name": "UP Madhyamik Shiksha Parishad (UPMSP Prayagraj)", "name_mr": "उत्तर प्रदेश माध्यमिक शिक्षण परिषद (UPMSP)", "name_hi": "उत्तर प्रदेश माध्यमिक शिक्षा परिषद (UPMSP प्रयागराज)", "description": "High School (10th) and Intermediate (12th) online marksheet verification, duplicate marksheet, and migration certificates."}
+            {"code": "MH_AGRI", "state_code": "MH", "name": "Maharashtra Department of Agriculture (MahaDBT Shetkari)", "name_mr": "महाराष्ट्र कृषी विभाग (महाडीबीटी शेतकरी योजना)", "name_hi": "महाराष्ट्र कृषि विभाग (महाडीबीटी किसान योजना)", "description": "Namo Shetkari Mahasanman Nidhi, PM Fasal Bima matching grant, and drip irrigation subsidies."},
+            {"code": "MH_IND", "state_code": "MH", "name": "Maharashtra Directorate of Industries (CMEGP)", "name_mr": "उद्योग संचालनालय महाराष्ट्र (मुख्यमंत्री रोजगार निर्मिती कार्यक्रम)", "name_hi": "उद्योग निदेशालय महाराष्ट्र (मुख्यमंत्री रोजगार सृजन कार्यक्रम)", "description": "Chief Minister Employment Generation Programme (CMEGP) and state MSME capital subsidies."},
+            {"code": "MH_WCD", "state_code": "MH", "name": "Maharashtra Women & Child Development (Ladki Bahin)", "name_mr": "महिला व बालविकास विभाग (मुख्यमंत्री माझी लाडकी बहीण योजना)", "name_hi": "महिला एवं बाल विकास विभाग (मुख्यमंत्री माझी लाडकी बहिन योजना)", "description": "Direct benefit financial assistance for women and child empowerment across Maharashtra."},
+            {"code": "UP_MSP", "state_code": "UP", "name": "UP Madhyamik Shiksha Parishad (UPMSP Prayagraj)", "name_mr": "उत्तर प्रदेश माध्यमिक शिक्षण परिषद (UPMSP)", "name_hi": "उत्तर प्रदेश माध्यमिक शिक्षा परिषद (UPMSP प्रयागराज)", "description": "High School (10th) and Intermediate (12th) online marksheet verification, duplicate marksheet, and migration certificates."},
+            {"code": "UP_AGRI", "state_code": "UP", "name": "UP Agriculture Department (Krishi Yantra Subsidy)", "name_mr": "उत्तर प्रदेश कृषी विभाग", "name_hi": "उत्तर प्रदेश कृषि विभाग (कृषि यंत्र अनुदान)", "description": "Farm mechanization, solar pump, and agricultural equipment subsidies across Uttar Pradesh."},
+            {"code": "KA_AGRI", "state_code": "KA", "name": "Karnataka Agriculture Department (Raitha Siri)", "name_mr": "कर्नाटक कृषी विभाग", "name_hi": "कर्नाटक कृषि विभाग (रैथा सिरी)", "description": "Direct benefit incentives for millet growers and dryland agriculture in Karnataka."}
         ]
 
         dept_map = {}
@@ -831,6 +848,453 @@ def seed():
                     {"key": "mobile_no", "label": "Aadhaar Linked Mobile Number", "label_mr": "मोबाईल क्रमांक", "label_hi": "मोबाइल नंबर", "type": "TEXT", "required": True},
                     {"key": "dob", "label": "Date of Birth (DD/MM/YYYY)", "label_mr": "जन्मतारीख", "label_hi": "जन्म तिथि", "type": "TEXT", "required": True}
                 ]
+            },
+            # 35. PM-KISAN Samman Nidhi Yojana (Central Agriculture)
+            {
+                "code": "CENTRAL_PM_KISAN", "state_code": "CENTRAL", "dept_code": "GOI_AGRI", "cat_code": "AGRI",
+                "service_type": "SCHEME", "scheme_type": "AGRICULTURE", "sponsor_type": "CENTRAL",
+                "benefit_amount": "₹6,000 / year (Direct Benefit Transfer in 3 equal instalments of ₹2,000)",
+                "name": "PM-KISAN Samman Nidhi Yojana",
+                "name_mr": "प्रधानमंत्री किसान सन्मान निधी योजना",
+                "name_hi": "प्रधानमंत्री किसान सम्मान निधि योजना",
+                "description": "Financial support of ₹6,000 per year transferred directly to Aadhaar-seeded bank accounts of landholding farmer families across India.",
+                "description_mr": "शेतकरी कुटुंबांच्या बँक खात्यात दरवर्षी ₹६,००० चा थेट लाभ (३ समान हप्त्यांमध्ये थेट DBT द्वारे).",
+                "description_hi": "सभी पात्र भूमिधारक किसान परिवारों को प्रति वर्ष ₹6,000 की प्रत्यक्ष आर्थिक सहायता (DBT किस्त)।",
+                "fee": 0.00, "processing_days": 15,
+                "required_docs": ["Aadhaar Card", "7/12 Land Record / RoR", "Bank Passbook", "Land Ownership Document"],
+                "eligibility": {"criteria": "All landholding farmer families with cultivable land in their names"},
+                "fields": [
+                    {"key": "aadhaar_no", "label": "12-Digit Aadhaar Number", "type": "TEXT", "required": True},
+                    {"key": "land_survey_no", "label": "Land Survey / Khasra / Gat Number", "type": "TEXT", "required": True},
+                    {"key": "land_area_hectares", "label": "Cultivable Land Area (in Hectares)", "type": "NUMBER", "required": True},
+                    {"key": "bank_account", "label": "Aadhaar Linked Bank Account Number", "type": "TEXT", "required": True},
+                    {"key": "bank_ifsc", "label": "Bank IFSC Code", "type": "TEXT", "required": True}
+                ]
+            },
+            # 36. Namo Shetkari Mahasanman Nidhi Yojana (Maharashtra Agriculture)
+            {
+                "code": "MH_NAMO_SHETKARI", "state_code": "MH", "dept_code": "MH_AGRI", "cat_code": "AGRI",
+                "service_type": "SCHEME", "scheme_type": "AGRICULTURE", "sponsor_type": "STATE",
+                "benefit_amount": "₹6,000 / year additional State top-up (Total ₹12,000 / year combined with PM-KISAN)",
+                "name": "Namo Shetkari Mahasanman Nidhi Yojana",
+                "name_mr": "नमो शेतकरी महासन्मान निधी योजना",
+                "name_hi": "नमो शेतकारी महासम्मान निधि योजना",
+                "description": "Maharashtra State financial assistance providing an additional ₹6,000 per year to registered farmers alongside PM-KISAN.",
+                "description_mr": "महाराष्ट्र शासनाकडून पीएम-किसान योजनेस जोडून वर्षाला अतिरिक्त ₹६,००० चा थेट बँक हस्तांतरण लाभ.",
+                "description_hi": "महाराष्ट्र सरकार द्वारा पीएम-किसान योजना के साथ अतिरिक्त ₹6,000 प्रति वर्ष की राज्य सहायता।",
+                "fee": 0.00, "processing_days": 10,
+                "required_docs": ["Aadhaar Card", "7/12 Land Record / RoR", "Bank Passbook", "Domicile Certificate"],
+                "eligibility": {"criteria": "Farmers resident in Maharashtra eligible for and registered under PM-KISAN"},
+                "fields": [
+                    {"key": "pm_kisan_id", "label": "PM-KISAN Registration ID / Aadhaar", "type": "TEXT", "required": True},
+                    {"key": "district", "label": "District", "type": "TEXT", "required": True},
+                    {"key": "taluka", "label": "Taluka", "type": "TEXT", "required": True},
+                    {"key": "village", "label": "Village", "type": "TEXT", "required": True},
+                    {"key": "bank_account", "label": "Bank Account Number", "type": "TEXT", "required": True}
+                ]
+            },
+            # 37. Pradhan Mantri Fasal Bima Yojana (Crop Insurance)
+            {
+                "code": "CENTRAL_PM_FASAL_BIMA", "state_code": "CENTRAL", "dept_code": "GOI_AGRI", "cat_code": "AGRI",
+                "service_type": "SCHEME", "scheme_type": "AGRICULTURE", "sponsor_type": "CENTRAL",
+                "benefit_amount": "Comprehensive Insurance Cover against Crop Loss with subsidized premium (1.5% - 2%)",
+                "name": "Pradhan Mantri Fasal Bima Yojana (Crop Insurance)",
+                "name_mr": "प्रधानमंत्री पीक विमा योजना (PMFBY)",
+                "name_hi": "प्रधानमंत्री फसल बीमा योजना (फसल सुरक्षा)",
+                "description": "Comprehensive risk insurance covering yield losses due to non-preventable natural risks (drought, flood, unseasonal rain, pests) from pre-sowing to post-harvest.",
+                "description_mr": "नैसर्गिक आपत्ती, दुष्काळ व किडीमुळे होणाऱ्या पीक नुकसानीपासून सर्वसमावेशक विमा संरक्षण.",
+                "description_hi": "सूखा, बाढ़ एवं प्राकृतिक आपदाओं से फसल नुकसान पर व्यापक वित्तीय सुरक्षा एवं न्यूनतम प्रीमियम।",
+                "fee": 1.00, "processing_days": 7,
+                "required_docs": ["7/12 Land Record / RoR", "Aadhaar Card", "Bank Passbook", "Sowing Certificate"],
+                "eligibility": {"criteria": "All farmers growing notified crops in notified areas including sharecroppers and tenant farmers"},
+                "fields": [
+                    {"key": "crop_season", "label": "Crop Season", "type": "DROPDOWN", "required": True, "options": ["Kharif", "Rabi", "Commercial / Horticultural"]},
+                    {"key": "crop_name", "label": "Notified Crop Name (e.g., Soybean, Cotton, Wheat)", "type": "TEXT", "required": True},
+                    {"key": "survey_number", "label": "Survey / Gut Number", "type": "TEXT", "required": True},
+                    {"key": "area_insured_acres", "label": "Area to Insure (in Acres)", "type": "NUMBER", "required": True}
+                ]
+            },
+            # 38. Prime Minister's Employment Generation Programme (PMEGP)
+            {
+                "code": "CENTRAL_PMEGP_MSME", "state_code": "CENTRAL", "dept_code": "GOI_MSME", "cat_code": "INDUSTRY",
+                "service_type": "SCHEME", "scheme_type": "INDUSTRIAL_MSME", "sponsor_type": "CENTRAL",
+                "benefit_amount": "15% to 35% Capital Subsidy on Project Costs up to ₹50 Lakh (Manufacturing) / ₹20 Lakh (Service)",
+                "name": "Prime Minister's Employment Generation Programme (PMEGP)",
+                "name_mr": "पंतप्रधान रोजगार निर्मिती कार्यक्रम (PMEGP)",
+                "name_hi": "प्रधानमंत्री रोजगार सृजन कार्यक्रम (PMEGP)",
+                "description": "Credit-linked subsidy programme by MSME Ministry & KVIC to set up micro-enterprises and generate self-employment in manufacturing and service sectors.",
+                "description_mr": "सूक्ष्म, लघू व मध्यम उद्योग सुरू करण्यासाठी खादी व ग्रामोद्योग आयोगामार्फत १५% ते ३५% चे भांडवली अनुदान.",
+                "description_hi": "सूक्ष्म उद्योग स्थापना हेतु 15% से 35% तक का पूंजीगत अनुदान (सब्सिडी) एवं बैंक ऋण सहायता।",
+                "fee": 0.00, "processing_days": 30,
+                "required_docs": ["Detailed Project Report (DPR)", "Aadhaar Card", "PAN Card", "Educational Marksheet", "Caste Certificate"],
+                "eligibility": {"criteria": "Individuals aged 18+ with minimum 8th standard pass for manufacturing projects above ₹10 Lakh"},
+                "fields": [
+                    {"key": "agency_type", "label": "Sponsoring Agency", "type": "DROPDOWN", "required": True, "options": ["KVIC", "KVIB", "DIC (District Industries Centre)"]},
+                    {"key": "industry_type", "label": "Sector / Industry Type", "type": "DROPDOWN", "required": True, "options": ["Manufacturing Enterprise", "Service Enterprise"]},
+                    {"key": "project_cost", "label": "Estimated Total Project Cost (in ₹)", "type": "NUMBER", "required": True},
+                    {"key": "preferred_bank", "label": "Financing Bank Name & Branch", "type": "TEXT", "required": True}
+                ]
+            },
+            # 39. Chief Minister Employment Generation Programme (CMEGP)
+            {
+                "code": "MH_CMEGP_INDUSTRIAL", "state_code": "MH", "dept_code": "MH_IND", "cat_code": "INDUSTRY",
+                "service_type": "SCHEME", "scheme_type": "INDUSTRIAL_MSME", "sponsor_type": "STATE",
+                "benefit_amount": "15% to 35% Margin Money Subsidy for projects up to ₹50 Lakh",
+                "name": "Chief Minister Employment Generation Programme (CMEGP)",
+                "name_mr": "मुख्यमंत्री रोजगार निर्मिती कार्यक्रम (CMEGP)",
+                "name_hi": "मुख्यमंत्री रोजगार सृजन कार्यक्रम (CMEGP)",
+                "description": "Government of Maharashtra scheme offering financial assistance and margin money subsidy for unemployed youth setting up new industrial MSME ventures.",
+                "description_mr": "महाराष्ट्रातील सुशिक्षित बेरोजगार तरुणांना नवीन उद्योग सुरू करण्यासाठी ३५% पर्यंत मार्जिन मनी अनुदान.",
+                "description_hi": "महाराष्ट्र शासन द्वारा राज्य के युवाओं को नए उद्योग एवं सेवा व्यवसाय स्थापित करने हेतु 35% तक अनुदान।",
+                "fee": 0.00, "processing_days": 21,
+                "required_docs": ["Project Report", "Aadhaar Card", "PAN Card", "Domicile Certificate", "Educational Marksheet"],
+                "eligibility": {"criteria": "Domicile of Maharashtra aged 18 to 45 years with minimum 7th/10th standard pass"},
+                "fields": [
+                    {"key": "enterprise_name", "label": "Proposed Enterprise / Business Name", "type": "TEXT", "required": True},
+                    {"key": "business_activity", "label": "Activity / Product Description", "type": "TEXT", "required": True},
+                    {"key": "project_cost", "label": "Total Project Outlay (in ₹)", "type": "NUMBER", "required": True},
+                    {"key": "district", "label": "District for Enterprise Location", "type": "TEXT", "required": True}
+                ]
+            },
+            # 40. AICTE Pragati Scholarship for Girls
+            {
+                "code": "CENTRAL_AICTE_PRAGATI", "state_code": "CENTRAL", "dept_code": "GOI_EDU", "cat_code": "EDUCATION",
+                "service_type": "SCHEME", "scheme_type": "EDUCATION_SCHOLARSHIP", "sponsor_type": "CENTRAL",
+                "benefit_amount": "₹50,000 / year for every year of technical degree or diploma study",
+                "name": "AICTE Pragati Scholarship Scheme for Girl Students",
+                "name_mr": "एआयसीटीई प्रगती शिष्यवृत्ती योजना (मुलींसाठी)",
+                "name_hi": "एआईसीटीई प्रगति छात्रवृत्ति योजना (बालिकाओं के लिए)",
+                "description": "Scholarship providing ₹50,000 per annum towards college fee and contingencies to girl students admitted in AICTE approved degree/diploma technical institutions.",
+                "description_mr": "तांत्रिक पदवी किंवा पदविका अभ्यासक्रमात प्रवेश घेतलेल्या गुणवंत विद्यार्थिनींसाठी दरवर्षी ₹५०,००० ची शिष्यवृत्ती.",
+                "description_hi": "तकनीकी शिक्षा (डिग्री/डिप्लोमा) में प्रवेशित मेधावी छात्राओं को प्रति वर्ष ₹50,000 की वित्तीय सहायता।",
+                "fee": 0.00, "processing_days": 20,
+                "required_docs": ["Marksheet", "College Admission Bonafide Certificate", "Income Certificate", "Aadhaar Card", "Bank Passbook"],
+                "eligibility": {"criteria": "Female students admitted to 1st year degree/diploma in AICTE approved college with family income under ₹8 Lakh/year"},
+                "fields": [
+                    {"key": "institute_name", "label": "AICTE Approved College / Institute Name", "type": "TEXT", "required": True},
+                    {"key": "course_name", "label": "Degree / Diploma Course & Branch", "type": "TEXT", "required": True},
+                    {"key": "roll_number", "label": "College Enrolment / PRN Number", "type": "TEXT", "required": True},
+                    {"key": "family_annual_income", "label": "Annual Family Income (in ₹)", "type": "NUMBER", "required": True}
+                ]
+            },
+            # 41. Rajarshi Chhatrapati Shahu Maharaj Shikshan Shulk Shishyavrutti
+            {
+                "code": "MH_SHAHU_MAHARAJ_SCHOLARSHIP", "state_code": "MH", "dept_code": "MH_SOC", "cat_code": "EDUCATION",
+                "service_type": "SCHEME", "scheme_type": "EDUCATION_SCHOLARSHIP", "sponsor_type": "STATE",
+                "benefit_amount": "50% Tuition Fee & Exam Fee Reimbursement for EBC/SEBC/OBC students",
+                "name": "Rajarshi Chhatrapati Shahu Maharaj Fee Reimbursement Scholarship",
+                "name_mr": "राजर्षी छत्रपती शाहू महाराज शिक्षण शुल्क शिष्यवृत्ती योजना",
+                "name_hi": "राजर्षि छत्रपति शाहू महाराज शिक्षण शुल्क छात्रवृत्ति योजना",
+                "description": "MahaDBT higher and professional education fee waiver providing 50% tuition and examination fee reimbursement to economically backward class students.",
+                "description_mr": "महाडीबीटी मार्फत उच्च व तंत्रशिक्षण घेणाऱ्या आर्थिकदृष्ट्या दुर्बल घटकातील (EBC) विद्यार्थ्यांसाठी ५०% फी सवलत.",
+                "description_hi": "उच्च एवं व्यावसायिक शिक्षा हेतु आर्थिक रूप से कमजोर वर्ग (EBC) के छात्रों को 50% शिक्षण शुल्क प्रतिपूर्ति।",
+                "fee": 0.00, "processing_days": 15,
+                "required_docs": ["Income Certificate", "Domicile Certificate", "College Fee Receipt", "Marksheet", "Aadhaar Card", "Bank Passbook"],
+                "eligibility": {"criteria": "Students admitted through CAP round with annual family income up to ₹8,00,000"},
+                "fields": [
+                    {"key": "cap_allotment_no", "label": "CAP Application / Allotment ID", "type": "TEXT", "required": True},
+                    {"key": "college_name", "label": "College / University Name", "type": "TEXT", "required": True},
+                    {"key": "course_year", "label": "Current Year of Study", "type": "DROPDOWN", "required": True, "options": ["First Year", "Second Year", "Third Year", "Final Year"]},
+                    {"key": "tuition_fee_paid", "label": "Tuition Fee Amount Paid (in ₹)", "type": "NUMBER", "required": True}
+                ]
+            },
+            # 42. Mukhyamantri Majhi Ladki Bahin Yojana
+            {
+                "code": "MH_LADKI_BAHIN_YOJANA", "state_code": "MH", "dept_code": "MH_WCD", "cat_code": "WELFARE",
+                "service_type": "SCHEME", "scheme_type": "SOCIAL_WELFARE", "sponsor_type": "STATE",
+                "benefit_amount": "₹1,500 / month Direct Cash Transfer (₹18,000 / year)",
+                "name": "Mukhyamantri Majhi Ladki Bahin Yojana",
+                "name_mr": "मुख्यमंत्री माझी लाडकी बहीण योजना",
+                "name_hi": "मुख्यमंत्री माझी लाड़की बहिन योजना",
+                "description": "Flagship DBT initiative providing monthly financial assistance of ₹1,500 directly into bank accounts of eligible women aged 21-65 years in Maharashtra.",
+                "description_mr": "महाराष्ट्रातील २१ ते ६५ वयोगटातील महिलांसाठी दरमहा ₹१,५०० चा थेट आर्थिक लाभ (वार्षिक ₹१८,००० थेट बँक खात्यात).",
+                "description_hi": "महाराष्ट्र की 21 से 65 वर्ष आयु वर्ग की पात्र महिलाओं को प्रतिमाह ₹1,500 (वार्षिक ₹18,000) प्रत्यक्ष डीबीटी लाभ।",
+                "fee": 0.00, "processing_days": 7,
+                "required_docs": ["Aadhaar Card", "Domicile Certificate", "Income Certificate", "Bank Passbook", "Ration Card"],
+                "eligibility": {"criteria": "Women residents of Maharashtra aged 21 to 65 years with family income below ₹2.5 Lakh per year"},
+                "fields": [
+                    {"key": "applicant_age", "label": "Age of Applicant (between 21 and 65)", "type": "NUMBER", "required": True},
+                    {"key": "marital_status", "label": "Marital Status", "type": "DROPDOWN", "required": True, "options": ["Married", "Unmarried", "Widow", "Divorced / Abandoned"]},
+                    {"key": "ration_card_no", "label": "12-Digit Ration Card Number", "type": "TEXT", "required": True},
+                    {"key": "bank_account", "label": "Aadhaar Seeded Bank Account Number", "type": "TEXT", "required": True},
+                    {"key": "bank_ifsc", "label": "Bank IFSC Code", "type": "TEXT", "required": True}
+                ]
+            },
+            # 43. PM-KUSUM Solar Agriculture Pump Subsidy
+            {
+                "code": "CENTRAL_PM_KUSUM", "state_code": "CENTRAL", "dept_code": "GOI_AGRI", "cat_code": "AGRI",
+                "service_type": "SCHEME", "scheme_type": "AGRICULTURE", "sponsor_type": "CENTRAL",
+                "benefit_amount": "Up to 60% Solar Pump Subsidy (3HP to 7.5HP) + 30% Bank Loan Support",
+                "name": "PM-KUSUM Solar Agriculture Pump Subsidy Yojana",
+                "name_mr": "प्रधानमंत्री कुसुम सौर कृषी पंप योजना",
+                "name_hi": "प्रधानमंत्री कुसुम सौर कृषि पंप योजना (PM-KUSUM)",
+                "description": "Subsidized installation of standalone off-grid and grid-connected solar agricultural water pumps (3HP to 7.5HP) for farmers to replace diesel pumps.",
+                "description_mr": "डिझेल पंपांना पर्याय म्हणून शेतकऱ्यांना सौर कृषी पंप बसवण्यासाठी ६०% पर्यंत थेट सरकारी अनुदान.",
+                "description_hi": "किसानों को सिंचाई हेतु सौर ऊर्जा चालित कृषि पंप (3 HP से 7.5 HP) स्थापना पर 60% तक की भारी सब्सिडी।",
+                "fee": 0.00, "processing_days": 21,
+                "required_docs": ["Aadhaar Card", "7/12 Land Record / RoR", "Bank Passbook", "Caste Certificate"],
+                "eligibility": {"criteria": "Farmers with agricultural land possessing an existing water source without electric grid pump"},
+                "fields": [
+                    {"key": "aadhaar_no", "label": "12-Digit Aadhaar Number", "type": "TEXT", "required": True},
+                    {"key": "district", "label": "District", "type": "TEXT", "required": True},
+                    {"key": "taluka", "label": "Taluka", "type": "TEXT", "required": True},
+                    {"key": "land_survey_no", "label": "Land Survey / Gat Number", "type": "TEXT", "required": True},
+                    {"key": "pump_capacity_hp", "label": "Desired Solar Pump Capacity", "type": "DROPDOWN", "required": True, "options": ["3 HP (Submersible/Surface)", "5 HP (Submersible/Surface)", "7.5 HP (Submersible/Surface)"]},
+                    {"key": "bank_account", "label": "Aadhaar Seeded Bank Account Number", "type": "TEXT", "required": True}
+                ]
+            },
+            # 44. PM Krishi Sinchayee Yojana (Micro-Irrigation)
+            {
+                "code": "CENTRAL_PMKSY_IRRIGATION", "state_code": "CENTRAL", "dept_code": "GOI_AGRI", "cat_code": "AGRI",
+                "service_type": "SCHEME", "scheme_type": "AGRICULTURE", "sponsor_type": "CENTRAL",
+                "benefit_amount": "45% to 55% Capital Subsidy for Drip and Sprinkler Systems (Per Drop More Crop)",
+                "name": "PM Krishi Sinchayee Yojana (Per Drop More Crop - Drip/Sprinkler)",
+                "name_mr": "प्रधानमंत्री कृषी सिंचन योजना (सूक्ष्म सिंचन - ठिबक व तुषार)",
+                "name_hi": "प्रधानमंत्री कृषि सिंचाई योजना (प्रति बूंद अधिक फसल - ड्रिप/स्प्रिंकलर)",
+                "description": "Capital financial subsidy of 55% for small/marginal farmers and 45% for other farmers to deploy water-saving drip and sprinkler irrigation.",
+                "description_mr": "शेतकऱ्यांच्या शेतात ठिबक आणि तुषार सूक्ष्म सिंचन संच बसवण्यासाठी ५५% पर्यंत थेट भांडवली अनुदान.",
+                "description_hi": "खेतों में ड्रिप एवं स्प्रिंकलर सिंचाई तकनीक अपनाने हेतु लघु/सीमांत किसानों को 55% तक का सरकारी अनुदान।",
+                "fee": 0.00, "processing_days": 15,
+                "required_docs": ["7/12 Land Record / RoR", "Aadhaar Card", "Bank Passbook", "Water Source Certificate"],
+                "eligibility": {"criteria": "Farmers with cultivable land holding an assured irrigation water source"},
+                "fields": [
+                    {"key": "aadhaar_no", "label": "12-Digit Aadhaar Number", "type": "TEXT", "required": True},
+                    {"key": "district", "label": "District", "type": "TEXT", "required": True},
+                    {"key": "irrigation_type", "label": "Type of Micro-Irrigation System", "type": "DROPDOWN", "required": True, "options": ["Inline Drip Irrigation", "Online Drip Irrigation", "Micro Sprinkler System", "Mini Sprinkler System"]},
+                    {"key": "land_area_hectares", "label": "Land Area for Installation (in Hectares)", "type": "NUMBER", "required": True},
+                    {"key": "bank_account", "label": "Aadhaar Seeded Bank Account Number", "type": "TEXT", "required": True}
+                ]
+            },
+            # 45. National Means-cum-Merit Scholarship Scheme (NMMSS)
+            {
+                "code": "CENTRAL_NMMSS_SCHOLARSHIP", "state_code": "CENTRAL", "dept_code": "GOI_EDU", "cat_code": "EDUCATION",
+                "service_type": "SCHEME", "scheme_type": "EDUCATION_SCHOLARSHIP", "sponsor_type": "CENTRAL",
+                "benefit_amount": "₹12,000 / year (₹1,000 / month) for Class 9 through Class 12",
+                "name": "National Means-cum-Merit Scholarship Scheme (NMMSS)",
+                "name_mr": "राष्ट्रीय आर्थिक दुर्बल घटक शिष्यवृत्ती योजना (NMMSS)",
+                "name_hi": "राष्ट्रीय साधन-सह-योग्यता छात्रवृत्ति योजना (NMMSS)",
+                "description": "Scholarship awarded to meritorious students from economically weaker sections to prevent dropout at Class 8 and support secondary schooling through Class 12.",
+                "description_mr": "आर्थिकदृष्ट्या दुर्बल घटकातील गुणवंत विद्यार्थ्यांना इयत्ता ९ वी ते १२ वी पर्यंत दरमहा ₹१,००० ची शिष्यवृत्ती.",
+                "description_hi": "आर्थिक रूप से कमजोर मेधावी छात्रों को कक्षा 9 से 12 तक प्रति वर्ष ₹12,000 की वित्तीय छात्रवृत्ति सहायता।",
+                "fee": 0.00, "processing_days": 15,
+                "required_docs": ["Marksheet", "Income Certificate", "Aadhaar Card", "Bank Passbook", "Caste Certificate"],
+                "eligibility": {"criteria": "Students in government/aided schools scoring min 55% in Class 8 with parental annual income under ₹3.5 Lakh"},
+                "fields": [
+                    {"key": "student_name", "label": "Student Legal Name", "type": "TEXT", "required": True},
+                    {"key": "school_name", "label": "School Name with UDISE Code", "type": "TEXT", "required": True},
+                    {"key": "class_enrolled", "label": "Current Class of Study", "type": "DROPDOWN", "required": True, "options": ["Class 9", "Class 10", "Class 11", "Class 12"]},
+                    {"key": "family_annual_income", "label": "Annual Family Income (in ₹)", "type": "NUMBER", "required": True},
+                    {"key": "bank_account", "label": "Student Aadhaar Linked Bank Account", "type": "TEXT", "required": True},
+                    {"key": "bank_ifsc", "label": "Bank IFSC Code", "type": "TEXT", "required": True}
+                ]
+            },
+            # 46. Post-Matric Scholarship for SC/ST/OBC Students
+            {
+                "code": "CENTRAL_POST_MATRIC_SCHOLARSHIP", "state_code": "CENTRAL", "dept_code": "GOI_EDU", "cat_code": "EDUCATION",
+                "service_type": "SCHEME", "scheme_type": "EDUCATION_SCHOLARSHIP", "sponsor_type": "CENTRAL",
+                "benefit_amount": "100% Tuition & Exam Fee Waiver + Monthly Maintenance Allowance up to ₹13,500/year",
+                "name": "Post-Matric Scholarship for SC/ST/OBC Students",
+                "name_mr": "मॅट्रिकोत्तर शिष्यवृत्ती योजना (अनुसूचित जाती/जमाती/इतर मागासवर्ग)",
+                "name_hi": "पोस्ट-मैट्रिक छात्रवृत्ति योजना (SC/ST/OBC छात्र)",
+                "description": "Comprehensive scholarship covering mandatory college fees, study tour expenses, and monthly living allowance for reserved category higher education.",
+                "description_mr": "उच्च शिक्षण घेणाऱ्या मागासवर्गीय विद्यार्थ्यांसाठी संपूर्ण शैक्षणिक शुल्क माफी आणि वार्षिक निर्वाह भत्ता.",
+                "description_hi": "आरक्षित वर्ग के उच्च शिक्षा (डिग्री/डिप्लोमा) छात्रों हेतु पूर्ण शिक्षण शुल्क प्रतिपूर्ति एवं मासिक निर्वाह भत्ता।",
+                "fee": 0.00, "processing_days": 20,
+                "required_docs": ["Caste Certificate", "Income Certificate", "Marksheet", "College Fee Receipt", "Aadhaar Card", "Bank Passbook"],
+                "eligibility": {"criteria": "SC/ST/OBC students studying in recognized post-secondary courses with annual parental income up to ₹2.5 Lakh"},
+                "fields": [
+                    {"key": "student_name", "label": "Student Name", "type": "TEXT", "required": True},
+                    {"key": "caste_category", "label": "Caste Category", "type": "DROPDOWN", "required": True, "options": ["SC", "ST", "OBC", "SBC", "VJNT"]},
+                    {"key": "sub_caste", "label": "Sub-Caste Name", "type": "TEXT", "required": True},
+                    {"key": "college_name", "label": "College / University Name", "type": "TEXT", "required": True},
+                    {"key": "course_name", "label": "Course & Specialization", "type": "TEXT", "required": True},
+                    {"key": "family_annual_income", "label": "Annual Family Income (in ₹)", "type": "NUMBER", "required": True},
+                    {"key": "bank_account", "label": "Student Aadhaar Linked Bank Account", "type": "TEXT", "required": True}
+                ]
+            },
+            # 47. Prime Minister's Special Scholarship Scheme (PMSSS)
+            {
+                "code": "CENTRAL_PMSSS_SCHOLARSHIP", "state_code": "CENTRAL", "dept_code": "GOI_EDU", "cat_code": "EDUCATION",
+                "service_type": "SCHEME", "scheme_type": "EDUCATION_SCHOLARSHIP", "sponsor_type": "CENTRAL",
+                "benefit_amount": "Full Academic Tuition Fee up to ₹3.0 Lakh + ₹1.0 Lakh/year Living & Hostel Allowance",
+                "name": "Prime Minister's Special Scholarship Scheme (PMSSS)",
+                "name_mr": "पंतप्रधान विशेष शिष्यवृत्ती योजना (PMSSS)",
+                "name_hi": "प्रधानमंत्री विशेष छात्रवृत्ति योजना (PMSSS)",
+                "description": "AICTE administered premier scholarship fully funding engineering, medical, and general degree courses across top national institutions with full hostel allowance.",
+                "description_mr": "देशातील नामांकित अभियांत्रिकी व वैद्यकीय महाविद्यालयांमध्ये मोफत उच्च शिक्षणासाठी ₹३ लाखांपर्यंत शुल्क व वसतिगृह भत्ता.",
+                "description_hi": "शीर्ष इंजीनियरिंग एवं मेडिकल संस्थानों में उच्च शिक्षा हेतु ₹3 लाख तक की पूर्ण फीस एवं ₹1 लाख वार्षिक छात्रावास भत्ता।",
+                "fee": 0.00, "processing_days": 20,
+                "required_docs": ["Marksheet", "Domicile Certificate", "Income Certificate", "Aadhaar Card", "Bonafide Certificate"],
+                "eligibility": {"criteria": "Students passing 10+2 with family annual income under ₹8 Lakh per year"},
+                "fields": [
+                    {"key": "student_name", "label": "Applicant Legal Name", "type": "TEXT", "required": True},
+                    {"key": "institute_name", "label": "Admitted College / Institute Name", "type": "TEXT", "required": True},
+                    {"key": "course_stream", "label": "Degree Course Stream", "type": "DROPDOWN", "required": True, "options": ["Engineering & Technology", "Medical / Nursing / Pharmacy", "General Arts / Science / Commerce", "Architecture / Hotel Management"]},
+                    {"key": "family_annual_income", "label": "Annual Family Income (in ₹)", "type": "NUMBER", "required": True},
+                    {"key": "bank_account", "label": "Aadhaar Linked Bank Account", "type": "TEXT", "required": True}
+                ]
+            },
+            # 48. Dr. Panjabrao Deshmukh Hostel Maintenance Allowance
+            {
+                "code": "MH_PUNJABRAO_DESHMUKH_HOSTEL", "state_code": "MH", "dept_code": "MH_SOC", "cat_code": "EDUCATION",
+                "service_type": "SCHEME", "scheme_type": "EDUCATION_SCHOLARSHIP", "sponsor_type": "STATE",
+                "benefit_amount": "Hostel Allowance of ₹30,000 / year (Mumbai/Pune) or ₹20,000 / year (Other cities)",
+                "name": "Dr. Panjabrao Deshmukh Hostel Maintenance Allowance Scheme",
+                "name_mr": "डॉ. पंजाबराव देशमुख वसतिगृह निर्वाह भत्ता योजना",
+                "name_hi": "डॉ. पंजाबराव देशमुख छात्रावास निर्वाह भत्ता योजना",
+                "description": "Financial hostel maintenance stipend for children of registered marginal landholding farmers and registered construction workers admitted to professional colleges.",
+                "description_mr": "अल्पभूधारक शेतकरी व नोंदणीकृत बांधकाम मजुरांच्या पाल्यांना उच्च शिक्षणासाठी दरवर्षी ₹३०,००० चा वसतिगृह निर्वाह भत्ता.",
+                "description_hi": "अल्प-भूधारक किसान एवं पंजीकृत निर्माण श्रमिकों के बच्चों को व्यावसायिक शिक्षा में ₹30,000 वार्षिक छात्रावास भत्ता।",
+                "fee": 0.00, "processing_days": 15,
+                "required_docs": ["7/12 Land Record or Building Worker Card", "Hostel Admission Certificate / Rent Agreement", "College Bonafide", "Domicile Certificate", "Aadhaar Card"],
+                "eligibility": {"criteria": "Children of registered marginal farmers (up to 2 hectares) or registered construction laborers with family income up to ₹8 Lakh"},
+                "fields": [
+                    {"key": "student_name", "label": "Student Name", "type": "TEXT", "required": True},
+                    {"key": "college_name", "label": "College / Institute Name", "type": "TEXT", "required": True},
+                    {"key": "hostel_name", "label": "Hostel / PG Accommodation Name & Address", "type": "TEXT", "required": True},
+                    {"key": "district", "label": "College District Location", "type": "TEXT", "required": True},
+                    {"key": "family_annual_income", "label": "Annual Family Income (in ₹)", "type": "NUMBER", "required": True},
+                    {"key": "bank_account", "label": "Aadhaar Seeded Bank Account Number", "type": "TEXT", "required": True}
+                ]
+            },
+            # 49. Pradhan Mantri MUDRA Yojana (PMMY)
+            {
+                "code": "CENTRAL_PMMY_MUDRA", "state_code": "CENTRAL", "dept_code": "GOI_FIN", "cat_code": "INDUSTRY",
+                "service_type": "SCHEME", "scheme_type": "INDUSTRIAL_MSME", "sponsor_type": "CENTRAL",
+                "benefit_amount": "Collateral-Free Credit up to ₹10 Lakh (Shishu: ≤₹50k, Kishore: ₹50k-₹5L, Tarun: ₹5L-₹10L)",
+                "name": "Pradhan Mantri MUDRA Yojana (PMMY Micro-Business Loans)",
+                "name_mr": "प्रधानमंत्री मुद्रा योजना (PMMY विनातारण व्यवसाय कर्ज)",
+                "name_hi": "प्रधानमंत्री मुद्रा योजना (PMMY संपार्श्विक-मुक्त सूक्ष्म ऋण)",
+                "description": "Collateral-free institutional credit up to ₹10 Lakh provided through public and commercial banks to non-corporate, non-farm small and micro enterprises.",
+                "description_mr": "लघु व सूक्ष्म व्यावसायिकांना व्यवसाय सुरू करण्यासाठी किंवा वाढवण्यासाठी बँकांमार्फत ₹१० लाखांपर्यंतचे विनातारण कर्ज.",
+                "description_hi": "सूक्ष्म एवं लघु व्यापार प्रारंभ एवं विस्तार हेतु बैंकों द्वारा बिना किसी गारंटी के ₹10 लाख तक का संस्थागत ऋण।",
+                "fee": 0.00, "processing_days": 14,
+                "required_docs": ["Aadhaar Card", "PAN Card", "Business Address Proof", "Quotation of Machinery / Items to be Purchased", "Bank Statement (Last 6 Months)"],
+                "eligibility": {"criteria": "Any Indian citizen having a viable business plan for non-farm income-generating activity"},
+                "fields": [
+                    {"key": "enterprise_name", "label": "Proposed or Existing Business Name", "type": "TEXT", "required": True},
+                    {"key": "mudra_category", "label": "MUDRA Loan Category", "type": "DROPDOWN", "required": True, "options": ["Shishu (Loans up to ₹50,000)", "Kishore (Loans ₹50,001 to ₹5,00,000)", "Tarun (Loans ₹5,00,001 to ₹10,00,000)"]},
+                    {"key": "business_activity", "label": "Nature of Business / Service", "type": "TEXT", "required": True},
+                    {"key": "loan_amount_required", "label": "Loan Amount Required (in ₹)", "type": "NUMBER", "required": True},
+                    {"key": "preferred_bank", "label": "Preferred Bank & Branch", "type": "TEXT", "required": True},
+                    {"key": "district", "label": "Business District", "type": "TEXT", "required": True}
+                ]
+            },
+            # 50. PM Vishwakarma Kaushal Samman Yojana
+            {
+                "code": "CENTRAL_PM_VISHWAKARMA", "state_code": "CENTRAL", "dept_code": "GOI_MSME", "cat_code": "INDUSTRY",
+                "service_type": "SCHEME", "scheme_type": "INDUSTRIAL_MSME", "sponsor_type": "CENTRAL",
+                "benefit_amount": "₹15,000 Free Toolkit Incentive + Collateral-Free Credit up to ₹3 Lakh at 5% interest",
+                "name": "PM Vishwakarma Kaushal Samman Yojana (Traditional Artisans)",
+                "name_mr": "पीएम विश्वकर्मा कौशल सन्मान योजना (पारंपारिक कारागीर)",
+                "name_hi": "पीएम विश्वकर्मा योजना (पारंपरिक कारीगर एवं शिल्पकार)",
+                "description": "End-to-end support for 18 traditional family trades providing skill training, free modern toolkit vouchers worth ₹15,000, and subsidized collateral-free loans.",
+                "description_mr": "१८ पारंपारिक कारागिरांना (सुतार, लोहार, कुंभार, चांभार, शिंपी) ₹१५,००० चे टूलकिट आणि ५% सवलतीच्या व्याजाने ₹३ लाखांपर्यंत कर्ज.",
+                "description_hi": "पारंपरिक 18 व्यवसायों से जुड़े कारीगरों को आधुनिक टूलकिट हेतु ₹15,000 का ई-वाउचर एवं 5% रियायती ब्याज पर ₹3 लाख तक का ऋण।",
+                "fee": 0.00, "processing_days": 10,
+                "required_docs": ["Aadhaar Card", "Ration Card", "Bank Passbook", "Active Mobile Number"],
+                "eligibility": {"criteria": "Artisans engaged in one of 18 notified traditional trades on self-employment basis aged 18+ years"},
+                "fields": [
+                    {"key": "full_name", "label": "Artisan Full Name", "type": "TEXT", "required": True},
+                    {"key": "trade_craft_name", "label": "Traditional Trade / Craft", "type": "DROPDOWN", "required": True, "options": ["Carpenter (Suthar)", "Blacksmith (Lohar)", "Potter (Kumhaar)", "Sculptor / Stone Carver", "Cobbler (Charmakar)", "Mason (Rajmistri)", "Basket/Mat/Broom Maker", "Tailor (Darzi)", "Barber (Naai)", "Washerman (Dhobi)", "Goldsmith (Sonar)", "Locksmith", "Boat Builder"]},
+                    {"key": "experience_years", "label": "Years of Experience in Traditional Trade", "type": "NUMBER", "required": True},
+                    {"key": "district", "label": "District", "type": "TEXT", "required": True},
+                    {"key": "bank_account", "label": "Aadhaar Seeded Bank Account", "type": "TEXT", "required": True}
+                ]
+            },
+            # 51. Stand-Up India Scheme
+            {
+                "code": "CENTRAL_STANDUP_INDIA", "state_code": "CENTRAL", "dept_code": "GOI_FIN", "cat_code": "INDUSTRY",
+                "service_type": "SCHEME", "scheme_type": "INDUSTRIAL_MSME", "sponsor_type": "CENTRAL",
+                "benefit_amount": "Bank Loans from ₹10 Lakh to ₹1 Crore for Greenfield Enterprises",
+                "name": "Stand-Up India Scheme (SC/ST & Women Entrepreneurs)",
+                "name_mr": "स्टँड-अप इंडिया योजना (अनुसूचित जाती/जमाती व महिला उद्योजक)",
+                "name_hi": "स्टैंड-अप इंडिया योजना (SC/ST एवं महिला उद्यमी ऋण)",
+                "description": "Facilitates bank loans between ₹10 Lakh and ₹1 Crore to at least one SC or ST borrower and at least one woman borrower per bank branch for greenfield manufacturing, service, or trading ventures.",
+                "description_mr": "अनुसूचित जाती, जमाती आणि महिला उद्योजकांना नवीन उद्योग, सेवा किंवा व्यापार सुरू करण्यासाठी ₹१० लाख ते ₹१ कोटींचे बँक कर्ज.",
+                "description_hi": "SC/ST एवं महिला उद्यमियों द्वारा नवीन विनिर्माण, सेवा अथवा व्यापार उद्यम स्थापित करने हेतु ₹10 लाख से ₹1 करोड़ का संस्थागत ऋण।",
+                "fee": 0.00, "processing_days": 21,
+                "required_docs": ["Project Report", "Aadhaar Card", "PAN Card", "Caste Certificate (if SC/ST)", "Proof of Business Premises", "Bank Statement"],
+                "eligibility": {"criteria": "SC/ST and/or Woman entrepreneurs above 18 years of age setting up greenfield projects"},
+                "fields": [
+                    {"key": "enterprise_name", "label": "Proposed Greenfield Enterprise Name", "type": "TEXT", "required": True},
+                    {"key": "caste_category", "label": "Applicant Category", "type": "DROPDOWN", "required": True, "options": ["Woman Entrepreneur (General)", "Woman Entrepreneur (OBC)", "SC (Scheduled Caste)", "ST (Scheduled Tribe)"]},
+                    {"key": "industry_type", "label": "Project Sector", "type": "DROPDOWN", "required": True, "options": ["Manufacturing", "Services", "Trading", "Agri-Allied Activity"]},
+                    {"key": "project_cost", "label": "Estimated Project Outlay (in ₹)", "type": "NUMBER", "required": True},
+                    {"key": "preferred_bank", "label": "Financing Bank & Branch", "type": "TEXT", "required": True},
+                    {"key": "district", "label": "District", "type": "TEXT", "required": True}
+                ]
+            },
+            # 52. Pradhan Mantri Awas Yojana - Gramin (PMAY-G)
+            {
+                "code": "CENTRAL_PMAY_GRAMIN", "state_code": "CENTRAL", "dept_code": "GOI_RD", "cat_code": "WELFARE",
+                "service_type": "SCHEME", "scheme_type": "SOCIAL_WELFARE", "sponsor_type": "CENTRAL",
+                "benefit_amount": "Direct Financial Grant of ₹1,20,000 (Plain Areas) / ₹1,30,000 (Hilly/Tribal areas) for Pucca House Construction",
+                "name": "Pradhan Mantri Awas Yojana - Gramin (PMAY-G Rural Housing)",
+                "name_mr": "प्रधानमंत्री आवास योजना - ग्रामीण (PMAY-G घरकुल योजना)",
+                "name_hi": "प्रधानमंत्री आवास योजना - ग्रामीण (PMAY-G पक्का मकान अनुदान)",
+                "description": "Financial assistance provided directly into bank accounts in 3 installments to homeless rural households and those living in kutcha/dilapidated houses to build pucca houses.",
+                "description_mr": "ग्रामीण भागातील बेघर व कच्च्या घरात राहणाऱ्या कुटुंबांना हक्काचे पक्के घर बांधण्यासाठी ₹१,२०,००० चे थेट बँक अनुदान.",
+                "description_hi": "ग्रामीण क्षेत्रों में बेघर एवं कच्चे घरों में रहने वाले गरीब परिवारों को पक्का मकान निर्माण हेतु ₹1,20,000 की प्रत्यक्ष डीबीटी सहायता।",
+                "fee": 0.00, "processing_days": 30,
+                "required_docs": ["Aadhaar Card", "Ration Card", "Bank Passbook", "Land Ownership / Gram Panchayat Certificate", "MGNREGA Job Card"],
+                "eligibility": {"criteria": "Homeless families or households living in zero, one, or two-room houses with kutcha wall/roof as per SECC / Awaas+ list"},
+                "fields": [
+                    {"key": "applicant_name", "label": "Head of Household Full Name", "type": "TEXT", "required": True},
+                    {"key": "aadhaar_no", "label": "12-Digit Aadhaar Number", "type": "TEXT", "required": True},
+                    {"key": "district", "label": "District", "type": "TEXT", "required": True},
+                    {"key": "taluka", "label": "Taluka / Block", "type": "TEXT", "required": True},
+                    {"key": "village", "label": "Gram Panchayat / Village", "type": "TEXT", "required": True},
+                    {"key": "ration_card_no", "label": "Ration Card Number", "type": "TEXT", "required": True},
+                    {"key": "bank_account", "label": "Aadhaar Seeded DBT Bank Account", "type": "TEXT", "required": True}
+                ]
+            },
+            # 53. Ayushman Bharat - PM-JAY Cashless Health Cover
+            {
+                "code": "CENTRAL_PMJAY_AYUSHMAN", "state_code": "CENTRAL", "dept_code": "GOI_HEALTH", "cat_code": "WELFARE",
+                "service_type": "SCHEME", "scheme_type": "SOCIAL_WELFARE", "sponsor_type": "CENTRAL",
+                "benefit_amount": "₹5,00,000 / year Cashless Hospitalization Cover per family across all empaneled public & private hospitals",
+                "name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (Ayushman Card)",
+                "name_mr": "आयुष्मान भारत - प्रधानमंत्री जन आरोग्य योजना (आयुष्मान कार्ड)",
+                "name_hi": "आयुष्मान भारत - प्रधानमंत्री जन आरोग्य योजना (PM-JAY गोल्डन कार्ड)",
+                "description": "World's largest government health assurance scheme providing ₹5 Lakh cashless treatment per family per year for secondary and tertiary hospital care without any out-of-pocket expenses.",
+                "description_mr": "पात्र गरीब कुटुंबांना दरवर्षी ₹५ लाखांपर्यंत मोफत व कॅशलेस वैद्यकीय उपचार देणारे देशातील सर्वात मोठे आरोग्य संरक्षण कवच.",
+                "description_hi": "प्रत्येक पात्र परिवार को प्रति वर्ष ₹5 लाख तक का कैशलेस एवं नि:शुल्क अस्पताल इलाज (द्वितीयक एवं तृतीयक स्वास्थ्य सुरक्षा)।",
+                "fee": 0.00, "processing_days": 3,
+                "required_docs": ["Aadhaar Card", "Ration Card", "Active Mobile Number"],
+                "eligibility": {"criteria": "Deprived rural and notified occupational urban households identified under SECC and National Food Security Act (NFSA)"},
+                "fields": [
+                    {"key": "applicant_name", "label": "Beneficiary Full Name", "type": "TEXT", "required": True},
+                    {"key": "aadhaar_no", "label": "12-Digit Aadhaar Number", "type": "TEXT", "required": True},
+                    {"key": "district", "label": "District", "type": "TEXT", "required": True},
+                    {"key": "ration_card_no", "label": "Ration Card Number (NFSA / State)", "type": "TEXT", "required": True},
+                    {"key": "applicant_age", "label": "Age of Applicant", "type": "NUMBER", "required": True},
+                    {"key": "family_annual_income", "label": "Annual Family Income (in ₹)", "type": "NUMBER", "required": True}
+                ]
+            },
+            # 54. Sanjay Gandhi Niradhar Anudan Yojana
+            {
+                "code": "MH_SANJAY_GANDHI_NIRADHAR", "state_code": "MH", "dept_code": "MH_SOC", "cat_code": "WELFARE",
+                "service_type": "SCHEME", "scheme_type": "SOCIAL_WELFARE", "sponsor_type": "STATE",
+                "benefit_amount": "₹1,500 / month Direct Pension Transfer for destitute, elderly, and disabled citizens",
+                "name": "Sanjay Gandhi Niradhar Anudan Yojana (Monthly Destitute Pension)",
+                "name_mr": "संजय गांधी निराधार अनुदान योजना (मासिक निवृत्तीवेतन)",
+                "name_hi": "संजय गांधी निराधार अनुदान योजना (मासिक पेंशन सहायता)",
+                "description": "Monthly financial pension of ₹1,500 transferred directly to destitute persons, elderly above 65, blind, physically handicapped, widows, cancer/TB patients, and abandoned women in Maharashtra.",
+                "description_mr": "निराधार व्यक्ती, ६५ वर्षांवरील वृद्ध, दिव्यांग, विधवा व गंभीर आजारी व्यक्तींना दरमहा ₹१,५०० चे थेट मासिक आर्थिक सहाय्य.",
+                "description_hi": "निराधार, 65 वर्ष से अधिक आयु के वृद्धजनों, दिव्यांगों एवं विधवाओं को प्रतिमाह ₹1,500 की प्रत्यक्ष मासिक पेंशन सहायता।",
+                "fee": 0.00, "processing_days": 21,
+                "required_docs": ["Age Proof / School Leaving Certificate", "Income Certificate (Tehsildar)", "Domicile Certificate", "Disability / Medical Certificate", "Aadhaar Card", "Bank Passbook"],
+                "eligibility": {"criteria": "Resident of Maharashtra for min 15 years with family annual income up to ₹21,000 and lacking family financial support"},
+                "fields": [
+                    {"key": "applicant_name", "label": "Applicant Full Name", "type": "TEXT", "required": True},
+                    {"key": "applicant_age", "label": "Age (Years)", "type": "NUMBER", "required": True},
+                    {"key": "marital_status", "label": "Marital / Living Status", "type": "DROPDOWN", "required": True, "options": ["Destitute / Unmarried", "Widow", "Divorced / Deserted Woman", "Married (Bedridden/Disabled Spouse)", "Other"]},
+                    {"key": "district", "label": "District", "type": "TEXT", "required": True},
+                    {"key": "taluka", "label": "Taluka", "type": "TEXT", "required": True},
+                    {"key": "bank_account", "label": "Aadhaar Seeded Bank Account Number", "type": "TEXT", "required": True},
+                    {"key": "bank_ifsc", "label": "Bank IFSC Code", "type": "TEXT", "required": True}
+                ]
             }
         ]
 
@@ -847,6 +1311,11 @@ def seed():
             import json
             elig_str = json.dumps(elig, ensure_ascii=False) if isinstance(elig, dict) else str(elig)
 
+            service_type = s_data.pop("service_type", "DOCUMENT")
+            scheme_type = s_data.pop("scheme_type", None)
+            sponsor_type = s_data.pop("sponsor_type", None)
+            benefit_amount = s_data.pop("benefit_amount", None)
+
             s_data.pop("dept_code")
             s_data.pop("cat_code")
 
@@ -855,6 +1324,10 @@ def seed():
                 s_obj = Service(
                     department_id=dept_id,
                     category_id=cat_id,
+                    service_type=service_type,
+                    scheme_type=scheme_type,
+                    sponsor_type=sponsor_type,
+                    benefit_amount=benefit_amount,
                     documents_required=req_docs,
                     eligibility=elig_str,
                     **s_data
@@ -868,6 +1341,10 @@ def seed():
             else:
                 existing.department_id = dept_id
                 existing.category_id = cat_id
+                existing.service_type = service_type
+                existing.scheme_type = scheme_type
+                existing.sponsor_type = sponsor_type
+                existing.benefit_amount = benefit_amount
                 existing.name = s_data["name"]
                 existing.name_mr = s_data["name_mr"]
                 existing.name_hi = s_data["name_hi"]
@@ -899,8 +1376,72 @@ def seed():
         # Seed Demonstration Users (Diverse Citizens, Officers & State Super Admins)
         demo_users = [
             # Citizens (Diverse across States & UTs)
-            {"email": "citizen@mahaseva.gov.in", "phone": "9876543210", "full_name": "Aarav Sharma", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
-            {"email": "rahul.deshmukh@mahaseva.gov.in", "phone": "9820010001", "full_name": "Rahul Deshmukh", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
+            {
+                "email": "citizen@mahaseva.gov.in",
+                "phone": "9876543210",
+                "full_name": "Aarav Sharma",
+                "password_hash": get_password_hash("Citizen@2026"),
+                "role": RoleEnum.CITIZEN,
+                "state_code": "MH",
+                "department_id": None,
+                "aadhaar_number": "8745-1290-3344",
+                "pan_number": "BRTPS5678K",
+                "profile_data": {
+                    "gender": "MALE",
+                    "dob": "1996-08-20",
+                    "place_of_birth": "Mumbai, Maharashtra",
+                    "residence_years": 28,
+                    "father_or_spouse_name": "Kailash Sharma",
+                    "caste_category": "GENERAL",
+                    "sub_caste": "Brahmin",
+                    "beneficiary_category": "GENERAL",
+                    "occupation": "Private Sector Professional",
+                    "annual_family_income": 450000,
+                    "address": "Flat 302, Green Meadows, Andheri East",
+                    "village": "Andheri",
+                    "district": "Mumbai Suburban",
+                    "taluka": "Andheri",
+                    "pincode": "400069",
+                    "ration_card_no": "MH-MUM-5421980",
+                    "marital_status": "Unmarried",
+                    "bank_name": "HDFC Bank",
+                    "bank_account_number": "50100234567890",
+                    "bank_ifsc": "HDFC0000128"
+                }
+            },
+            {
+                "email": "rahul.deshmukh@mahaseva.gov.in",
+                "phone": "9820010001",
+                "full_name": "Rahul Deshmukh",
+                "password_hash": get_password_hash("Citizen@2026"),
+                "role": RoleEnum.CITIZEN,
+                "state_code": "MH",
+                "department_id": None,
+                "aadhaar_number": "9820-4512-8890",
+                "pan_number": "ABCDE1234F",
+                "profile_data": {
+                    "gender": "MALE",
+                    "dob": "1994-06-15",
+                    "place_of_birth": "Pune, Maharashtra",
+                    "residence_years": 30,
+                    "father_or_spouse_name": "Suresh Deshmukh",
+                    "caste_category": "OBC",
+                    "sub_caste": "Maratha / Kunbi",
+                    "beneficiary_category": "FARMER",
+                    "occupation": "Agriculture & Dairy Farming",
+                    "annual_family_income": 180000,
+                    "address": "House No. 42, Gram Panchayat Road, Ambegaon",
+                    "village": "Ambegaon",
+                    "district": "Pune",
+                    "taluka": "Haveli",
+                    "pincode": "411041",
+                    "ration_card_no": "MH-PUN-7829104",
+                    "marital_status": "Married",
+                    "bank_name": "State Bank of India",
+                    "bank_account_number": "349921008745",
+                    "bank_ifsc": "SBIN0001234"
+                }
+            },
             {"email": "priya.patil@mahaseva.gov.in", "phone": "9820010002", "full_name": "Priya Patil", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
             {"email": "aditya.kulkarni@mahaseva.gov.in", "phone": "9820010003", "full_name": "Aditya Kulkarni", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
             {"email": "sunita.jadhav@mahaseva.gov.in", "phone": "9820010004", "full_name": "Sunita Jadhav", "password_hash": get_password_hash("Citizen@2026"), "role": RoleEnum.CITIZEN, "state_code": "MH", "department_id": None},
@@ -1064,9 +1605,56 @@ def seed():
                 existing.role = u["role"]
                 existing.state_code = u.get("state_code", "MH")
                 existing.department_id = u.get("department_id")
+                if "aadhaar_number" in u:
+                    existing.aadhaar_number = u["aadhaar_number"]
+                if "pan_number" in u:
+                    existing.pan_number = u["pan_number"]
+                if "profile_data" in u:
+                    existing.profile_data = u["profile_data"]
                 user_map[u["email"]] = existing.id
         db.commit()
         print(f"[OK] {len(demo_users)} Demo Users verified across States & Roles.")
+
+        # Seed personal vault documents for Rahul Deshmukh (DigiLocker)
+        rahul_id = user_map.get("rahul.deshmukh@mahaseva.gov.in")
+        if rahul_id:
+            import os
+            from app.core.config import settings
+            os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+            dummy_file_path = os.path.join(settings.UPLOAD_DIR, "demo_vault_sample.pdf")
+            if not os.path.exists(dummy_file_path):
+                with open(dummy_file_path, "wb") as f:
+                    f.write(b"%PDF-1.4 demo verified government credential document content\n%%EOF")
+
+            vault_docs = [
+                {"type": "AADHAAR", "name": "aadhaar_card.pdf", "path": "demo_vault_sample.pdf", "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+                {"type": "PAN", "name": "pan_card.pdf", "path": "demo_vault_sample.pdf", "hash": "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb"},
+                {"type": "INCOME_CERT", "name": "tahsildar_income_cert.pdf", "path": "demo_vault_sample.pdf", "hash": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce"},
+                {"type": "DOMICILE_CERT", "name": "maharashtra_domicile.pdf", "path": "demo_vault_sample.pdf", "hash": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"},
+                {"type": "LAND_RECORD", "name": "satbara_7_12_extract.pdf", "path": "demo_vault_sample.pdf", "hash": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"},
+                {"type": "BANK_PASSBOOK", "name": "sbi_bank_passbook.pdf", "path": "demo_vault_sample.pdf", "hash": "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"}
+            ]
+            for vdoc in vault_docs:
+                existing_vdoc = db.query(Document).filter(
+                    Document.citizen_id == rahul_id,
+                    Document.application_id.is_(None),
+                    Document.document_type == vdoc["type"]
+                ).first()
+                if not existing_vdoc:
+                    db.add(Document(
+                        citizen_id=rahul_id,
+                        application_id=None,
+                        document_type=vdoc["type"],
+                        file_name=vdoc["name"],
+                        original_file_name=vdoc["name"],
+                        mime_type="application/pdf",
+                        file_size=102400,
+                        storage_path=vdoc["path"],
+                        file_hash=vdoc["hash"],
+                        verification_status="VERIFIED"
+                    ))
+            db.commit()
+            print("[OK] Rahul Deshmukh verified DigiLocker vault documents seeded.")
 
         # 6. Seed Sample Multi-State Applications with Diverse Citizens
         sample_apps = [

@@ -15,6 +15,7 @@ from app.routers.officer import router as officer_router
 from app.routers.admin import router as admin_router
 from app.routers.notifications import router as notifications_router
 from app.routers.assistant import router as assistant_router
+from app.routers.citizen import router as citizen_router
 
 # ============================================================
 # FASTAPI APPLICATION DEFINITION
@@ -28,6 +29,22 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json"
 )
+
+@app.on_event("startup")
+def run_migrations():
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE services ADD COLUMN IF NOT EXISTS service_type VARCHAR(50) DEFAULT 'DOCUMENT';"))
+            conn.execute(text("ALTER TABLE services ADD COLUMN IF NOT EXISTS scheme_type VARCHAR(50);"))
+            conn.execute(text("ALTER TABLE services ADD COLUMN IF NOT EXISTS benefit_amount VARCHAR(150);"))
+            conn.execute(text("ALTER TABLE services ADD COLUMN IF NOT EXISTS sponsor_type VARCHAR(50) DEFAULT 'STATE';"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS aadhaar_number VARCHAR(20);"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS pan_number VARCHAR(20);"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_data JSONB;"))
+            conn.commit()
+            print("[OK] Startup migration verified successfully.")
+    except Exception as e:
+        print(f"[STARTUP MIGRATION NOTE] {e}")
 
 # ============================================================
 # CORS MIDDLEWARE (Allow Frontend Dev on Vite localhost:5173 etc.)
@@ -72,6 +89,7 @@ app.include_router(officer_router, prefix=api_v1)
 app.include_router(admin_router, prefix=api_v1)
 app.include_router(notifications_router, prefix=api_v1)
 app.include_router(assistant_router, prefix=api_v1)
+app.include_router(citizen_router, prefix=api_v1)
 
 # Backward-compatible auth routes
 app.include_router(auth_router)

@@ -1,4 +1,4 @@
-﻿from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -6,6 +6,7 @@ class ApplicationCreateRequest(BaseModel):
     service_id: int
     form_data: Dict[str, Any]
     status: Optional[str] = "SUBMITTED"
+    vault_document_ids: Optional[List[int]] = None
 
 class TimelineEventResponse(BaseModel):
     id: int

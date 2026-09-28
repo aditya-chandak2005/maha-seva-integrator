@@ -3,26 +3,20 @@ import { useTranslation } from "react-i18next";
 import { 
   Search, 
   ArrowRight, 
-  Building, 
+  ShieldCheck, 
   Clock, 
-  FileCheck2, 
-  CheckCircle, 
-  Sparkles, 
-  Shield, 
-  Users, 
-  Zap, 
-  Award,
-  FileText,
-  HelpCircle,
-  TrendingUp
+  FileCheck, 
+  Sparkles,
+  Building,
+  CheckCircle2,
+  Users
 } from "lucide-react";
 import { ServiceItem } from "../types";
-
-import { ALL_INDIA_STATES_AND_UTS, ALL_OPTION, CENTRAL_OPTION, getStateLabel, getStateShortName } from "../constants/states";
+import { ALL_INDIA_STATES_AND_UTS } from "../types";
 
 interface HomePageProps {
   services: ServiceItem[];
-  onSelectService: (serviceId: number) => void;
+  onSelectService: (serviceId: string | number) => void;
   onNavigate: (tab: string, param?: any) => void;
   onOpenAssistant: () => void;
   selectedState?: string;
@@ -43,7 +37,9 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onNavigate("services", { q: searchQuery });
+    if (searchQuery.trim()) {
+      onNavigate("services", { q: searchQuery.trim() });
+    }
   };
 
   const handleTrackSubmit = (e: React.FormEvent) => {
@@ -90,7 +86,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
             <button
               type="submit"
-              className="px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm rounded-xl transition shadow-md flex items-center justify-center"
+              className="px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm rounded-xl transition shadow-md flex items-center justify-center cursor-pointer"
             >
               <span>{t("common.search")}</span>
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -178,11 +174,11 @@ export const HomePage: React.FC<HomePageProps> = ({
               value={trackNumber}
               onChange={(e) => setTrackNumber(e.target.value)}
               placeholder="e.g. MH-REV-2026-00101"
-              className="px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 md:w-64 font-mono text-slate-800"
+              className="px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 md:w-64 font-mono text-slate-800 placeholder:text-slate-400"
             />
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold transition shrink-0"
+              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold transition shrink-0 cursor-pointer"
             >
               {t("track.track_btn")}
             </button>
@@ -211,7 +207,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
           <button
             onClick={() => onNavigate("services")}
-            className="text-sm font-bold text-blue-700 hover:text-blue-800 flex items-center"
+            className="text-sm font-bold text-blue-700 hover:text-blue-800 flex items-center cursor-pointer"
           >
             <span>{i18n.language === "hi" ? "सभी सेवाएं देखें" : i18n.language === "mr" ? "सर्व सेवांची सूची पहा" : "View All Services Directory"}</span>
             <ArrowRight className="w-4 h-4 ml-1" />
@@ -250,6 +246,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
                   {i18n.language === "hi"
                     ? svc.description_hi || svc.description
+                    : i18n.language === "mr"
+                    ? svc.description_mr || svc.description
                     : svc.description}
                 </p>
               </div>
@@ -261,7 +259,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </span>
                 <button
                   onClick={() => onSelectService(svc.id)}
-                  className="px-3.5 py-1.5 rounded-lg bg-blue-50 group-hover:bg-blue-600 text-blue-700 group-hover:text-white text-xs font-semibold transition"
+                  className="px-3.5 py-1.5 rounded-lg bg-blue-50 group-hover:bg-blue-600 text-blue-700 group-hover:text-white text-xs font-semibold transition cursor-pointer"
                 >
                   {t("common.apply_now")}
                 </button>

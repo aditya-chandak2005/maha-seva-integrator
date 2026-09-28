@@ -244,10 +244,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
 
   if (registeredSuccess) {
     const roleLabel = role === "SUPER_ADMIN" 
-      ? "State Administrator" 
+      ? (i18n.language === "mr" ? "राज्य मुख्य प्रशासक" : i18n.language === "hi" ? "राज्य मुख्य प्रशासक" : "State Administrator")
       : role === "OFFICER" 
-      ? "Department Administrator / Officer" 
-      : "Citizen";
+      ? (i18n.language === "mr" ? "विभागीय अधिकारी" : i18n.language === "hi" ? "विभागीय अधिकारी" : "Department Administrator / Officer")
+      : (i18n.language === "mr" ? "नागरिक" : i18n.language === "hi" ? "नागरिक" : "Citizen");
 
     return (
       <div className="max-w-md mx-auto px-4 py-16 space-y-6 animate-fadeIn">
@@ -289,7 +289,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
 
           <button
             onClick={() => onNavigateLogin(email, `Registration successful as ${roleLabel}! Please sign in with your password.`)}
-            className="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center space-x-2"
+            className="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center space-x-2 cursor-pointer"
           >
             <span>Proceed to Sign In</span>
             <ArrowRight className="w-4 h-4" />
@@ -319,7 +319,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
         <button
           type="button"
           onClick={() => handleRoleChange("CITIZEN")}
-          className={`py-2.5 px-2 rounded-xl text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
+          className={`py-2.5 px-2 rounded-xl text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
             role === "CITIZEN"
               ? "bg-white text-blue-800 shadow-sm"
               : "text-slate-600 hover:text-slate-900"
@@ -332,7 +332,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
         <button
           type="button"
           onClick={() => handleRoleChange("OFFICER")}
-          className={`py-2.5 px-2 rounded-xl text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
+          className={`py-2.5 px-2 rounded-xl text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
             role === "OFFICER"
               ? "bg-white text-indigo-800 shadow-sm"
               : "text-slate-600 hover:text-slate-900"
@@ -345,7 +345,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
         <button
           type="button"
           onClick={() => handleRoleChange("SUPER_ADMIN")}
-          className={`py-2.5 px-2 rounded-xl text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
+          className={`py-2.5 px-2 rounded-xl text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
             role === "SUPER_ADMIN"
               ? "bg-white text-purple-800 shadow-sm"
               : "text-slate-600 hover:text-slate-900"
@@ -368,7 +368,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
           <>
             <User className="w-5 h-5 text-blue-600 shrink-0" />
             <div>
-              <span className="font-bold block">Citizen Profile (नागरिक)</span>
+              <span className="font-bold block">
+                {i18n.language === "mr" ? "नागरिक नोंदणी प्रोफाइल" : i18n.language === "hi" ? "नागरिक पंजीकरण प्रोफाइल" : "Citizen Registration Profile"}
+              </span>
               <span className="text-[11px] text-blue-700">Apply for state & central public certificates, scholarships, utility permits, and track real-time status.</span>
             </div>
           </>
@@ -377,7 +379,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
           <>
             <Briefcase className="w-5 h-5 text-indigo-600 shrink-0" />
             <div>
-              <span className="font-bold block">Department Officer / Admin (विभागीय अधिकारी)</span>
+              <span className="font-bold block">
+                {i18n.language === "mr" ? "विभागीय अधिकारी / प्रशासक" : i18n.language === "hi" ? "विभागीय अधिकारी / प्रशासक" : "Department Officer / Administrator"}
+              </span>
               <span className="text-[11px] text-indigo-700">Mandatory departmental format login (e.g. <code>officer.{cleanDeptTag}@mahaseva.gov.in</code>) to inspect department applications and SLAs.</span>
             </div>
           </>
@@ -386,7 +390,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
           <>
             <ShieldCheck className="w-5 h-5 text-purple-600 shrink-0" />
             <div>
-              <span className="font-bold block">State Administrator (राज्य मुख्य प्रशासक)</span>
+              <span className="font-bold block">
+                {i18n.language === "mr" ? "राज्य मुख्य प्रशासक" : i18n.language === "hi" ? "राज्य मुख्य प्रशासक" : "State Government Administrator"}
+              </span>
               <span className="text-[11px] text-purple-700">Mandatory state initials login (e.g. <code>admin.{stateCode.toLowerCase()}@mahaseva.gov.in</code>) to govern state telemetry and workloads.</span>
             </div>
           </>
@@ -415,7 +421,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               value={fullName}
               onChange={(e) => handleFullNameChange(e.target.value)}
               placeholder={role === "CITIZEN" ? "e.g. Rameshwar Patil" : role === "OFFICER" ? "e.g. Suresh Deshmukh" : "e.g. Dr. Rajesh Kadam"}
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
         </div>
@@ -438,14 +444,14 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               <option value="ALL">🇮🇳 All India (Chief National Administrator)</option>
             )}
             <option value={CENTRAL_OPTION.code}>{CENTRAL_OPTION.name}</option>
-            <optgroup label="States (28)">
+            <optgroup label="States (28)" className="text-slate-900 bg-white">
               {ALL_INDIA_STATES_AND_UTS.filter(s => s.type === "STATE").map((s) => (
                 <option key={s.code} value={s.code}>
                   {s.name} ({s.code})
                 </option>
               ))}
             </optgroup>
-            <optgroup label="Union Territories (8)">
+            <optgroup label="Union Territories (8)" className="text-slate-900 bg-white">
               {ALL_INDIA_STATES_AND_UTS.filter(s => s.type === "UT").map((s) => (
                 <option key={s.code} value={s.code}>
                   {s.name} ({s.code})
@@ -498,7 +504,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               <button
                 type="button"
                 onClick={applySuggestedEmail}
-                className="text-[10px] text-blue-700 hover:text-blue-800 font-bold flex items-center space-x-1"
+                className="text-[10px] text-blue-700 hover:text-blue-800 font-bold flex items-center space-x-1 cursor-pointer"
               >
                 <Sparkles className="w-3 h-3" />
                 <span>Auto-Generate Format</span>
@@ -523,7 +529,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl border text-sm focus:outline-none ${
                 role !== "CITIZEN" && isEmailFormatValid()
                   ? "border-emerald-400 bg-emerald-50/20 focus:ring-2 focus:ring-emerald-500 font-mono text-emerald-900"
-                  : "border-slate-300 focus:ring-2 focus:ring-blue-500"
+                  : "border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500"
               }`}
             />
           </div>
@@ -599,7 +605,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="10-digit Mobile Number"
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
         </div>
@@ -615,7 +621,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               value={designation}
               onChange={(e) => setDesignation(e.target.value)}
               placeholder="e.g. Tahsildar / Verification Desk Officer"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
         )}
@@ -633,7 +639,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
                 value={adminPasscode}
                 onChange={(e) => setAdminPasscode(e.target.value)}
                 placeholder="Admin verification passcode (Default: ADMIN2026)"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
               />
             </div>
             <span className="text-[10px] text-slate-400 block">
@@ -655,7 +661,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimum 8 characters"
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
         </div>
@@ -664,7 +670,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center space-x-1.5 disabled:opacity-50 ${
+          className={`w-full py-3 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer ${
             role === "CITIZEN"
               ? "bg-blue-700 hover:bg-blue-800"
               : role === "OFFICER"
@@ -686,7 +692,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
           <button
             type="button"
             onClick={() => onNavigateLogin()}
-            className="text-blue-700 font-bold hover:underline"
+            className="text-blue-700 font-bold hover:underline cursor-pointer"
           >
             Sign in to Portal
           </button>

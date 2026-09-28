@@ -1,7 +1,10 @@
 import React from "react";
-import { Building2, ShieldCheck, Phone, HelpCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Building2, ShieldCheck, Phone } from "lucide-react";
 
 export const Footer: React.FC = () => {
+  const { i18n } = useTranslation();
+
   return (
     <footer className="bg-slate-900 text-slate-400 text-xs border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -11,7 +14,11 @@ export const Footer: React.FC = () => {
             <div className="flex items-center space-x-2 text-white">
               <Building2 className="w-5 h-5 text-orange-500" />
               <span className="font-bold text-base tracking-tight">
-                Maha-Seva Integrator (महा-सेवा इंटिग्रेटर)
+                {i18n.language === "mr"
+                  ? "महा-सेवा इंटिग्रेटर"
+                  : i18n.language === "hi"
+                  ? "महा-सेवा इंटीग्रेटर"
+                  : "Maha-Seva Integrator"}
               </span>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed max-w-md">

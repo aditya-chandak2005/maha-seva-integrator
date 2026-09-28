@@ -54,6 +54,22 @@ class TestMahaSevaE2E(unittest.TestCase):
         cls.citizen_token = res["access_token"]
         cls.citizen_headers = {"Authorization": f"Bearer {cls.citizen_token}"}
 
+        # Clean up existing test applications for this citizen so e2e test can submit cleanly
+        from app.core.database import SessionLocal
+        from app.models import Application, ApplicationEvent, Document, Notification, SupportRequest, User
+        _db = SessionLocal()
+        _u = _db.query(User).filter(User.email == "citizen@mahaseva.gov.in").first()
+        if _u:
+            _apps = _db.query(Application).filter(Application.citizen_id == _u.id).all()
+            for _a in _apps:
+                _db.query(ApplicationEvent).filter(ApplicationEvent.application_id == _a.id).delete()
+                _db.query(Document).filter(Document.application_id == _a.id).delete()
+                _db.query(Notification).filter(Notification.application_id == _a.id).delete()
+                _db.query(SupportRequest).filter(SupportRequest.application_id == _a.id).delete()
+                _db.delete(_a)
+            _db.commit()
+        _db.close()
+
         # 2. Login Revenue Officer
         status, res = make_request(
             f"{BASE_URL}/auth/login",

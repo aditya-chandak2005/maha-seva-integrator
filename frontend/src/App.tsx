@@ -6,6 +6,8 @@ import { ServiceItem } from "./types";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { SmartAssistantModal } from "./components/SmartAssistantModal";
+import { CitizenProfileDrawer } from "./components/CitizenProfileDrawer";
+import { LoginModal } from "./components/LoginModal";
 
 import { HomePage } from "./pages/HomePage";
 import { ServiceCatalogPage } from "./pages/ServiceCatalogPage";
@@ -25,6 +27,49 @@ export const App: React.FC = () => {
 
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [assistantOpen, setAssistantOpen] = useState(false);
+  const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
+  const [profileDrawerTab, setProfileDrawerTab] = useState<"profile" | "uploaded-docs">("profile");
+
+  // Universal Login Dialog Modal State
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginModalNotice, setLoginModalNotice] = useState<string | undefined>();
+  const [loginModalSuccessAction, setLoginModalSuccessAction] = useState<(() => void) | null>(null);
+
+  const requireAuth = (notice?: string, actionOnSuccess?: () => void): boolean => {
+    if (isAuthenticated) {
+      if (actionOnSuccess) actionOnSuccess();
+      return true;
+    }
+    setLoginModalNotice(notice || "Please sign in to access advanced portal services.");
+    setLoginModalSuccessAction(() => actionOnSuccess || null);
+    setLoginModalOpen(true);
+    return false;
+  };
+
+  const handleOpenAssistant = () => {
+    requireAuth(
+      "Please sign in to access the Smart AI Service Assistant (scheme discovery & eligibility guidance).",
+      () => setAssistantOpen(true)
+    );
+  };
+
+  const handleLoginModalSuccess = () => {
+    setLoginModalOpen(false);
+    if (loginModalSuccessAction) {
+      const action = loginModalSuccessAction;
+      setLoginModalSuccessAction(null);
+      action();
+    }
+  };
+
+  const handleOpenProfileVault = (tab: "profile" | "uploaded-docs" = "profile") => {
+    if (!isAuthenticated) {
+      requireAuth("Please sign in to access your Profile and Document Vault.");
+      return;
+    }
+    setProfileDrawerTab(tab);
+    setProfileDrawerOpen(true);
+  };
 
   useEffect(() => {
     fetchServices();
@@ -73,11 +118,13 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 overflow-x-hidden">
       <Navbar
         currentTab={currentTab}
         onNavigate={handleNavigate}
-        onOpenAssistant={() => setAssistantOpen(true)}
+        onOpenAssistant={handleOpenAssistant}
+        onOpenProfileVault={handleOpenProfileVault}
+        onOpenLoginModal={(notice) => requireAuth(notice)}
         selectedState={selectedState}
         onSelectState={setSelectedState}
       />
@@ -88,7 +135,7 @@ export const App: React.FC = () => {
             services={services}
             onSelectService={handleSelectService}
             onNavigate={handleNavigate}
-            onOpenAssistant={() => setAssistantOpen(true)}
+            onOpenAssistant={handleOpenAssistant}
             selectedState={selectedState}
             onSelectState={setSelectedState}
           />
@@ -98,6 +145,7 @@ export const App: React.FC = () => {
           <ServiceCatalogPage
             initialSearch={tabParam?.q || ""}
             initialState={tabParam?.state || selectedState}
+            initialMode={tabParam?.mode || "documents"}
             onSelectService={handleSelectService}
             onStateChange={setSelectedState}
           />
@@ -109,7 +157,13 @@ export const App: React.FC = () => {
             onBack={() => handleNavigate("services")}
             onTrackSubmitted={(appNum) => handleNavigate("track", { number: appNum })}
             onGoToDashboard={() => handleNavigate("citizen-dashboard")}
-            onRequireLogin={() => handleNavigate("login")}
+            onRequireLogin={(notice, onSuccess) => {
+              requireAuth(
+                notice || "Please sign in to proceed with your application.",
+                onSuccess
+              );
+            }}
+            onOpenProfileVault={() => handleOpenProfileVault("uploaded-docs")}
           />
         )}
 
@@ -123,7 +177,8 @@ export const App: React.FC = () => {
         {currentTab === "citizen-dashboard" && (
           <CitizenDashboard
             onNavigate={handleNavigate}
-            onOpenAssistant={() => setAssistantOpen(true)}
+            onOpenAssistant={handleOpenAssistant}
+            onOpenProfileVault={handleOpenProfileVault}
           />
         )}
 
@@ -158,8 +213,8 @@ export const App: React.FC = () => {
 
       {/* Floating Smart Assistant Trigger (Always available in bottom right) */}
       <button
-        onClick={() => setAssistantOpen(true)}
-        className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white p-3.5 rounded-full shadow-2xl flex items-center space-x-2 transition-transform hover:scale-105"
+        onClick={handleOpenAssistant}
+        className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white p-3.5 rounded-full shadow-2xl flex items-center space-x-2 transition-transform hover:scale-105 cursor-pointer"
         title="Ask Smart Service Assistant"
       >
         <span className="text-xl">✨</span>
@@ -172,6 +227,35 @@ export const App: React.FC = () => {
         onClose={() => setAssistantOpen(false)}
         onSelectService={handleSelectService}
         selectedState={selectedState}
+        onRequireLogin={() => {
+          requireAuth(
+            "Please sign in to chat with the AI Service Assistant.",
+            () => setAssistantOpen(true)
+          );
+        }}
+      />
+
+      {/* Citizen Profile & DigiLocker Vault Slide-over Drawer */}
+      <CitizenProfileDrawer
+        isOpen={profileDrawerOpen}
+        initialTab={profileDrawerTab}
+        onClose={() => setProfileDrawerOpen(false)}
+        onNavigate={handleNavigate}
+      />
+
+      {/* Universal Login Dialog Box */}
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={() => {
+          setLoginModalOpen(false);
+          setLoginModalSuccessAction(null);
+        }}
+        onSuccess={handleLoginModalSuccess}
+        notice={loginModalNotice}
+        onNavigateRegister={() => {
+          setLoginModalOpen(false);
+          handleNavigate("register");
+        }}
       />
     </div>
   );

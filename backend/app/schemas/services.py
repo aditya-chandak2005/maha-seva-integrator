@@ -31,6 +31,10 @@ class ServiceListItem(BaseModel):
     fee: float
     processing_days: int
     integration_type: str
+    service_type: Optional[str] = "DOCUMENT"
+    scheme_type: Optional[str] = None
+    benefit_amount: Optional[str] = None
+    sponsor_type: Optional[str] = "STATE"
     is_active: bool
 
     class Config:
@@ -56,6 +60,10 @@ class ServiceDetailResponse(BaseModel):
     processing_days: int
     workflow_id: str
     integration_type: str
+    service_type: Optional[str] = "DOCUMENT"
+    scheme_type: Optional[str] = None
+    benefit_amount: Optional[str] = None
+    sponsor_type: Optional[str] = "STATE"
     is_active: bool
     form_schema: Optional[Any] = None
 

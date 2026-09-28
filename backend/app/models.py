@@ -65,6 +65,10 @@ class Service(Base):
     processing_days = Column(Integer, default=7)
     workflow_id = Column(String(50), default="STANDARD")
     integration_type = Column(String(50), default="MOCK_REV")
+    service_type = Column(String(50), default="DOCUMENT", index=True) # DOCUMENT or SCHEME
+    scheme_type = Column(String(50), nullable=True, index=True) # AGRICULTURE, EDUCATION_SCHOLARSHIP, INDUSTRIAL_MSME, SOCIAL_WELFARE
+    benefit_amount = Column(String(150), nullable=True) # e.g. ₹6,000 / year DBT, 35% Capital Subsidy
+    sponsor_type = Column(String(50), default="STATE") # CENTRAL or STATE
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
 
@@ -96,6 +100,9 @@ class User(Base):
     role = Column(String(50), nullable=False, default="CITIZEN", index=True)
     department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
     state_code = Column(String(10), default="MH", index=True, nullable=True)
+    aadhaar_number = Column(String(20), nullable=True)
+    pan_number = Column(String(20), nullable=True)
+    profile_data = Column(JSON, nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
 

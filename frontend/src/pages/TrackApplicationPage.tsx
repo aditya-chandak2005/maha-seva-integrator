@@ -96,7 +96,7 @@ export const TrackApplicationPage: React.FC<TrackApplicationPageProps> = ({
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
             Authentication Required to Track Applications
           </h2>
           <p className="text-sm text-slate-600">
@@ -112,14 +112,14 @@ export const TrackApplicationPage: React.FC<TrackApplicationPageProps> = ({
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <button
               onClick={() => onNavigate && onNavigate("login")}
-              className="flex-1 py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center space-x-2"
+              className="flex-1 py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center space-x-2 cursor-pointer"
             >
               <span>Sign In to Track Application</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => onNavigate && onNavigate("register")}
-              className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition border border-slate-300 flex items-center justify-center space-x-1"
+              className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition border border-slate-300 flex items-center justify-center space-x-1 cursor-pointer"
             >
               <span>Register Account</span>
             </button>
@@ -156,13 +156,13 @@ export const TrackApplicationPage: React.FC<TrackApplicationPageProps> = ({
             value={appNumber}
             onChange={(e) => setAppNumber(e.target.value)}
             placeholder="Enter Application Number (e.g. MH-REV-2026-00101, KA-BES-2026-XXXXX)..."
-            className="w-full px-3 py-2.5 text-sm font-mono text-slate-800 focus:outline-none placeholder-slate-400 uppercase"
+            className="w-full px-3 py-2.5 text-sm font-mono text-slate-800 bg-white focus:outline-none placeholder-slate-400 uppercase"
           />
         </div>
         <button
           type="submit"
           disabled={loading || !appNumber.trim()}
-          className="px-6 py-2.5 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-semibold text-xs sm:text-sm rounded-xl transition shadow-sm"
+          className="px-6 py-2.5 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-semibold text-xs sm:text-sm rounded-xl transition shadow-sm cursor-pointer"
         >
           {loading ? "Searching..." : "Track"}
         </button>

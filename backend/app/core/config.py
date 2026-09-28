@@ -32,12 +32,10 @@ class Settings(BaseModel):
     ]
 
     UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", os.path.join(os.getcwd(), "uploads"))
+    MAX_UPLOAD_SIZE_KB: int = int(os.getenv("MAX_UPLOAD_SIZE_KB", "256"))
     MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "5"))
     ALLOWED_MIME_TYPES: List[str] = [
-        "application/pdf",
-        "image/jpeg",
-        "image/png",
-        "image/jpg"
+        "application/pdf"
     ]
 
     ENABLE_MOCK_GOV_INTEGRATIONS: bool = os.getenv(

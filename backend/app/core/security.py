@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -41,7 +41,7 @@ def decode_access_token(token: str) -> Optional[dict]:
     except JWTError:
         return None
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_user_from_token_str(token: str, db: Session):
     from app.models import User
     
     credentials_exception = HTTPException(
@@ -64,6 +64,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None or not user.is_active:
         raise credentials_exception
     return user
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    return get_user_from_token_str(token, db)
 
 def require_roles(allowed_roles: List[str]):
     def role_checker(current_user = Depends(get_current_user)):
