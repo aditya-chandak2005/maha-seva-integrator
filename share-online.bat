@@ -1,24 +1,16 @@
 @echo off
 echo ================================================================
-echo      Maha-Seva Live Public Link Generator (Share with Friends)
+echo      Maha-Seva Live Public Link Generator (Cloudflare Tunnel)
 echo ================================================================
 echo.
 echo Please ensure Maha-Seva is running (run start.bat first).
 echo.
-echo Fetching your tunnel password for friendly verification...
-for /f "tokens=*" %%i in ('curl -s https://loca.lt/mytunnelpassword') do set TUNNEL_PWD=%%i
+echo Starting high-speed secure Cloudflare Tunnel for your website...
+echo  - NO PASSWORD REQUIRED!
+echo  - Works on iPhone, Android, tablets, and laptops worldwide!
 echo.
-echo ----------------------------------------------------------------
-echo   IMPORTANT: When your friend opens the link for the first time,
-echo   the page will ask for a "Tunnel Password / Endpoint IP".
-echo   Share this password with them:
-echo.
-echo   >>> %TUNNEL_PWD% <<<
+echo Your public HTTPS link will appear below (e.g. https://...trycloudflare.com):
 echo ----------------------------------------------------------------
 echo.
-echo Starting secure tunnel on port 5173...
-echo Your public HTTPS link will appear below (e.g. https://...loca.lt):
-echo.
-npx --yes localtunnel --port 5173
+"%~dp0cloudflared.exe" tunnel --url http://localhost:5173
 pause
-

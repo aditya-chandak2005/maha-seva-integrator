@@ -228,3 +228,4 @@ yarn-error.log*
 # Uploads / Local files
 uploads/
 *.sqlite3
+cloudflared.exe
